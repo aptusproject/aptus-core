@@ -11,7 +11,7 @@ val scala212 = "2.12.13"
 lazy val root = (project in file("."))
   .settings(  
     organizationName     := "Aptus Project",
-    organization         := "aptusproject",
+    organization         := "io.github.aptusproject", // *must* match groupId for sonatype
     name                 := "aptus-core",
     version              := "0.1.0",
 	homepage             := Some(url("https://github.com/aptusproject/aptus-core")),
@@ -23,7 +23,11 @@ lazy val root = (project in file("."))
 		name  = "Anthony Cros",
 		email = "contact.galliaproject@gmail.com",
 		url   = url("https://github.com/anthony-cros") )),
-	licenses             := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),	
+    scmInfo              :=
+      Some(ScmInfo(
+        browseUrl  = url("https://github.com/aptusproject/aptus-core"),
+        connection =     "scm:git@github.com:aptusproject/aptus-core.git")),
+	licenses             := Seq("Apache 2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),	
     description          := "Basic utilities for Scala.",
     scalaVersion         :=      scala213,
     crossScalaVersions   := List(scala213, scala212) )
@@ -87,9 +91,12 @@ libraryDependencies ++= // hard to do anything on the JVM without those nowadays
 // ===========================================================================
 // publishing
 
-publishMavenStyle := true
-githubOwner       := "aptusproject"
-githubRepository  := "aptus-core"
+sonatypeRepository     := "https://s01.oss.sonatype.org/service/local"
+sonatypeCredentialHost :=         "s01.oss.sonatype.org"        
+publishMavenStyle      := true
+publishTo              := sonatypePublishToBundle.value
+//pomIncludeRepository := { _ => false }
+//credentials += Credentials(Path.userHome / ".sbt" / ".credentials")
 
 // ===========================================================================
 

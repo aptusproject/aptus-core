@@ -1,3 +1,5 @@
+Aptus includes the "Scala Collection Compat" library:
+
                                  Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -199,24 +201,4 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
-===========================================================================   
-This product bundles:
-
-	The following which is available under a "MIT" license:
-		Enumeratum                 1.5.13 (for details, see https://github.com/lloydmeta/enumeratum)
-
-	The following which are available under a "Apache License Version 2.0" license:
-		Apache Commons CSV         1.8    (for details, see https://github.com/apache/commons-csv)
-		Apache Commons Compress    1.20   (for details, see https://github.com/apache/commons-compress)		
-		Apache Commons IO          2.8.0  (for details, see https://github.com/apache/commons-io)
-		Apache Commons Lang3       3.5    (for details, see https://github.com/apache/commons-lang)
-		Apache Commons Math3       3.5    (for details, see https://github.com/apache/commons-math)
-		Google_Gson                2.8.6  (for details, see https://github.com/google/gson)
-		SBT                        1.4.7  (for details, see https://github.com/sbt/sbt)
-		Scala                      2.13.4 (for details, see https://github.com/scala/scala)
-		Scala Collection Compat    2.4.1  (for details, see https://github.com/scala/scala-collection-compat)
-		Scala Parallel Collections 1.0.0  (for details, see https://github.com/scala/scala-parallel-collections)
-
-===========================================================================
 

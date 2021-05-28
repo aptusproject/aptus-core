@@ -25,19 +25,20 @@ import aptus._
 3.toString.p // prints "3"
 
 // ---------------------------------------------------------------------------
-"hello".assert (_.startsWith("h"))                    .toUpperCase.p // prints "HELLO"
-"hello".assert (_.startsWith("h"), x => s"value=${x}").toUpperCase.p // prints "HELLO"    
-"hello".require(_.startsWith("h"))                    .toUpperCase.p // prints "HELLO"   
+  "hello".assert (_.startsWith("h"))                    .toUpperCase.p // prints "HELLO"
+  "hello".assert (_.startsWith("h"), x => s"value=${x}").toUpperCase.p // prints "HELLO"    
+  "hello".require(_.startsWith("h"))                    .toUpperCase.p // prints "HELLO"   
 //"hello".assert (_.startsWith("H"))                    .toUpperCase.p // throws AssertionError
 //"hello".assert (_.startsWith("H"), x => s"value=${x}").toUpperCase.p // throws AssertionError: assertion failed: value=hello
 
 // ---------------------------------------------------------------------------
-"hello". append(" you!") .p // prints "hello you!"
-"hello".prepend("well, ").p // prints "well, hello"
-"hello".colon  ("human") .p // prints "hello:human"
-"hello".tab    ("human") .p // prints "hello<TAB>human"
-"hello".newline("human") .p // prints "hello<new-line>human"
-"hello".quote            .p // prints "\"hello\""
+"hello". append(" you!")  .p // prints "hello you!"
+"hello".prepend("well, ") .p // prints "well, hello"
+"hello".colon  ("human")  .p // prints "hello:human"
+"hello".tab    ("human")  .p // prints "hello<TAB>human"
+"hello".newline("human")  .p // prints "hello<new-line>human"
+"hello".quote             .p // prints "\"hello\""
+"hello|world".splitBy("|").p // prints List(hello, world)
 // .. many more String operations
 
 // ---------------------------------------------------------------------------
@@ -69,5 +70,11 @@ myOption.force.p // prints "foo"
 val myMap = Map("bar" -> "foo")
 myMap.get  ("bar").p // prints Some("foo") -> stdlib way, attempting
 myMap.force("bar").p // prints "foo"
+
+// ---------------------------------------------------------------------------
+"~/.bashrc".readFileLines().head.p // on my machine, prints "# ~/.bashrc: executed by bash(1) for non-login shells."
+Seq("hello", "world").writeFileLines("/tmp/hello") // self-explanatory
+"/tmp/hello".readFileContent().p // prints "hello<new-line>world"
+
 ```
 

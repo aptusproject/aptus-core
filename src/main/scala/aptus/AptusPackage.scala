@@ -330,6 +330,9 @@ package object aptus
   
   // ===========================================================================
   implicit class Map_[K, V](val mp: Map[K, V]) extends AnyVal {
+    def force(key: K): V = mp.get(key).get // stdlib polyseme (see Option's)
+    
+    // ---------------------------------------------------------------------------
     def toMutableMap                        :   mutable.    Map[K, V] = utils.MapUtils.toMutableMap(mp)
     def toListMap                           : immutable.ListMap[K, V] = utils.MapUtils.toListMap   (mp)
     def toTreeMap(implicit ord: Ordering[K]): immutable.TreeMap[K, V] = utils.MapUtils.toTreeMap   (mp)
@@ -337,7 +340,7 @@ package object aptus
 
   // ===========================================================================
   implicit class Option_[A](val opt: Option[A]) extends AnyVal {
-    @inline def force = opt.get // get is too much of a misnomer
+    @inline def force = opt.get // stdlib polyseme (see Map's)
   }
 
   // ===========================================================================

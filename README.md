@@ -4,6 +4,14 @@
 
 It is currenly used as part of [Gallia](https://github.com/galliaproject/gallia-core/blob/master/README.md#210129170214), a Scala library for data manipulation.
 
+<a name="210121153149"></a>
+**aptus-core** dependency graph:<br/><br/>
+<div style="text-align:center"><img src="./dependencies.png" alt="core dependency graph"></div>
+
+<a name="210531095628"></a>
+A big motivation for including all these dependencies is that I find myself constantly adding them to my projects, in order to get things done.
+A great example of this being a method like `splitByWholeSeparatorPreserveAllTokens` (from `org.apache.commons.lang3.StringUtils`) whose semantics feel more intuitive to me than the `String.split`'s.
+
 ## SBT
 `libraryDependencies += "io.github.aptusproject" %% "aptus-core" % "0.1.0"`
 
@@ -14,10 +22,6 @@ import aptus._ // or more specific imports, eg import.aptus.String_
 ```
 
 The library is available for both scala 2.12 and 2.13
-
-<a name="210121153149"></a>
-**aptus-core** dependency graph:<br/><br/>
-<div style="text-align:center"><img src="./dependencies.png" alt="core dependency graph"></div>
 
 ## Examples
 

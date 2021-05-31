@@ -1,5 +1,6 @@
 // aptus-core
 //   trying to keep this to a mimimum; TODO: t210125110147 - investigate sbt alternatives, especially https://github.com/com-lihaoyi/mill
+//   TODO: t210531095408 - consider offering an alternative version with shaded+pruned dependent libraries
 
 // ===========================================================================    
 val scala213 = "2.13.4"

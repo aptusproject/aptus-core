@@ -204,7 +204,7 @@
 This product bundles:
 
 	The following which is available under a "MIT" license:
-		Enumeratum                 1.5.13 (for details see https://github.com/lloydmeta/enumeratum)
+		UTest                      0.7.10 (for details see https://github.com/com-lihaoyi/utest)
 
 	The following which are available under a "Apache License Version 2.0" license:
 		Apache Commons CSV         1.8    (for details see https://github.com/apache/commons-csv)

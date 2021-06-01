@@ -80,6 +80,13 @@ libraryDependencies ++= // hard to do anything on the JVM without those nowadays
     case "2.12" => Seq("org.scala-lang.modules" %% "scala-collection-compat" % compatVersion) })    
 
 // ===========================================================================
+// testing
+
+libraryDependencies += "com.lihaoyi" %% "utest" % "0.7.10" % "test"
+
+testFrameworks += new TestFramework("utest.runner.Framework")
+
+// ===========================================================================
 // publishing
 
 sonatypeRepository     := "https://s01.oss.sonatype.org/service/local"

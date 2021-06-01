@@ -21,7 +21,7 @@ Then import the following:
 import aptus._ // or more specific imports, eg import.aptus.String_
 ```
 
-The library is available for both scala 2.12 and 2.13
+The library is available for both scala 3.0, 2.13 and 2.12
 
 ## Examples
 

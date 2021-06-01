@@ -138,6 +138,17 @@ myMap.get  ("bar").p // prints Some("foo") -> stdlib way, attempting
 myMap.force("bar").p // prints "foo"
 ```
 
+### System calls
+<a name="210601115320"></a><a name="system-calls"></a>
+
+Quick-and-dirty system calls:
+
+```scala
+"echo hello"           .systemCall() // prints: "hello<new-line>"
+"date +%s"             .systemCall() // prints: "1622562984
+"head -1 /proc/cpuinfo".systemCall() // prints: "processor	: 0<new-line>"
+```
+
 ### Handling files/URLs
 <a name="210531093427"></a><a name="files-handling"></a>
 

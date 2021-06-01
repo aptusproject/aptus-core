@@ -88,7 +88,7 @@ package object aptus
     def pattern: JavaPattern = str.r.pattern
 
     // ---------------------------------------------------------------------------
-    import scala.language.postfixOps; def systemCall: String = sys.process.Process(str) !!
+    import scala.language.postfixOps; def systemCall(): String = sys.process.Process(str) !!
 
     // ===========================================================================
     def mkdirs = { new java.io.File(str).mkdirs(); str }

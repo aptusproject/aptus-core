@@ -10,7 +10,21 @@ It is currenly used as part of [Gallia](https://github.com/galliaproject/gallia-
 
 <a name="210531095628"></a>
 A big motivation for including all these dependencies is that I find myself constantly adding them to my projects, in order to get things done.
-A great example of this being a method like `splitByWholeSeparatorPreserveAllTokens` (from `org.apache.commons.lang3.StringUtils`) whose semantics feel more intuitive to me than the `String.split`'s.
+A great example of this being a method like `splitByWholeSeparatorPreserveAllTokens` (from `org.apache.commons.lang3.StringUtils`)
+whose semantics feel more intuitive to me than those of `java.lang.String.split`. Meanwhile using:
+
+```scala
+"foo|bar".splitBy("|")
+```
+
+is more convenient than:
+
+```scala
+import org.apache.commons.lang3.StringUtils
+val str = "foo|bar"
+if (str.isEmpty()) List(str)
+else               StringUtils.splitByWholeSeparatorPreserveAllTokens(str, "|").toList
+```
 
 ## SBT
 `libraryDependencies += "io.github.aptusproject" %% "aptus-core" % "0.2.0"`
@@ -124,18 +138,48 @@ myMap.get  ("bar").p // prints Some("foo") -> stdlib way, attempting
 myMap.force("bar").p // prints "foo"
 ```
 
-### Handling files
+### Handling files/URLs
 <a name="210531093427"></a><a name="files-handling"></a>
+
+Plain files:
 ```scala
-"~/.bashrc".readFileLines().head.p
-  // on my machine, prints:
-  //   "# ~/.bashrc: executed by bash(1) for non-login shells."
-  
-Seq("hello", "world").writeFileLines("/tmp/hello") // self-explanatory
-"/tmp/hello".readFileContent().p                   // prints "hello<new-line>world"
+"hello world".writeFileContent("/tmp/content")
+"/tmp/content".readFileContent().p // prints: "hello world"
+
+Seq("hello", "world").writeFileLines("/tmp/lines")
+"/tmp/lines".readFileLines().p // prints: Seq("hello", "world")
 ```
+
+Compression:
+
+```scala
+// ---------------------------------------------------------------------------
+"hello world".writeFileContent("/tmp/content.gz")
+"/tmp/content.gz".readFileContent().p // prints: "hello world"	  
+
+Seq("hello", "world").writeFileLines("/tmp/lines.gz")
+"/tmp/lines.gz".readFileLines().p // prints: Seq("hello", "world")
+
+// note:
+"file -i /tmp/content.gz".systemCall.p // prints "/tmp/content.gz: application/gzip; charset=binary"
+```
+
+for URLs:
+
+```scala
+val TestResources = "https://raw.githubusercontent.com/aptusproject/aptus-core/main/src/test/resources"
+
+s"${TestResources}/content".readUrlContent() // prints "hello word"
+s"${TestResources}/lines"  .readUrlLines().p // prints: Seq("hello", "world")
+```
+
+Note: in the future we'll allow a basic POST as well
 
 ### WIP
 <a name="210531093428"></a>
 (lots more to port here)
+
+## Contributing
+
+Contributions welcome.
 

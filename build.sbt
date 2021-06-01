@@ -2,10 +2,6 @@
 //   trying to keep this to a mimimum; TODO: t210125110147 - investigate sbt alternatives, especially https://github.com/com-lihaoyi/mill
 //   TODO: t210531095408 - consider offering an alternative version with shaded+pruned dependent libraries
 
-// ===========================================================================    
-val scala213 = "2.13.4"
-val scala212 = "2.12.13"
-
 // ===========================================================================
 // settings
 
@@ -14,7 +10,7 @@ lazy val root = (project in file("."))
     organizationName     := "Aptus Project",
     organization         := "io.github.aptusproject", // *must* match groupId for sonatype
     name                 := "aptus-core",
-    version              := "0.1.0",
+    version              := "0.2.0",
 	homepage             := Some(url("https://github.com/aptusproject/aptus-core")),
 	organizationHomepage := Some(url("https://github.com/aptusproject")),
     startYear            := Some(2021),
@@ -30,19 +26,16 @@ lazy val root = (project in file("."))
         connection =     "scm:git@github.com:aptusproject/aptus-core.git")),
 	licenses             := Seq("Apache 2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),	
     description          := "Basic utilities for Scala.",
-    scalaVersion         :=      scala213,
-    crossScalaVersions   := List(scala213, scala212) )
+    scalaVersion         :=      "3.0.0",
+    crossScalaVersions   := List("3.0.0", "2.13.4", "2.12.13") )
 
 // ---------------------------------------------------------------------------    
-scalacOptions      ++= Seq(
-    "-encoding", "UTF-8",  
-  //"-Yimports:java.lang,scala,scala.Predef,scala.util.chaining" -- not possible for 2.12 it seems (TODO: t210308154253 confirm)
-    "-Ywarn-value-discard") ++
-  //
-  // ---------------------------------------------------------------------------
+scalacOptions ++= Seq("-encoding", "UTF-8") ++ //"-Yimports:java.lang,scala,scala.Predef,scala.util.chaining" -- not possible for 2.12 it seems (TODO: t210308154253 confirm)
   (scalaBinaryVersion.value match {
-    case "2.13" => Seq("-Ywarn-unused:imports")
-    case _      => Seq("-Ywarn-unused-import" ) })
+    case "3"    => Seq("-unchecked")
+
+    case "2.13" => Seq("-Ywarn-value-discard", "-Ywarn-unused:imports,privates,locals")
+    case "2.12" => Seq("-Ywarn-value-discard", "-Ywarn-unused-import" ) })
 
 // ===========================================================================    
 // dependencies
@@ -63,11 +56,7 @@ val gsonVersion                = "2.8.6"
 // ---------------------------------------------------------------------------
 libraryDependencies ++= // hard to do anything on the JVM without those nowadays
   Seq(
-    "org.scala-lang.modules" %% "scala-collection-compat" % compatVersion, // to support scala <2.13
-
-    // ---------------------------------------------------------------------------
     // misc utils
-    "com.beachape"       %% "enumeratum"    % enumeratumVersion ,
     "org.apache.commons" %  "commons-lang3" % commonsLangVersion,
     "org.apache.commons" %  "commons-math3" % commonsMathVersion,
     "commons-io"         %  "commons-io"    % commonsIoVersion  ,
@@ -86,8 +75,9 @@ libraryDependencies ++= // hard to do anything on the JVM without those nowadays
   //
   // ---------------------------------------------------------------------------
   (scalaBinaryVersion.value match {
-    case "2.13" => Seq("org.scala-lang.modules" %% "scala-parallel-collections" % parallelCollectionsVersion)
-    case _      => Seq.empty })
+    case "3"    => Seq.empty
+    case "2.13" => Seq("org.scala-lang.modules" %% "scala-collection-compat" % compatVersion, "org.scala-lang.modules" %% "scala-parallel-collections" % parallelCollectionsVersion)    
+    case "2.12" => Seq("org.scala-lang.modules" %% "scala-collection-compat" % compatVersion) })    
 
 // ===========================================================================
 // publishing

@@ -41,7 +41,7 @@ object Rdbms {
 
   // ===========================================================================
   final class ConnectionQuerier(conn : Connection) extends BasicQuerier with Closeable {
-    def close() { conn.close() }
+    def close() = { conn.close() }
 
     /** beware: unsanitized! - TODO: t210114145431 */
     def query(query: QueryString): (ResultSet, Closeable) = {
@@ -50,7 +50,7 @@ object Rdbms {
 
       (rs,
        new Closeable {
-          override def close() {
+          override def close() = {
             rs.close()
             ps.close() } } )
     }
@@ -75,7 +75,7 @@ object Rdbms {
 
       (rs,
        new Closeable {
-          override def close() {
+          override def close() = {
             rs  .close()
             ps  .close()
             conn.close() } } )
@@ -84,7 +84,7 @@ object Rdbms {
 
   // ===========================================================================
   final class PreparedStatementQuerier(ps: PreparedStatement) extends AdvancedQuerier with Closeable {
-    def close() { ps.close() }
+    def close() = { ps.close() }
 
     /** beware: unsanitized! */
     def query(f: PreparedStatement => PreparedStatement): (ResultSet, Closeable) = f(ps).executeQuery().thn { rs => (rs, rs.closeable ) }
@@ -98,7 +98,7 @@ object Rdbms {
   // ---------------------------------------------------------------------------
   trait AdvancedQuerier {
     def query(f: PreparedStatement => PreparedStatement): (ResultSet, Closeable)
-    def query                                           : (ResultSet, Closeable) = query(identity)
+    def query                                           : (ResultSet, Closeable) = query(x => x)
   }
 
   // ===========================================================================

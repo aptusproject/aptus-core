@@ -14,22 +14,9 @@ package object aptus
 
   // ===========================================================================
   implicit class Unit_(val u: Unit) extends AnyVal { // TODO: t201213095810 anyway to add that to Predef? implicit class doesn't seem to work
-
-    def fs = new {
-      def homeDirectoryPath(): String = System.getProperty("user.home")
-    }
-
-    // ---------------------------------------------------------------------------
-    def reflect = new {
-      def       stackTrace(): List[java.lang.StackTraceElement] = new Throwable().getStackTrace.toList
-      def formatStackTrace(): String = utils.ThrowableUtils.stackTraceString(new Throwable())
-    }
-
-    // ---------------------------------------------------------------------------
-    def time = new { import utils.TimeUtils.elapsed
-      def seconds[A](block: => A): A = { val (result, time) = elapsed(block); (time / 1000.0).formatDecimals(2).thn(elapsed => println(s"done: ${elapsed} seconds")); result }
-    }
-
+    def fs      = new Fs()
+    def reflect = new Reflect()
+    def time    = new Time()
   }
 
   // ===========================================================================
@@ -63,9 +50,9 @@ package object aptus
     // ---------------------------------------------------------------------------
     @fordevonly def __exit: A = { utils.ReflectionUtils.formatExitTrace(().reflect.stackTrace(), "intentionally stopping").p; System.exit(0); a }
 
-    @fordevonly def p      : A = { System.out.println(a); a   }
-    @fordevonly def p__    : A = { System.out.println(a); __exit }
-    @fordevonly def pp     : A = { System.out.println(a + "\n"); a   }
+    @fordevonly def p      : A = { System.out.println(a)     ; a      }
+    @fordevonly def p__    : A = { System.out.println(a)     ; __exit }
+    @fordevonly def pp     : A = { System.out.println(s"a\n"); a      }
 
     @fordevonly def i(f: A => Any                ): A = { System.out.println(               f(a)  ); a }
     @fordevonly def i(f: A => Any, prefix: String): A = { System.out.println(s"${prefix}\t${f(a)}"); a }
@@ -113,8 +100,8 @@ package object aptus
       def readFileContent(): Content     = utils.FileUtils.readFileContent(path = str)
       def readFileLines  (): Seq[String] = utils.FileUtils.readFileLines  (path = str)
 
-      def readFileTsv(): Seq[Vector[String]] = readFileLines.map(_.splitBy("\t").toVector)    
-      def readFileCsv(): Seq[Vector[String]] = readFileLines.map(_.splitBy( ",").toVector)
+      def readFileTsv(): Seq[Vector[String]] = readFileLines().map(_.splitBy("\t").toVector)    
+      def readFileCsv(): Seq[Vector[String]] = readFileLines().map(_.splitBy( ",").toVector)
 
       def streamFileLines(): (Iterator[String], Closeable) = utils.FileUtils.streamFileLines(path = str)
 
@@ -370,9 +357,6 @@ package object aptus
   // ===========================================================================
   // ===========================================================================
   implicit class Int_(val nmbr: Int) extends AnyVal {
-      def isNanOrInfinity: Boolean = nmbr.isNaN || nmbr.isInfinity
-
-      // ---------------------------------------------------------------------------
       def add       (n: Int): Int = nmbr + n
       def subtract  (n: Int): Int = nmbr - n
       
@@ -389,8 +373,6 @@ package object aptus
 
     // ---------------------------------------------------------------------------
     implicit class Long_(val nmbr: Long) extends AnyVal {
-      def isNanOrInfinity: Boolean = nmbr.isNaN || nmbr.isInfinity
-
       def formatUsLocale: String = utils.NumberUtils.IntegerFormatter.format(nmbr)
       def formatExplicit: String = formatUsLocale.replace(",", "")
     }
@@ -419,7 +401,7 @@ package object aptus
   // ===========================================================================
   implicit class Throwable_(val throwable: Throwable) extends AnyVal {
     def       stackTrace: Seq[StackTraceElement] = throwable.getStackTrace.toList              	
-    def formatStackTrace: String                  = utils.ThrowableUtils.stackTraceString(throwable)  	
+    def formatStackTrace: String                 = utils.ThrowableUtils.stackTraceString(throwable)  	
   }
 
   // ---------------------------------------------------------------------------
@@ -440,8 +422,24 @@ package object aptus
 
   // ===========================================================================
   implicit class ResultSet_(val rs: java.sql.ResultSet) extends AnyVal {
-    def closeable = new java.io.Closeable { override def close() { rs.close() } }
+    def closeable = new java.io.Closeable { override def close() = { rs.close() } }
     def rawRdbmsEntries : Iterator[RawRdbmsEntries] = utils.SqlUtils.rawRdbmsEntries(rs)
+  }
+
+  // ===========================================================================
+  class Fs private[aptus] () {
+    def homeDirectoryPath(): String = System.getProperty("user.home")
+  }
+  
+  // ---------------------------------------------------------------------------
+  class Reflect private[aptus] () {
+    def       stackTrace(): List[java.lang.StackTraceElement] = new Throwable().getStackTrace.toList
+    def formatStackTrace(): String = utils.ThrowableUtils.stackTraceString(new Throwable())
+  }
+
+  // ---------------------------------------------------------------------------
+  class Time private[aptus] () { import utils.TimeUtils.elapsed
+    def seconds[A](block: => A): A = { val (result, time) = elapsed(block); (time / 1000.0).formatDecimals(2).thn(elapsed => println(s"done: ${elapsed} seconds")); result }
   }
 
 }

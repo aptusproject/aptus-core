@@ -2,7 +2,7 @@ package aptus
 
 // ===========================================================================
 final class Closeabled[A](val u: A, val cls: Closeable) extends Closeable { // TODO: look into geny for Iterator version?
-    override def close() { cls.close() }
+    override def close() = { cls.close() }
 
     // ---------------------------------------------------------------------------
     def consume[B](f: A =>            B ):            B  = { val result = f(u); close(); result }
@@ -18,7 +18,7 @@ final class Closeabled[A](val u: A, val cls: Closeable) extends Closeable { // T
     def fromPair[A]             (pair: (A, Closeable))        : Closeabled[A] = new Closeabled(pair._1, closeable(pair._2))
 
     // ---------------------------------------------------------------------------
-    @ordermatters private def closeable[A](values: Seq[Closeable]           ): Closeable = new java.io.Closeable { def close() { values.foreach(_.close()) } }
+    @ordermatters private def closeable[A](values: Seq[Closeable]           ): Closeable = new java.io.Closeable { def close() = { values.foreach(_.close()) } }
     @ordermatters private def closeable[A](cls1: Closeable, more: Closeable*): Closeable = closeable(cls1 +: more)
   }
 

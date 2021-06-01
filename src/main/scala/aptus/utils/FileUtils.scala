@@ -49,7 +49,7 @@ object FileUtils {
   // ===========================================================================
   private def quickNormalize(path: FilePath): FilePath =
     if (!path.startsWith("~/")) path
-    else                        s"${().fs.homeDirectoryPath}/${path.drop(2)}" // eg ~/foo to /home/tony/foo
+    else                        s"${().fs.homeDirectoryPath()}/${path.drop(2)}" // eg ~/foo to /home/tony/foo
 
 }
 

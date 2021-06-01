@@ -17,7 +17,7 @@ object IteratorUtils {
       }
 
       // ---------------------------------------------------------------------------
-      override def close() { closed = true; cls.foreach(_.close()) }
+      override def close() = { closed = true; cls.foreach(_.close()) }
     }
   
   // ===========================================================================

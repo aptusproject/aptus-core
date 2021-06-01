@@ -13,7 +13,7 @@ A big motivation for including all these dependencies is that I find myself cons
 A great example of this being a method like `splitByWholeSeparatorPreserveAllTokens` (from `org.apache.commons.lang3.StringUtils`) whose semantics feel more intuitive to me than the `String.split`'s.
 
 ## SBT
-`libraryDependencies += "io.github.aptusproject" %% "aptus-core" % "0.1.0"`
+`libraryDependencies += "io.github.aptusproject" %% "aptus-core" % "0.2.0"`
 
 Then import the following:
 

@@ -22,7 +22,7 @@ The library is available for Scala 3.0, 2.13 and 2.12
 <a name="210531095628"></a>
 A big motivation for including all these dependencies is that I find myself constantly adding them to my projects, in order to get things done.
 A great example of this being a method like `splitByWholeSeparatorPreserveAllTokens` (from `org.apache.commons.lang3.StringUtils`)
-whose semantics feel more intuitive to me than those of `java.lang.String.split`. Meanwhile using:
+whose semantics feel [more intuitive](https://github.com/aptusproject/aptus-core/blob/d548ae4/src/test/scala/aptustesting/StringTests.scala#L12-L20) to me than those of `java.lang.String.split`. Meanwhile using:
 
 ```scala
 "foo|bar".splitBy("|")
@@ -58,7 +58,7 @@ Convenient for quick debugging
   "hello".require(_.startsWith("h"))                    .toUpperCase.p // prints "HELLO"   
 //"hello".assert (_.startsWith("H"))                    .toUpperCase.p // throws AssertionError
 //"hello".assert (_.startsWith("H"), x => s"value=${x}").toUpperCase.p // throws AssertionError:
-                                                                       //   assertion failed: value=hello
+                                                                // assertion failed: value=hello
 ```
 Convenient for chaining, consider the alternative:
 ```scala
@@ -168,7 +168,7 @@ for URLs:
 
 ```scala
 val TestResources =
-  "https://raw.githubusercontent.com/aptusproject/aptus-core/main/src/test/resources"
+  "https://raw.githubusercontent.com/aptusproject/aptus-core/6f4acbc/src/test/resources"
 
 s"${TestResources}/content".readUrlContent() // prints "hello word"
 s"${TestResources}/lines"  .readUrlLines().p // prints: Seq("hello", "world")
@@ -179,6 +179,10 @@ Note: in the future we'll allow a basic POST as well
 ### WIP
 <a name="210531093428"></a>
 (lots more to port here)
+
+## Backlog
+
+See Gallia's [backlog](https://github.com/galliaproject/gallia-docs/blob/master/tasks.md#aptus) for now.
 
 ## Contributing
 

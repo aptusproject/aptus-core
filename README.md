@@ -4,6 +4,17 @@
 
 It is currenly used as part of [Gallia](https://github.com/galliaproject/gallia-core/blob/master/README.md#210129170214), a Scala library for data manipulation.
 
+## SBT
+`libraryDependencies += "io.github.aptusproject" %% "aptus-core" % "0.2.0"`
+
+Then import the following:
+
+```scala
+import aptus._ // or more specific imports, eg import.aptus.String_
+```
+
+The library is available for Scala 3.0, 2.13 and 2.12
+
 <a name="210121153149"></a>
 **aptus-core** dependency graph:<br/><br/>
 <div style="text-align:center"><img src="./dependencies.png" alt="core dependency graph"></div>
@@ -25,17 +36,6 @@ val str = "foo|bar"
 if (str.isEmpty()) List(str)
 else               StringUtils.splitByWholeSeparatorPreserveAllTokens(str, "|").toList
 ```
-
-## SBT
-`libraryDependencies += "io.github.aptusproject" %% "aptus-core" % "0.2.0"`
-
-Then import the following:
-
-```scala
-import aptus._ // or more specific imports, eg import.aptus.String_
-```
-
-The library is available for both scala 3.0, 2.13 and 2.12
 
 ## Examples
 
@@ -161,13 +161,14 @@ Seq("hello", "world").writeFileLines("/tmp/lines.gz")
 "/tmp/lines.gz".readFileLines().p // prints: Seq("hello", "world")
 
 // note:
-"file -i /tmp/content.gz".systemCall.p // prints "/tmp/content.gz: application/gzip; charset=binary"
+"file -i /tmp/content.gz".systemCall.p // prints "/tmp/content.gz: application/gzip; [...]"
 ```
 
 for URLs:
 
 ```scala
-val TestResources = "https://raw.githubusercontent.com/aptusproject/aptus-core/main/src/test/resources"
+val TestResources =
+  "https://raw.githubusercontent.com/aptusproject/aptus-core/main/src/test/resources"
 
 s"${TestResources}/content".readUrlContent() // prints "hello word"
 s"${TestResources}/lines"  .readUrlLines().p // prints: Seq("hello", "world")

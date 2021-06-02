@@ -83,6 +83,7 @@ Convenient for chaining, consider the alternative:
 // .. many more, see String_
 ```
 
+Note: see corresponding [tests](https://github.com/aptusproject/aptus-core/blob/d548ae4/src/test/scala/aptustesting/StringTests.scala#L12-L20)
 
 #### Conditional piping (a.k.a thrush)
 <a name="210531093424"></a><a name="conditional-piping"></a>
@@ -103,13 +104,17 @@ See [discussion](https://users.scala-lang.org/t/implicit-class-for-any-and-or-ge
 #### In-line "to Option"
 <a name="210531093425"></a><a name="in-line-to-option"></a>
 ```scala
-"hello"  .as.noneIf(_.size >  5).p // prints Some("hello")
-"bonjour".as.noneIf(_.size >  5).p // prints None
+"hello"  .in.noneIf(_.size >  5).p // prints Some("hello")
+"bonjour".in.noneIf(_.size >  5).p // prints None
 
-"hello"  .as.someIf(_.size <= 5).p // prints Some("hello")
-"bonjour".as.someIf(_.size <= 5).p // prints None
+"hello"  .in.someIf(_.size <= 5).p // prints Some("hello")
+"bonjour".in.someIf(_.size <= 5).p // prints None
+
+// notes:
+// - formerly '.as' instead of '.in'
+// - can also use shorthands: inNoneIf/inSomeIf
 ```
-
+    
 Convenient for chaining, consider the alternative:
 ```scala
 {
@@ -119,6 +124,16 @@ Convenient for chaining, consider the alternative:
     else                  Some(str)
   opt.p
 }
+```
+
+#### Associate left/right
+
+```scala
+Seq("foo", "bar").map(_.associateLeft(_.toUpperCase)).toMap.p
+  // returns: Map("FOO" -> "foo", "BAR" -> "bar")
+
+Seq("foo", "bar").map(_.associateRight(_.size)).toMap.p
+  // returns: Map("foo" -> 3, "bar" -> 3)
 ```
 
 #### "force" disambiguator (Option/Map)

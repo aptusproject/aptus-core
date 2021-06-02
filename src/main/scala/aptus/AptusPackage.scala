@@ -14,9 +14,11 @@ package object aptus
 
   // ===========================================================================
   implicit class Unit_(val u: Unit) extends AnyVal { // TODO: t201213095810 anyway to add that to Predef? implicit class doesn't seem to work
-    def fs      = new Fs()
-    def reflect = new Reflect()
-    def time    = new Time()
+    def environment = misc.Environment
+    def fs          = misc.Fs
+    def hardware    = misc.Hardware
+    def reflect     = misc.Reflect
+    def time        = misc.Time
   }
 
   // ===========================================================================
@@ -54,6 +56,7 @@ package object aptus
     @fordevonly def p__    : A = { System.out.println(a)     ; __exit }
     @fordevonly def pp     : A = { System.out.println(s"a\n"); a      }
 
+    // "i" for "inspect"
     @fordevonly def i(f: A => Any                ): A = { System.out.println(               f(a)  ); a }
     @fordevonly def i(f: A => Any, prefix: String): A = { System.out.println(s"${prefix}\t${f(a)}"); a }
 
@@ -66,14 +69,19 @@ package object aptus
 
     // ---------------------------------------------------------------------------
     // TODO: t210116165559 - rename to "in"?
-    def as: aptus.As[A] = new aptus.As[A](a)
+    @deprecated def as: aptus.As[A] = new aptus.As[A](a)
+                def in: aptus.As[A] = new aptus.As[A](a)
 
+      // most common ones
+      def inNoneIf(p: A => Boolean): Option[A] = as.noneIf(p)
+      def inSomeIf(p: A => Boolean): Option[A] = as.someIf(p)
+      
     // ---------------------------------------------------------------------------
-    def    containedIn(values: Set[A]): Boolean =  values.contains(a)
-    def    containedIn(values: Seq[A]): Boolean =  values.contains(a)
+    @inline def    containedIn(values: Set[A]): Boolean =  values.contains(a)
+    @inline def    containedIn(values: Seq[A]): Boolean =  values.contains(a)
 
-    def notContainedIn(values: Seq[A]): Boolean = !values.contains(a)
-    def notContainedIn(values: Set[A]): Boolean = !values.contains(a)
+    @inline def notContainedIn(values: Seq[A]): Boolean = !values.contains(a)
+    @inline def notContainedIn(values: Set[A]): Boolean = !values.contains(a)
 
     // ---------------------------------------------------------------------------
     def associateLeft [K](f: A => K): (K, A) = (f(a), a)
@@ -328,6 +336,8 @@ package object aptus
   // ===========================================================================
   implicit class Option_[A](val opt: Option[A]) extends AnyVal {
     @inline def force = opt.get // stdlib polyseme (see Map's)
+    
+    def swap[B](f: => B): Option[B] = if (opt.isDefined) None else Some(f)
   }
 
   // ===========================================================================
@@ -425,23 +435,7 @@ package object aptus
     def closeable = new java.io.Closeable { override def close() = { rs.close() } }
     def rawRdbmsEntries : Iterator[RawRdbmsEntries] = utils.SqlUtils.rawRdbmsEntries(rs)
   }
-
-  // ===========================================================================
-  class Fs private[aptus] () {
-    def homeDirectoryPath(): String = System.getProperty("user.home")
-  }
   
-  // ---------------------------------------------------------------------------
-  class Reflect private[aptus] () {
-    def       stackTrace(): List[java.lang.StackTraceElement] = new Throwable().getStackTrace.toList
-    def formatStackTrace(): String = utils.ThrowableUtils.stackTraceString(new Throwable())
-  }
-
-  // ---------------------------------------------------------------------------
-  class Time private[aptus] () { import utils.TimeUtils.elapsed
-    def seconds[A](block: => A): A = { val (result, time) = elapsed(block); (time / 1000.0).formatDecimals(2).thn(elapsed => println(s"done: ${elapsed} seconds")); result }
-  }
-
 }
 
 // ===========================================================================

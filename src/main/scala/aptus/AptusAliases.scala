@@ -20,6 +20,7 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   type Line              = String
   type Content           = String
 
+  type DirPath           = String
   type FilePath          = String
   type FileName          = String
 
@@ -28,6 +29,8 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   type JsonCompact       = String
   type JsonArrayString   = String
   type JsonObjectString  = String
+
+  type HostName          = String
 
   type UrlString         = String
   type UriString         = String

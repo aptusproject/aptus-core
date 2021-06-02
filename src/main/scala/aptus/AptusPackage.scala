@@ -1,4 +1,5 @@
 import org.apache.commons.lang3
+import com.google.common.base.CaseFormat
 
 import scala.collection.{mutable,immutable}
 
@@ -220,11 +221,10 @@ package object aptus
     // ---------------------------------------------------------------------------
     def uncapitalize: String = str.headOption.map(x => x.toLower +: str.tail).getOrElse(str)
 
-    // FIXME: t210121165120 - guava causes issues with Spark - https://issues.apache.org/jira/browse/HADOOP-10961 -
-    //   "By Google, it is not so smart to change things upwards, that causes exceptions downwards." - shade, downgrade to another version or use apache commons?
-    def snakeToCamelCase : String = ???//com.google.common.base.CaseFormat.UPPER_UNDERSCORE.to(com.google.common.base.CaseFormat.UPPER_CAMEL, str)
-    def camelCaseToSnake : String = ???
-    // TODO: other common combinations
+    // ---------------------------------------------------------------------------
+    def snakeToCamelCase: String = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL     , str)
+    def camelCaseToSnake: String = CaseFormat.UPPER_CAMEL     .to(CaseFormat.LOWER_UNDERSCORE, str)
+    // TODO: other common combinations?
 
     // ===========================================================================
     // json; TODO: t210204095517 - replace gson in the long run

@@ -50,19 +50,25 @@ val commonsLangVersion         = "3.5"
 val commonsIoVersion           = "2.8.0"
 val commonsCsvVersion          = "1.8"
 val commonsCompressVersion     = "1.20"
-//val guavaVersion             = "28.0-jre"
+val guavaVersion               = "30.1.1-jre"
 val gsonVersion                = "2.8.6"
 
 // ---------------------------------------------------------------------------
 libraryDependencies ++= // hard to do anything on the JVM without those nowadays
   Seq(
     // misc utils
-    "org.apache.commons" %  "commons-lang3" % commonsLangVersion,
-    "org.apache.commons" %  "commons-math3" % commonsMathVersion,
-    "commons-io"         %  "commons-io"    % commonsIoVersion  ,
-
-    // compatibility issues (eg https://issues.apache.org/jira/browse/HADOOP-10961)... TODO: t210121165120: shade
-    //"com.google.guava" %  "guava"         % guavaVersion     ,
+    "org.apache.commons"    %  "commons-lang3" % commonsLangVersion,
+    "org.apache.commons"    %  "commons-math3" % commonsMathVersion,
+               "commons-io" %  "commons-io"    % commonsIoVersion  ,
+    
+    "com.google.guava" % "guava" % guavaVersion
+       exclude("org.codehaus.mojo"       , "animal-sniffer-annotations") // no such sniffing necessary here           
+       exclude("org.checkerframework"    , "checker-qual"              )
+       exclude("com.google.code.findbugs", "jsr305"                    )
+       exclude("com.google.errorprone"   , "error_prone_annotations"   )
+       exclude("com.google.guava"        , "failureaccess"             )
+       exclude("com.google.guava"        , "listenablefuture"          )
+       exclude("com.google.j2objc"       , "j2objc-annotations"        ),
 
     // ---------------------------------------------------------------------------
     // XSV (tsv, csv, ...), compression (bz2, ...)
@@ -78,6 +84,15 @@ libraryDependencies ++= // hard to do anything on the JVM without those nowadays
     case "3"    => Seq.empty
     case "2.13" => Seq("org.scala-lang.modules" %% "scala-collection-compat" % compatVersion, "org.scala-lang.modules" %% "scala-parallel-collections" % parallelCollectionsVersion)    
     case "2.12" => Seq("org.scala-lang.modules" %% "scala-collection-compat" % compatVersion) })    
+
+// ===========================================================================
+// shading; guava - compatibility issues (eg https://issues.apache.org/jira/browse/HADOOP-10961)... TODO: t210121165120: shade
+/*
+enablePlugins(ShadingPlugin)
+shadedModules += "com.google.guava" % "guava"
+shadingRules  += ShadingRule.moveUnder("com.google.common", "guava28")
+// TODO: getting: [error] Unrecognized: aptus/, ...
+*/
 
 // ===========================================================================
 // testing

@@ -41,6 +41,22 @@ object Fs {
 }
 
 // ===========================================================================
+object Hardware {
+  lazy val Runtime = java.lang.Runtime.getRuntime()
+
+  // ---------------------------------------------------------------------------
+  def availableProcessors() = Runtime.availableProcessors()
+  def totalMemory        () = Runtime.totalMemory() // in bytes
+  def freeMemory         () = Runtime. freeMemory() // in bytes
+  def maxMemory          () = Runtime.  maxMemory() // in bytes       
+}
+
+// ===========================================================================
+object Random {    
+  def uuidString(): String = java.util.UUID.randomUUID().toString
+}
+
+// ===========================================================================
 object Reflect {
   def       stackTrace(): List[java.lang.StackTraceElement] = new Throwable().getStackTrace.toList
   def formatStackTrace(): String = utils.ThrowableUtils.stackTraceString(new Throwable())
@@ -53,16 +69,4 @@ object Time {
   
   def seconds[A](block: => A): A = { val (result, time) = elapsed(block); (time / 1000.0).formatDecimals(2).pipe(elapsed => println(s"done: ${elapsed} seconds")); result }
 }
-
-// ===========================================================================
-object Hardware {
-  lazy val Runtime = java.lang.Runtime.getRuntime()
-
-  // ---------------------------------------------------------------------------
-  def availableProcessors() = Runtime.availableProcessors()
-  def totalMemory        () = Runtime.totalMemory() // in bytes
-  def freeMemory         () = Runtime. freeMemory() // in bytes
-  def maxMemory          () = Runtime.  maxMemory() // in bytes       
-}
-
 // ===========================================================================

@@ -18,8 +18,14 @@ package object aptus
     def environment = misc.Environment
     def fs          = misc.Fs
     def hardware    = misc.Hardware
+    def random      = misc.Random                
     def reflect     = misc.Reflect
     def time        = misc.Time
+    
+    // ---------------------------------------------------------------------------
+    // convenience
+    
+    //@fordevonly def tid(): Long = concurrency.threadId     
   }
 
   // ===========================================================================

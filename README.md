@@ -153,6 +153,21 @@ myMap.get  ("bar").p // prints Some("foo") -> stdlib way, attempting
 myMap.force("bar").p // prints "foo"
 ```
 
+### Force tuples
+<a name="210610085515"></a><a name="force-tuples"></a>
+
+```scala
+val (first, second)        = Seq("foo", "bar")       .force.tuple2
+val (first, second, third) = Seq("foo", "bar", "baz").force.tuple3
+// ... and so on up to 10
+```
+Convenient in combination with methods like `.sliding`, eg:
+
+```scala
+Seq(1, 2, 3, 4, 5).sliding(2).map(_.force.tuple2).map { case (x, y) => ... }
+```
+
+
 ### System calls
 <a name="210601115320"></a><a name="system-calls"></a>
 

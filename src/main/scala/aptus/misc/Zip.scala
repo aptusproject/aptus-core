@@ -1,12 +1,8 @@
-package aptus.misc
+package aptus
+package misc
 
 import scala.collection.JavaConverters._
 import java.util.zip._
-
-import aptus.{Anything_, Seq_}
-
-import aptus.{FilePath, Line, Content}
-import aptus.utils.InputStreamUtils
 
 // ===========================================================================
 object Zip {
@@ -38,10 +34,10 @@ object Zip {
         val zipEntry = entry(zipFile, pred)
 
         val pair =
-          InputStreamUtils.lines (
+          utils.InputStreamUtils.lines (
             zipFile
               .getInputStream(zipEntry)
-              .thn(Closeabled.fromPair(_, zipFile)),
+              .thn(aptus.Closeabled.fromPair(_, zipFile)),
             StandardCharsets.UTF_8)
 
         pair.u -> pair }
@@ -53,10 +49,10 @@ object Zip {
       .thn { zipFile =>
         val zipEntry = entry(zipFile, pred)
 
-        InputStreamUtils.content(
+        utils.InputStreamUtils.content(
           zipFile
             .getInputStream(zipEntry)
-            .thn(Closeabled.fromPair(_, zipFile)),
+            .thn(aptus.Closeabled.fromPair(_, zipFile)),
           StandardCharsets.UTF_8) }
 
   // ===========================================================================

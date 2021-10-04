@@ -1,6 +1,5 @@
-package aptus.utils
-
-import aptus.Seq_
+package aptus
+package utils
 
 // ===========================================================================
 object ReflectionUtils {

@@ -1,4 +1,5 @@
-package aptus.misc
+package aptus
+package misc
 
 // ===========================================================================
 object Java {

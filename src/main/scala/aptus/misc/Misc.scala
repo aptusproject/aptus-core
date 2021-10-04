@@ -1,7 +1,7 @@
-package aptus.misc
+package aptus
+package misc
 
 import scala.util.chaining._
-import aptus._
 
 // ===========================================================================
 object Environment {

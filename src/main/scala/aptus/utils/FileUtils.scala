@@ -1,10 +1,8 @@
-package aptus.utils
+package aptus
+package utils
 
 import java.io._
 import java.util.zip.GZIPOutputStream
-
-import aptus.{FilePath, Content, Line}
-import aptus.Unit_
 
 // ===========================================================================
 object FileUtils {

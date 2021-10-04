@@ -1,9 +1,7 @@
-package aptus.utils
+package aptus
+package utils
 
 import scala.collection.JavaConverters._
-import aptus.{Anything_, String_}
-import aptus.Iterator_
-import aptus.Cell
 
 // ===========================================================================
 object StringUtils {
@@ -41,6 +39,20 @@ object StringUtils {
           title
             .thnIf(!_.endsWith(":")) {
               _.append(":") } )
+
+  // ===========================================================================  
+  def unquoteLeft(value: String) = value.headOption match {
+        case None     => value
+        case Some(x) => x match {
+          case '"' | '\'' => value.tail    
+          case _          => value } }
+  
+    // ---------------------------------------------------------------------------
+    def unquoteRight(value: String) = value.lastOption match {
+        case None    => value
+        case Some(x) => x match {
+          case '"' | '\'' => value.init    
+          case _          => value } }
 
   // ===========================================================================
   def splitXsv(line: String, sep: Char): List[Cell] = {

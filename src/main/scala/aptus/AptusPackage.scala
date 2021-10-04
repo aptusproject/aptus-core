@@ -88,8 +88,8 @@ package object aptus
 
     // ---------------------------------------------------------------------------
     // TODO: t210116165559 - rename to "in"?
-    @deprecated def as: aptus.As[A] = new aptus.As[A](a)
-                def in: aptus.As[A] = new aptus.As[A](a)
+    @deprecated def as: aptus.misc.As[A] = new aptus.misc.As[A](a)
+                def in: aptus.misc.As[A] = new aptus.misc.As[A](a)
 
       // most common ones
       def inNoneIf(p: A => Boolean): Option[A] = in.noneIf(p)
@@ -202,6 +202,9 @@ package object aptus
     def extractGroup (regex: Regex): Option[    String ] = regex.findFirstMatchIn(str).map(_.group(1)) // TODO: check contains only X groups
     def extractGroups(regex: Regex): Option[Seq[String]] = regex.findFirstMatchIn(str).map { matsh => Range(1, matsh.groupCount + 1).map(matsh.group) }
 
+    // ---------------------------------------------------------------------------
+    // TODO: replaceGroup (see 211004151531)
+    
     // ===========================================================================
     def splitBy(separator: String        ): Seq[String] = if (str.isEmpty()) List(str) else lang3.StringUtils.splitByWholeSeparatorPreserveAllTokens(str, separator   ).toList
     def splitBy(separator: String, n: Int): Seq[String] = if (str.isEmpty()) List(str) else lang3.StringUtils.splitByWholeSeparatorPreserveAllTokens(str, separator, n).toList
@@ -231,17 +234,16 @@ package object aptus
     def stripTrailingZeros: String = if (!org.apache.commons.lang3.math.NumberUtils.isCreatable(str)) str else new java.math.BigDecimal(str).stripTrailingZeros().toPlainString()
 
     // ---------------------------------------------------------------------------
-    def quote          = s""""$str""""
-    def quoteSingle    =   s"'$str'"
+    def   quote      : String = if (isQuoted)       str else s""""$str""""
+    def   quoteSingle: String = if (isSingleQuoted) str else   s"'$str'"
+    def unquote      : String = utils.StringUtils.unquoteLeft(str).thn(utils.StringUtils.unquoteRight)
 
     def escapeQuotes       = str.replace("\"", "\\\"")
     def escapeSingleQuotes = str.replace("\"", "\\\"")
 
-    def unquoteIfApplicable        = if (isQuoted)       escapeQuotes       else str
-    def unquoteSinglesIfApplicable = if (isSingleQuoted) escapeSingleQuotes else str
-
     // ---------------------------------------------------------------------------
-    def uncapitalize: String = str.headOption.map(x => x.toLower +: str.tail).getOrElse(str)
+    def uncapitalizeFirst: String = str.headOption.map(x => x.toLower +: str.tail).getOrElse(str)
+    def   capitalizeFirst: String = str.headOption.map(x => x.toUpper +: str.tail).getOrElse(str)
 
     // ---------------------------------------------------------------------------
     def snakeToCamelCase: String = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL     , str)
@@ -261,10 +263,6 @@ package object aptus
   // ===========================================================================
   // TODO: switch it all to List? see https://users.scala-lang.org/t/seq-vs-list-which-should-i-choose/5412/16
   implicit class Seq_[A](val coll: Seq[A]) extends AnyVal { // TODO: t210124092716 - codegen specializations (List, Vector, ...?)
-    private type Collection[A] = Seq[A]
-    import aptus.utils.MathUtils
-
-    // ---------------------------------------------------------------------------
     def requireDistinct   ()           : Seq[A] = utils.SeqUtils.distinct(coll, Predef.require(_, _))
     def requireDistinctBy[B](f: A => B): Seq[A] = utils.SeqUtils.requireDistinctBy(coll)(f)
 
@@ -272,7 +270,7 @@ package object aptus
     def writeFileLines(path: FilePath): FilePath = utils.FileUtils.writeLines(path, coll.map(_.toString))
 
     // ---------------------------------------------------------------------------
-    def force = new aptus.Force(coll) // TODO: conflicts with view's...
+    def force = new aptus.misc.Force(coll) // TODO: conflicts with view's...
 
     // ---------------------------------------------------------------------------
     def join(sep: Separator) = coll.mkString(sep)
@@ -305,7 +303,7 @@ package object aptus
     def mapIf    [B <: A](pred: A => Boolean)(f: A => B) = coll.map { x => if (pred(x)) f(x) else   x }
 
     // ---------------------------------------------------------------------------
-    def zipWithRank: Collection[(A, aptus.Rank)] = coll.zipWithIndex.map { case (value, index) => value -> (index + 1) }
+    def zipWithRank: Seq[(A, aptus.Rank)] = coll.zipWithIndex.map { case (value, index) => value -> (index + 1) }
 
     def zipSameSize[B](that: Seq[B])                      : Seq[(A, B)] = zipSameSize(that, _.size)
     def zipSameSize[B](that: Seq[B], debug: Seq[_] => Any): Seq[(A, B)] = { require(coll.size == that.size, (debug(coll), debug(that))); coll.zip(that) }
@@ -328,11 +326,11 @@ package object aptus
 
     // ---------------------------------------------------------------------------
     def stdev              (implicit num: Numeric[A]): Double = stdev(coll.mean(num))(num.asInstanceOf[Numeric[A]])
-    def stdev(mean: Double)(implicit num: Numeric[A]): Double = MathUtils.stdev(coll, mean)
+    def stdev(mean: Double)(implicit num: Numeric[A]): Double = utils.MathUtils.stdev(coll, mean)
 
     // ---------------------------------------------------------------------------
-    def median               (implicit num: Numeric[A]): Double = MathUtils.percentile(coll, 50)
-    def percentile(n: Double)(implicit num: Numeric[A]): Double = MathUtils.percentile(coll,  n)
+    def median               (implicit num: Numeric[A]): Double = utils.MathUtils.percentile(coll, 50)
+    def percentile(n: Double)(implicit num: Numeric[A]): Double = utils.MathUtils.percentile(coll,  n)
 
     // ---------------------------------------------------------------------------
     def range[B >: A](implicit cmp: Ordering[B],  num: Numeric[B]): B      = num.minus(coll.max(cmp), coll.min(cmp)) // TODO: optimize; TODO: max if double?
@@ -351,7 +349,7 @@ package object aptus
     def countBySelf: List[(A, Int)] = coll.groupBy(identity).view.map { x => x._1 -> x._2.size }.toList.sortBy(-_._2) // TODO: t211004120452 - more efficient version
     
     // ===========================================================================
-    def toOption[B](implicit ev: A <:< Option[B]): Option[Collection[B]] = if (coll.contains(None)) None else Some(coll.map(_.get))
+    def toOption[B](implicit ev: A <:< Option[B]): Option[Seq[B]] = if (coll.contains(None)) None else Some(coll.map(_.get))
   }
 
   // ===========================================================================
@@ -387,7 +385,8 @@ package object aptus
     def mapFirst [A2](fa: A => A2) = (fa(tup._1),   tup._2)
     def mapSecond[B2](fb: B => B2) = (   tup._1, fb(tup._2))
 
-    def mapAll   [A2, B2](fa: A => A2, fb: B => B2) = (fa(tup._1), fb(tup._2))
+    def mapAll[A2, B2](fa: A => A2, fb: B => B2)                            = (fa(tup._1), fb(tup._2))        
+    def mapAll[C1, C2](f : C1 => C2)(implicit ev1: A <:< C1, ev2: B <:< C1) = (f (tup._1), f (tup._2))
 
     def toOptionalTuple[Z, Y](implicit ev1: A <:< Option[Z], ev2: B <:< Option[Y]): Option[(Z, Y)] = for { a <- tup._1; b <- tup._2 } yield (a, b)
 

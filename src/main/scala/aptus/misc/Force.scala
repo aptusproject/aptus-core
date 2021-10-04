@@ -1,4 +1,5 @@
 package aptus
+package misc
 
 import scala.collection.immutable.{ListMap, TreeMap}
 
@@ -31,11 +32,6 @@ private[aptus] final class Force[A] private[aptus] (private val coll: Seq[A]) {
 
   def treeMap[K, V]                             (implicit ev: A <:< (K, V), ord: Ordering[K]): TreeMap[K, V] = { val map = aptus.utils.MapUtils.toTreeMap(coll); assert(coll.size == map.size, (coll.size, map.size))  ; map }
   def treeMap[K, V](debug: A => Any, anys: Any*)(implicit ev: A <:< (K, V), ord: Ordering[K]): TreeMap[K, V] = { val map = aptus.utils.MapUtils.toTreeMap(coll); assert(coll.size == map.size, (coll.map(debug), anys)); map }
-
-  // ===========================================================================
-  def mapLeft [K   ](f : A => K            ): Map[K, A] = new Force(coll.map { x => f (x) ->    x  }).map
-  def mapRight[   V](            f : A => V): Map[A, V] = new Force(coll.map { x =>    x  -> f (x) }).map
-  def mapBoth [K, V](fk: A => K, fv: A => V): Map[K, V] = new Force(coll.map { x => fk(x) -> fv(x) }).map
 }
 
 // ===========================================================================

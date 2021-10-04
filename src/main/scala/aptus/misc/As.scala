@@ -1,4 +1,5 @@
 package aptus
+package misc
 
 // ===========================================================================
 private[aptus] final class As[A] private[aptus](private val a: A) {

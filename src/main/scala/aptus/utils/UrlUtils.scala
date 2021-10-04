@@ -1,4 +1,5 @@
-package aptus.utils
+package aptus
+package utils
 
 import java.io._
 import scala.collection.JavaConverters._

@@ -63,6 +63,13 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   // ---------------------------------------------------------------------------
   type RawRdbmsEntries = Map   [String /* field name */, Option[Any /* value */]]
   type RawRdbmsValues  = Vector[                         Option[Any /* value */]]
+  
+  // ---------------------------------------------------------------------------
+  type Closeabled[T] = misc.Closeabled[T]
+  val  Closeabled    = misc.Closeabled
+
+  // ---------------------------------------------------------------------------
+  type JavaPattern = java.util.regex.Pattern
 }
 
 // ===========================================================================

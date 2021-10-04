@@ -1,9 +1,7 @@
-package aptus.utils
+package aptus
+package utils
 
 import java.sql._
-
-import aptus.Seq_
-import aptus.{RawRdbmsEntries, RawRdbmsValues}
 
 // ===========================================================================
 object SqlUtils {

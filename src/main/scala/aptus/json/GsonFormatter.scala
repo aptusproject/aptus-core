@@ -1,7 +1,7 @@
-package aptus.json
+package aptus
+package json
 
 import com.google.gson._
-import aptus.JsonString
 
 // ===========================================================================
 object GsonFormatter { // TODO: also handle yaml here? (see https://github.com/google/gson/issues/327)

@@ -5,13 +5,14 @@ import java. io._
 import java.nio.file.{Path => _, _}
 
 // ===========================================================================
-class AptusPath(path: String) {
+private[aptus] final class AptusPath(path: String) {
   def isFile     (): Boolean = Files.isRegularFile (Paths.get(path))
   def isDirectory(): Boolean = Files.isDirectory   (Paths.get(path))
   def isSymlink  (): Boolean = Files.isSymbolicLink(Paths.get(path))
 
   // ---------------------------------------------------------------------------
   // TODO: touch file
+
   def removeFile(): Unit = { if (new java.io.File(path).exists()) { s"rm ${path}".systemCall(); () } } // FIXME: wait until removed JVM way  
 
   // ---------------------------------------------------------------------------

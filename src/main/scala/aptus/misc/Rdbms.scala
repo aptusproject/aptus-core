@@ -1,10 +1,7 @@
-package aptus.misc
+package aptus
+package misc
 
 import java.sql.{Array => _, _}
-
-import aptus.{Anything_, String_, Seq_}
-import aptus.ResultSet_
-import aptus.{QueryString, TableName, UriString, RawRdbmsEntries}
 
 // ===========================================================================
 object Rdbms {

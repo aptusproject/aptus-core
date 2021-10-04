@@ -1,9 +1,8 @@
-package aptus.utils
+package aptus
+package utils
 
-import java.io.OutputStream
-import java.io.InputStream
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext
+import java.io.{OutputStream, InputStream}
+import scala.concurrent.{Future, ExecutionContext}
 
 // ===========================================================================
 object SystemUtils {

@@ -1,7 +1,8 @@
 package aptus
+package misc
 
 // ===========================================================================
-final class Closeabled[A](val u: A, val cls: Closeable) extends Closeable { // TODO: look into geny for Iterator version?
+private[aptus] final class Closeabled[A](val u: A, val cls: Closeable) extends Closeable { // TODO: look into geny for Iterator version?
     override def close() = { cls.close() }
 
     // ---------------------------------------------------------------------------
@@ -11,7 +12,7 @@ final class Closeabled[A](val u: A, val cls: Closeable) extends Closeable { // T
   }
 
   // ===========================================================================
-  object Closeabled {
+  private[aptus] object Closeabled {
 
     def from    [A <: Closeable](a: A)                        : Closeabled[A] = new Closeabled(a, a)
     def from    [A]             (a: A, values: Seq[Closeable]): Closeabled[A] = new Closeabled(a, closeable(values))

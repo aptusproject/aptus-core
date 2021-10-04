@@ -1,14 +1,11 @@
-package aptus.utils
+package aptus
+package utils
 
 import java.io._
 
 import scala.collection.JavaConverters.asScalaIteratorConverter
 
 import org.apache.commons.compress.compressors.CompressorStreamFactory
-
-import aptus.InputStream_
-import aptus.URL_
-import aptus.{Content, Line}
 
 // ===========================================================================
 object InputStreamUtils {

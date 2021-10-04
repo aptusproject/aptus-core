@@ -1,8 +1,5 @@
-package aptus.json
-
-import aptus.JsonString
-import aptus.JsonObjectString
-import aptus.JsonArrayString
+package aptus
+package json
 
 import scala.collection.JavaConverters._
 import com.google.gson._

@@ -58,15 +58,15 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   type Nes[T] =        Seq   [T]
 
   // ===========================================================================
-  type CharsetSelector = misc.StandardCharsets.type => Charset
+  type CharsetSelector = aptmisc.StandardCharsets.type => Charset
 
   // ---------------------------------------------------------------------------
   type RawRdbmsEntries = Map   [String /* field name */, Option[Any /* value */]]
   type RawRdbmsValues  = Vector[                         Option[Any /* value */]]
   
   // ---------------------------------------------------------------------------
-  type Closeabled[T] = misc.Closeabled[T]
-  val  Closeabled    = misc.Closeabled
+  type Closeabled[T] = aptmisc.Closeabled[T]
+  val  Closeabled    = aptmisc.Closeabled
 
   // ---------------------------------------------------------------------------
   type JavaPattern = java.util.regex.Pattern

@@ -7,6 +7,7 @@ import scala.util.chaining._
 import java.time._
 import java.time.format.DateTimeFormatter
 import java.lang.IllegalStateException
+import aptus.aptutils._
 
 // ===========================================================================
 package object aptus
@@ -18,7 +19,7 @@ package object aptus
   def illegalState   (x: Any*): Nothing = { throw new IllegalStateException   (x.toString) }
   def illegalArgument(x: Any*): Nothing = { throw new IllegalArgumentException(x.toString) }
   
-  def listOrdering[T : Ordering]: Ordering[List[T]] = aptus.utils.SeqUtils.listOrdering[T]
+  def listOrdering[T : Ordering]: Ordering[List[T]] = SeqUtils.listOrdering[T]
 
   // ---------------------------------------------------------------------------
   def zip[T1, T2, T3]        (a: Iterable[T1], b: Iterable[T2], c: Iterable[T3])                                  : Iterable[(T1, T2, T3)]         = a.zip(b).zip(c)              .map { case   ((a, b), c)         => (a, b, c) }
@@ -28,12 +29,12 @@ package object aptus
 
   // ===========================================================================
   implicit class Unit_(val u: Unit) extends AnyVal { // TODO: t201213095810 anyway to add that to Predef? implicit class doesn't seem to work
-    def environment = misc.Environment
-    def fs          = misc.Fs
-    def hardware    = misc.Hardware
-    def random      = misc.Random                
-    def reflect     = misc.Reflect
-    def time        = misc.Time
+    def environment = aptmisc.Environment
+    def fs          = aptmisc.Fs
+    def hardware    = aptmisc.Hardware
+    def random      = aptmisc.Random                
+    def reflect     = aptmisc.Reflect
+    def time        = aptmisc.Time
     
     // ---------------------------------------------------------------------------
     // convenience
@@ -70,7 +71,7 @@ package object aptus
       def sideEffectIf    (pred: A => Boolean)(f: A => Unit)              : A  = { if (pred(a)) { f(a) }              ; a }
     
     // ---------------------------------------------------------------------------
-    @fordevonly def __exit: A = { utils.ReflectionUtils.formatExitTrace(().reflect.stackTrace(), "intentionally stopping").p; System.exit(0); a }
+    @fordevonly def __exit: A = { ReflectionUtils.formatExitTrace(().reflect.stackTrace(), "intentionally stopping").p; System.exit(0); a }
 
     @fordevonly def p      : A = { System.out.println(a)     ; a      }
     @fordevonly def p__    : A = { System.out.println(a)     ; __exit }
@@ -89,8 +90,8 @@ package object aptus
 
     // ---------------------------------------------------------------------------
     // TODO: t210116165559 - rename to "in"?
-    @deprecated def as: aptus.misc.As[A] = new aptus.misc.As[A](a)
-                def in: aptus.misc.As[A] = new aptus.misc.As[A](a)
+    @deprecated def as: aptus.aptmisc.As[A] = new aptus.aptmisc.As[A](a)
+                def in: aptus.aptmisc.As[A] = new aptus.aptmisc.As[A](a)
 
       // most common ones
       def inNoneIf(p: A => Boolean): Option[A] = in.noneIf(p)
@@ -121,25 +122,25 @@ package object aptus
     import scala.language.postfixOps; def systemCall(): String = sys.process.Process(str) !!    
 
     // ===========================================================================
-    def path = new misc.AptusPath(str)
+    def path = new aptmisc.AptusPath(str)
 
       // ---------------------------------------------------------------------------
       // TODO: t211004131206 - move to path?
-      def writeFileContent(path: String): FilePath = utils.FileUtils.writeContent(path, content = str)
-      def  readFileContent()            : Content  = utils.FileUtils.readFileContent(path = str)
+      def writeFileContent(path: String): FilePath = FileUtils.writeContent(path, content = str)
+      def  readFileContent()            : Content  = FileUtils.readFileContent(path = str)
   
         // ---------------------------------------------------------------------------
-        def readFileLines(): List[Line] = utils.FileUtils.readFileLines(path = str)
+        def readFileLines(): List[Line] = FileUtils.readFileLines(path = str)
         def readFileTsv  (): List[Vector[Cell]] = readFileLines().map(_.splitBy("\t").toVector)    
         def readFileCsv  (): List[Vector[Cell]] = readFileLines().map(_.splitBy( ",").toVector)
 
-        def streamFileLines(): (Iterator[Line],         Closeable) = utils.FileUtils.streamFileLines(path = str)
+        def streamFileLines(): (Iterator[Line],         Closeable) = FileUtils.streamFileLines(path = str)
         def streamFileTsv  (): (Iterator[Vector[Cell]], Closeable) = str.streamFileLines().mapFirst(_.map(_.splitXsv('\t').toVector))
         def streamFileCsv  (): (Iterator[Vector[Cell]], Closeable) = str.streamFileLines().mapFirst(_.map(_.splitXsv(',') .toVector))
 
     // ===========================================================================
-    def readUrlContent(): Content   = utils.UrlUtils.content(str)
-    def readUrlLines()  : Seq[Line] = utils.UrlUtils.  lines(str)
+    def readUrlContent(): Content   = UrlUtils.content(str)
+    def readUrlLines()  : Seq[Line] = UrlUtils.  lines(str)
 
     // ===========================================================================
     def prepend(prefix: String)                      = s"$prefix$str"
@@ -171,20 +172,20 @@ package object aptus
 
     // ===========================================================================
     // TODO: quite inefficient
-      def indent                          : String = utils.StringUtils.indent(1, indenter = "\t")(str)
-      def indent(n: Int                  ): String = utils.StringUtils.indent(n, indenter = "\t")(str)
-      def indent(n: Int, indenter: String): String = utils.StringUtils.indent(n, indenter       )(str)
+      def indent                          : String = StringUtils.indent(1, indenter = "\t")(str)
+      def indent(n: Int                  ): String = StringUtils.indent(n, indenter = "\t")(str)
+      def indent(n: Int, indenter: String): String = StringUtils.indent(n, indenter       )(str)
 
       // ---------------------------------------------------------------------------
-      def indentAll                          : String = utils.StringUtils.indentAll(n = 1, indenter = "\t")(str)
-      def indentAll(n: Int                  ): String = utils.StringUtils.indentAll(n    , indenter = "\t")(str)
-      def indentAll(n: Int, indenter: String): String = utils.StringUtils.indentAll(n    , indenter       )(str)
+      def indentAll                          : String = StringUtils.indentAll(n = 1, indenter = "\t")(str)
+      def indentAll(n: Int                  ): String = StringUtils.indentAll(n    , indenter = "\t")(str)
+      def indentAll(n: Int, indenter: String): String = StringUtils.indentAll(n    , indenter       )(str)
 
       // ---------------------------------------------------------------------------
-      def sectionAllOff                : String =                  utils.StringUtils.sectionAllOff(n = 1, indenter = "\t")(str)
-      def sectionAllOff(n: Int)        : String =                  utils.StringUtils.sectionAllOff(n    , indenter = "\t")(str)
+      def sectionAllOff                : String =                  StringUtils.sectionAllOff(n = 1, indenter = "\t")(str)
+      def sectionAllOff(n: Int)        : String =                  StringUtils.sectionAllOff(n    , indenter = "\t")(str)
 
-      def sectionAllOff(prefix: String): String = s"${prefix}\n" + utils.StringUtils.sectionAllOff(n = 1, indenter = "\t")(str)
+      def sectionAllOff(prefix: String): String = s"${prefix}\n" + StringUtils.sectionAllOff(n = 1, indenter = "\t")(str)
 
     // ===========================================================================
     def isTrimmed     : Boolean = str == str.trim
@@ -192,7 +193,7 @@ package object aptus
     def isSingleQuoted: Boolean = str.size >= 2 && str.startsWith( "'") && str.endsWith( "'")
 
     def isDigits      : Boolean = str.nonEmpty && str.forall(_.isDigit) // TODO: vs org.apache.commons.lang3.math.NumberUtils.isDigits?
-    def isValidInt    : Boolean = utils.NumberUtils.isValidInt(str) // FIXME
+    def isValidInt    : Boolean = NumberUtils.isValidInt(str) // FIXME
 
     def notContains(s: CharSequence): Boolean = !str.contains(s) // TODO: or "containsNot"?
 
@@ -213,7 +214,7 @@ package object aptus
     def splitBy(regex: Regex)             : Seq[String] = regex.split(str).toList // TODO: keep?
 
     // ---------------------------------------------------------------------------
-    def splitXsv(sep: Char): List[Cell] = utils.StringUtils.splitXsv(str, sep)
+    def splitXsv(sep: Char): List[Cell] = StringUtils.splitXsv(str, sep)
     def splitTabs          : List[Cell] = splitXsv('\t')
     def splitCommas        : List[Cell] = splitXsv(',')
 
@@ -237,7 +238,7 @@ package object aptus
     // ---------------------------------------------------------------------------
     def   quote      : String = if (isQuoted)       str else s""""$str""""
     def   quoteSingle: String = if (isSingleQuoted) str else   s"'$str'"
-    def unquote      : String = utils.StringUtils.unquoteLeft(str).pipe(utils.StringUtils.unquoteRight)
+    def unquote      : String = StringUtils.unquoteLeft(str).pipe(StringUtils.unquoteRight)
 
     def escapeQuotes       = str.replace("\"", "\\\"")
     def escapeSingleQuotes = str.replace("\"", "\\\"")
@@ -254,24 +255,24 @@ package object aptus
     // ===========================================================================
     // json; TODO: t210204095517 - replace gson in the long run
 
-    def jsonObject: com.google.gson.JsonObject = aptus.json.GsonParser.stringToJsonObject(str)
-    def jsonArray : com.google.gson.JsonArray  = aptus.json.GsonParser.stringToJsonArray (str)
+    def jsonObject: com.google.gson.JsonObject = aptus.aptjson.GsonParser.stringToJsonObject(str)
+    def jsonArray : com.google.gson.JsonArray  = aptus.aptjson.GsonParser.stringToJsonArray (str)
 
-    def prettyJson : String = aptus.json.GsonFormatter.pretty (str).get
-    def compactJson: String = aptus.json.GsonFormatter.compact(str).get
+    def prettyJson : String = aptus.aptjson.GsonFormatter.pretty (str).get
+    def compactJson: String = aptus.aptjson.GsonFormatter.compact(str).get
   }
 
   // ===========================================================================
   // TODO: switch it all to List? see https://users.scala-lang.org/t/seq-vs-list-which-should-i-choose/5412/16
   implicit class Seq_[A](val coll: Seq[A]) extends AnyVal { // TODO: t210124092716 - codegen specializations (List, Vector, ...?)
-    def requireDistinct   ()           : Seq[A] = utils.SeqUtils.distinct(coll, Predef.require(_, _))
-    def requireDistinctBy[B](f: A => B): Seq[A] = utils.SeqUtils.requireDistinctBy(coll)(f)
+    def requireDistinct   ()           : Seq[A] = SeqUtils.distinct(coll, Predef.require(_, _))
+    def requireDistinctBy[B](f: A => B): Seq[A] = SeqUtils.requireDistinctBy(coll)(f)
 
     // ---------------------------------------------------------------------------
-    def writeFileLines(path: FilePath): FilePath = utils.FileUtils.writeLines(path, coll.map(_.toString))
+    def writeFileLines(path: FilePath): FilePath = FileUtils.writeLines(path, coll.map(_.toString))
 
     // ---------------------------------------------------------------------------
-    def force = new aptus.misc.Force(coll) // TODO: conflicts with view's...
+    def force = new aptus.aptmisc.Force(coll) // TODO: conflicts with view's...
 
     // ---------------------------------------------------------------------------
     def join(sep: Separator) = coll.mkString(sep)
@@ -286,10 +287,10 @@ package object aptus
 
     // ---------------------------------------------------------------------------
     def section                : String = section("")
-    def section (title: String): String = utils.StringUtils.section(coll, 1, title)
+    def section (title: String): String = StringUtils.section(coll, 1, title)
 
     def section2               : String = section2("")
-    def section2(title: String): String = utils.StringUtils.section(coll, 2, title)
+    def section2(title: String): String = StringUtils.section(coll, 2, title)
 
     // ---------------------------------------------------------------------------
     def isDistinct                               : Boolean = coll.size == coll.toSet.size
@@ -320,32 +321,32 @@ package object aptus
     def splitLast: (Seq[A], A) = coll.splitAt(coll.size - 1).mapSecond(_.force.one)    
     
     // ---------------------------------------------------------------------------
-    def distinctByAdjacency: Seq[A] = utils.IterableUtils.distinctByAdjacency(coll).toList // TODO: test for 1
+    def distinctByAdjacency: Seq[A] = IterableUtils.distinctByAdjacency(coll).toList // TODO: test for 1
     
     // ===========================================================================
     def mean(implicit num: Numeric[A]): Double = (num.toDouble(coll.foldLeft(num.zero)(num.plus)) / coll.size)
 
     // ---------------------------------------------------------------------------
     def stdev              (implicit num: Numeric[A]): Double = stdev(coll.mean(num))(num.asInstanceOf[Numeric[A]])
-    def stdev(mean: Double)(implicit num: Numeric[A]): Double = utils.MathUtils.stdev(coll, mean)
+    def stdev(mean: Double)(implicit num: Numeric[A]): Double = MathUtils.stdev(coll, mean)
 
     // ---------------------------------------------------------------------------
-    def median               (implicit num: Numeric[A]): Double = utils.MathUtils.percentile(coll, 50)
-    def percentile(n: Double)(implicit num: Numeric[A]): Double = utils.MathUtils.percentile(coll,  n)
+    def median               (implicit num: Numeric[A]): Double = MathUtils.percentile(coll, 50)
+    def percentile(n: Double)(implicit num: Numeric[A]): Double = MathUtils.percentile(coll,  n)
 
     // ---------------------------------------------------------------------------
     def range[B >: A](implicit cmp: Ordering[B],  num: Numeric[B]): B      = num.minus(coll.max(cmp), coll.min(cmp)) // TODO: optimize; TODO: max if double?
     def IQR          (implicit                    num: Numeric[A]): Double = (coll.percentile(75) - coll.percentile(25)) // TODO: optimize
 
     // ===========================================================================
-    def toMutableMap[K, V](implicit ev: A <:< (K, V))                   = utils.MapUtils.toMutableMap(coll)
-    def toListMap   [K, V](implicit ev: A <:< (K, V))                   = utils.MapUtils.toListMap(coll)
-    def toTreeMap   [K, V](implicit ev: A <:< (K, V), ord: Ordering[K]) = utils.MapUtils.toTreeMap(coll)
+    def toMutableMap[K, V](implicit ev: A <:< (K, V))                   = MapUtils.toMutableMap(coll)
+    def toListMap   [K, V](implicit ev: A <:< (K, V))                   = MapUtils.toListMap(coll)
+    def toTreeMap   [K, V](implicit ev: A <:< (K, V), ord: Ordering[K]) = MapUtils.toTreeMap(coll)
 
     // ---------------------------------------------------------------------------
-    def groupByKey           [K, V](implicit ev: A <:< (K, V)                  ):               Map[K, Seq[V]] = utils.MapUtils.groupByKey           (coll.iterator.asInstanceOf[Iterator[(K, V)]])
-    def groupByKeyWithListMap[K, V](implicit ev: A <:< (K, V)                  ): immutable.ListMap[K, Seq[V]] = utils.MapUtils.groupByKeyWithListMap(coll.iterator.asInstanceOf[Iterator[(K, V)]])
-    def groupByKeyWithTreeMap[K, V](implicit ev: A <:< (K, V), ord: Ordering[K]): immutable.TreeMap[K, Seq[V]] = utils.MapUtils.groupByKeyWithTreeMap(coll.iterator.asInstanceOf[Iterator[(K, V)]])
+    def groupByKey           [K, V](implicit ev: A <:< (K, V)                  ):               Map[K, Seq[V]] = MapUtils.groupByKey           (coll.iterator.asInstanceOf[Iterator[(K, V)]])
+    def groupByKeyWithListMap[K, V](implicit ev: A <:< (K, V)                  ): immutable.ListMap[K, Seq[V]] = MapUtils.groupByKeyWithListMap(coll.iterator.asInstanceOf[Iterator[(K, V)]])
+    def groupByKeyWithTreeMap[K, V](implicit ev: A <:< (K, V), ord: Ordering[K]): immutable.TreeMap[K, Seq[V]] = MapUtils.groupByKeyWithTreeMap(coll.iterator.asInstanceOf[Iterator[(K, V)]])
 
     def countBySelf: List[(A, Int)] = coll.groupBy(identity).view.map { x => x._1 -> x._2.size }.toList.sortBy(-_._2) // TODO: t211004120452 - more efficient version
     
@@ -358,10 +359,10 @@ package object aptus
     def last(): A = itr.next().assert(_ => !itr.hasNext)
     
     // ---------------------------------------------------------------------------
-    def groupByKey           [K, V](implicit ev: A <:< (K, V))                  :               Map[K, Seq[V]]  = utils.MapUtils.groupByKey              (itr.asInstanceOf[Iterator[(K, V)]])
-    def groupByKeyWithListMap[K, V](implicit ev: A <:< (K, V))                  : immutable.ListMap[K, Seq[V]]  = utils.MapUtils.groupByKeyWithListMap   (itr.asInstanceOf[Iterator[(K, V)]])
-    def groupByKeyWithTreeMap[K, V](implicit ev: A <:< (K, V), ord: Ordering[K]): immutable.TreeMap[K, Seq[V]]  = utils.MapUtils.groupByKeyWithTreeMap   (itr.asInstanceOf[Iterator[(K, V)]])    
-    def groupByPreSortedKey[K, V](implicit ev: A <:< (K, V))                    :         Iterator[(K, Seq[V])] = utils.IteratorUtils.groupByPreSortedKey(itr.asInstanceOf[Iterator[(K, V)]])
+    def groupByKey           [K, V](implicit ev: A <:< (K, V))                  :               Map[K, Seq[V]]  = MapUtils.groupByKey              (itr.asInstanceOf[Iterator[(K, V)]])
+    def groupByKeyWithListMap[K, V](implicit ev: A <:< (K, V))                  : immutable.ListMap[K, Seq[V]]  = MapUtils.groupByKeyWithListMap   (itr.asInstanceOf[Iterator[(K, V)]])
+    def groupByKeyWithTreeMap[K, V](implicit ev: A <:< (K, V), ord: Ordering[K]): immutable.TreeMap[K, Seq[V]]  = MapUtils.groupByKeyWithTreeMap   (itr.asInstanceOf[Iterator[(K, V)]])    
+    def groupByPreSortedKey[K, V](implicit ev: A <:< (K, V))                    :         Iterator[(K, Seq[V])] = IteratorUtils.groupByPreSortedKey(itr.asInstanceOf[Iterator[(K, V)]])
   }
   
   // ===========================================================================
@@ -369,9 +370,9 @@ package object aptus
     def force(key: K): V = mp.get(key).get // stdlib polyseme (see Option's)
     
     // ---------------------------------------------------------------------------
-    def toMutableMap                        :   mutable.    Map[K, V] = utils.MapUtils.toMutableMap(mp)
-    def toListMap                           : immutable.ListMap[K, V] = utils.MapUtils.toListMap   (mp)
-    def toTreeMap(implicit ord: Ordering[K]): immutable.TreeMap[K, V] = utils.MapUtils.toTreeMap   (mp)
+    def toMutableMap                        :   mutable.    Map[K, V] = MapUtils.toMutableMap(mp)
+    def toListMap                           : immutable.ListMap[K, V] = MapUtils.toListMap   (mp)
+    def toTreeMap(implicit ord: Ordering[K]): immutable.TreeMap[K, V] = MapUtils.toTreeMap   (mp)
   }
 
   // ===========================================================================
@@ -434,13 +435,13 @@ package object aptus
       def divideBy(n: Number): Double = nmbr / n.doubleValue()    
       
       // ---------------------------------------------------------------------------
-      def formatUsLocale: String = utils.NumberUtils.IntegerFormatter.format(nmbr)
+      def formatUsLocale: String = NumberUtils.IntegerFormatter.format(nmbr)
       def formatExplicit: String = formatUsLocale.replace(",", "") //def formatExplicit: String = f"${int}%0f" // TODO: try      
     }
 
     // ---------------------------------------------------------------------------
     implicit class Long_(val nmbr: Long) extends AnyVal {
-      def formatUsLocale: String = utils.NumberUtils.IntegerFormatter.format(nmbr)
+      def formatUsLocale: String = NumberUtils.IntegerFormatter.format(nmbr)
       def formatExplicit: String = formatUsLocale.replace(",", "")
     }
 
@@ -459,20 +460,20 @@ package object aptus
       def log2(n: Number): Double = math.log10(n.doubleValue) / math.log10(2.0)
       
       // ---------------------------------------------------------------------------
-      def formatUsLocale               : FormattedNumber = utils.NumberUtils.NumberFormatter.format(nmbr)
+      def formatUsLocale               : FormattedNumber = NumberUtils.NumberFormatter.format(nmbr)
       def formatExplicit               : FormattedNumber = f"${nmbr}%.16f".stripTrailingZeros
       def formatDecimals(decimals: Int): FormattedNumber = s"%.${decimals}f".format(nmbr)
 
       //FIXME: t210123101634 - significantFigures vs maxDecimal
         def significantFigures                   : Double = significantFigures(2)
-        def significantFigures(setPrecision: Int): Double = utils.NumberUtils.significantFigures(nmbr, setPrecision)
+        def significantFigures(setPrecision: Int): Double = NumberUtils.significantFigures(nmbr, setPrecision)
         def maxDecimals(n: Int): Double = org.apache.commons.math3.util.Precision.round(nmbr, n.require(_ >= 0))
     }
 
   // ===========================================================================
   implicit class Throwable_(val throwable: Throwable) extends AnyVal {
     def       stackTrace: Seq[StackTraceElement] = throwable.getStackTrace.toList              	
-    def formatStackTrace: String                 = utils.ThrowableUtils.stackTraceString(throwable)  	
+    def formatStackTrace: String                 = ThrowableUtils.stackTraceString(throwable)  	
   }
 
   // ---------------------------------------------------------------------------
@@ -482,19 +483,19 @@ package object aptus
 
   // ===========================================================================
   implicit class URL_(url: java.net.URL) {
-    def smartCloseabledInputStream: Closeabled[java.io.InputStream] = utils.InputStreamUtils.smartCloseabledInputStream(url.openStream())
+    def smartCloseabledInputStream: Closeabled[java.io.InputStream] = InputStreamUtils.smartCloseabledInputStream(url.openStream())
   }
 
   // ---------------------------------------------------------------------------
   implicit class InputStream_(is: java.io.InputStream) {
-    def closeabledBufferedReader                  : aptus.Closeabled[java.io.BufferedReader] = utils.InputStreamUtils.closeabledBufferedReader(is, UTF_8)
-    def closeabledBufferedReader(charset: Charset): aptus.Closeabled[java.io.BufferedReader] = utils.InputStreamUtils.closeabledBufferedReader(is, charset)
+    def closeabledBufferedReader                  : aptus.Closeabled[java.io.BufferedReader] = InputStreamUtils.closeabledBufferedReader(is, UTF_8)
+    def closeabledBufferedReader(charset: Charset): aptus.Closeabled[java.io.BufferedReader] = InputStreamUtils.closeabledBufferedReader(is, charset)
   }
 
   // ===========================================================================
   implicit class ResultSet_(val rs: java.sql.ResultSet) extends AnyVal {
     def closeable = new java.io.Closeable { override def close() = { rs.close() } }
-    def rawRdbmsEntries : Iterator[RawRdbmsEntries] = utils.SqlUtils.rawRdbmsEntries(rs)
+    def rawRdbmsEntries : Iterator[RawRdbmsEntries] = SqlUtils.rawRdbmsEntries(rs)
   }
   
 }

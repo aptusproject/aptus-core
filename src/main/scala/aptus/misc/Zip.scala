@@ -1,6 +1,7 @@
 package aptus
 package misc
 
+import scala.util.chaining._
 import scala.collection.JavaConverters._
 import java.util.zip._
 
@@ -13,7 +14,7 @@ object Zip {
   /** will contain '/' if nesting */
   def listContent(in: FilePath): Seq[RelativePath] =
     new ZipFile(in)
-      .thn { zipFile =>
+      .pipe { zipFile =>
         val names =
           zipFile
             .entries()
@@ -30,14 +31,14 @@ object Zip {
   def streamLines(in: FilePath)                         : (Iterator[Line], java.io.Closeable) = streamLines(in, _ => true)
   def streamLines(in: FilePath, pred: String => Boolean): (Iterator[Line], java.io.Closeable) =
     new ZipFile(in)
-      .thn { zipFile =>
+      .pipe { zipFile =>
         val zipEntry = entry(zipFile, pred)
 
         val pair =
           utils.InputStreamUtils.lines (
             zipFile
               .getInputStream(zipEntry)
-              .thn(aptus.Closeabled.fromPair(_, zipFile)),
+              .pipe(aptus.Closeabled.fromPair(_, zipFile)),
             StandardCharsets.UTF_8)
 
         pair.u -> pair }
@@ -46,13 +47,13 @@ object Zip {
   def content(in: FilePath)                         : Content = content(in, _ => true)
   def content(in: FilePath, pred: String => Boolean): Content =
     new ZipFile(in)
-      .thn { zipFile =>
+      .pipe { zipFile =>
         val zipEntry = entry(zipFile, pred)
 
         utils.InputStreamUtils.content(
           zipFile
             .getInputStream(zipEntry)
-            .thn(aptus.Closeabled.fromPair(_, zipFile)),
+            .pipe(aptus.Closeabled.fromPair(_, zipFile)),
           StandardCharsets.UTF_8) }
 
   // ===========================================================================

@@ -1,6 +1,8 @@
 package aptus
 package misc
 
+import scala.util.chaining._
+
 // ===========================================================================
 private[aptus] final class Closeabled[A](val u: A, val cls: Closeable) extends Closeable { // TODO: look into geny for Iterator version?
     override def close() = { cls.close() }
@@ -8,7 +10,7 @@ private[aptus] final class Closeabled[A](val u: A, val cls: Closeable) extends C
     // ---------------------------------------------------------------------------
     def consume[B](f: A =>            B ):            B  = { val result = f(u); close(); result }
     def     map[B](f: A =>            B ): Closeabled[B] = Closeabled.fromPair(f(u), cls)
-    def flatMap[B](f: A => Closeabled[B]): Closeabled[B] = f(u).thn { x => Closeabled.from(x.u, Seq(x.cls, this.cls)) }
+    def flatMap[B](f: A => Closeabled[B]): Closeabled[B] = f(u).pipe { x => Closeabled.from(x.u, Seq(x.cls, this.cls)) }
   }
 
   // ===========================================================================

@@ -1,6 +1,7 @@
 package aptus
 package misc
 
+import scala.util.chaining._
 import java.sql.{Array => _, _}
 
 // ===========================================================================
@@ -18,7 +19,7 @@ object Rdbms {
 
     def querier = new ConnectionQuerier(conn)
 
-    def querier(query: QueryString) = conn.prepareStatement(query).thn(new PreparedStatementQuerier(_))
+    def querier(query: QueryString) = conn.prepareStatement(query).pipe(new PreparedStatementQuerier(_))
   }
 
   // ---------------------------------------------------------------------------
@@ -61,7 +62,7 @@ object Rdbms {
       table
         .require(_.nonEmpty)
         .require(_.forall(aptus.utils.CharUtils.AlphaNumericalWithUnderscoreSet.contains)) /* cheap sanitizing.. */
-        .thn(name => query(s"SELECT * FROM ${name}"))
+        .pipe(name => query(s"SELECT * FROM ${name}"))
 
     // ---------------------------------------------------------------------------
     /** beware: unsanitized! TODO: t210114145431 */
@@ -84,7 +85,7 @@ object Rdbms {
     def close() = { ps.close() }
 
     /** beware: unsanitized! */
-    def query(f: PreparedStatement => PreparedStatement): (ResultSet, Closeable) = f(ps).executeQuery().thn { rs => (rs, rs.closeable ) }
+    def query(f: PreparedStatement => PreparedStatement): (ResultSet, Closeable) = f(ps).executeQuery().pipe { rs => (rs, rs.closeable ) }
   }
 
   // ===========================================================================

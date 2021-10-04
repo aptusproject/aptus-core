@@ -2,6 +2,7 @@ import org.apache.commons.lang3
 import com.google.common.base.CaseFormat
 
 import scala.collection.{mutable,immutable}
+import scala.util.chaining._
 
 import java.time._
 import java.time.format.DateTimeFormatter
@@ -218,13 +219,13 @@ package object aptus
 
     // ===========================================================================
     def date = toLocalDateFromIso // "2021-01-08".date
-      def toLocalDateFromIso                           : LocalDate     = DateTimeFormatter.ISO_LOCAL_DATE     .thn(toLocalDate)
-      def toLocalDate    (pattern:   String           ): LocalDate     = DateTimeFormatter.ofPattern(pattern) .thn(toLocalDate)
+      def toLocalDateFromIso                           : LocalDate     = DateTimeFormatter.ISO_LOCAL_DATE     .pipe(toLocalDate)
+      def toLocalDate    (pattern:   String           ): LocalDate     = DateTimeFormatter.ofPattern(pattern) .pipe(toLocalDate)
       def toLocalDate    (formatter: DateTimeFormatter): LocalDate     = LocalDate.parse(str, formatter)
 
     def datetime = toLocalDateTimeFromIso // "2021-01-08T...".datetime
-      def toLocalDateTimeFromIso                       : LocalDateTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME.thn(toLocalDateTime)
-      def toLocalDateTime(pattern:   String           ): LocalDateTime = DateTimeFormatter.ofPattern(pattern) .thn(toLocalDateTime)
+      def toLocalDateTimeFromIso                       : LocalDateTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME.pipe(toLocalDateTime)
+      def toLocalDateTime(pattern:   String           ): LocalDateTime = DateTimeFormatter.ofPattern(pattern) .pipe(toLocalDateTime)
       def toLocalDateTime(formatter: DateTimeFormatter): LocalDateTime = LocalDateTime.parse(str, formatter)
 
     // ===========================================================================
@@ -236,7 +237,7 @@ package object aptus
     // ---------------------------------------------------------------------------
     def   quote      : String = if (isQuoted)       str else s""""$str""""
     def   quoteSingle: String = if (isSingleQuoted) str else   s"'$str'"
-    def unquote      : String = utils.StringUtils.unquoteLeft(str).thn(utils.StringUtils.unquoteRight)
+    def unquote      : String = utils.StringUtils.unquoteLeft(str).pipe(utils.StringUtils.unquoteRight)
 
     def escapeQuotes       = str.replace("\"", "\\\"")
     def escapeSingleQuotes = str.replace("\"", "\\\"")

@@ -37,7 +37,7 @@ object StringUtils {
         .sectionAllOff(n)
         .prepend(
           title
-            .thnIf(!_.endsWith(":")) {
+            .pipeIf(!_.endsWith(":")) {
               _.append(":") } )
 
   // ===========================================================================  

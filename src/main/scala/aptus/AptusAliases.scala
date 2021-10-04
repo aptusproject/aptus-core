@@ -20,6 +20,7 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   type Line              = String
   type Content           = String
 
+  type Path              = String
   type DirPath           = String
   type FilePath          = String
   type FileName          = String

@@ -5,6 +5,7 @@ import scala.collection.{mutable,immutable}
 
 import java.time._
 import java.time.format.DateTimeFormatter
+import java.lang.IllegalStateException
 
 // ===========================================================================
 package object aptus
@@ -12,6 +13,17 @@ package object aptus
     with    AptusAliases
     with    AptusCommonAliases {
   /* for extends AnyVals, see https://stackoverflow.com/questions/14929422/should-implicit-classes-always-extend-anyval */
+
+  def illegalState   (x: Any*): Nothing = { throw new IllegalStateException   (x.toString) }
+  def illegalArgument(x: Any*): Nothing = { throw new IllegalArgumentException(x.toString) }
+  
+  def listOrdering[T : Ordering]: Ordering[List[T]] = aptus.utils.SeqUtils.listOrdering[T]
+
+  // ---------------------------------------------------------------------------
+  def zip[T1, T2, T3]        (a: Iterable[T1], b: Iterable[T2], c: Iterable[T3])                                  : Iterable[(T1, T2, T3)]         = a.zip(b).zip(c)              .map { case   ((a, b), c)         => (a, b, c) }
+  def zip[T1, T2, T3, T4]    (a: Iterable[T1], b: Iterable[T2], c: Iterable[T3], d: Iterable[T4])                 : Iterable[(T1, T2, T3, T4)]     = a.zip(b).zip(c).zip(d)       .map { case  (((a, b), c), d)     => (a, b, c, d) }
+  def zip[T1, T2, T3, T4, T5](a: Iterable[T1], b: Iterable[T2], c: Iterable[T3], d: Iterable[T4], e: Iterable[T5]): Iterable[(T1, T2, T3, T4, T5)] = a.zip(b).zip(c).zip(d).zip(e).map { case ((((a, b), c), d), e) => (a, b, c, d, e) }
+  def zip[T1, T2](a: Iterable[T1], b: Iterable[T2]): Iterable[(T1, T2)] = a.zip(b) // for good measure, should favor: a.zip(b)  
 
   // ===========================================================================
   implicit class Unit_(val u: Unit) extends AnyVal { // TODO: t201213095810 anyway to add that to Predef? implicit class doesn't seem to work
@@ -80,8 +92,8 @@ package object aptus
                 def in: aptus.As[A] = new aptus.As[A](a)
 
       // most common ones
-      def inNoneIf(p: A => Boolean): Option[A] = as.noneIf(p)
-      def inSomeIf(p: A => Boolean): Option[A] = as.someIf(p)
+      def inNoneIf(p: A => Boolean): Option[A] = in.noneIf(p)
+      def inSomeIf(p: A => Boolean): Option[A] = in.someIf(p)
       
     // ---------------------------------------------------------------------------
     @inline def    containedIn(values: Set[A]): Boolean =  values.contains(a)
@@ -103,22 +115,26 @@ package object aptus
     def pattern: JavaPattern = str.r.pattern
 
     // ---------------------------------------------------------------------------
-    import scala.language.postfixOps; def systemCall(): String = sys.process.Process(str) !!
+    def systemCallLines(): Seq[String] = systemCall().splitBy("\n")
+
+    import scala.language.postfixOps; def systemCall(): String = sys.process.Process(str) !!    
 
     // ===========================================================================
-    def mkdirs = { new java.io.File(str).mkdirs(); str }
-
-    // ---------------------------------------------------------------------------
-    def writeFileContent(path: String): FilePath = utils.FileUtils.writeContent(path, content = str)
+    def path = new misc.AptusPath(str)
 
       // ---------------------------------------------------------------------------
-      def readFileContent(): Content     = utils.FileUtils.readFileContent(path = str)
-      def readFileLines  (): Seq[String] = utils.FileUtils.readFileLines  (path = str)
+      // TODO: t211004131206 - move to path?
+      def writeFileContent(path: String): FilePath = utils.FileUtils.writeContent(path, content = str)
+      def  readFileContent()            : Content  = utils.FileUtils.readFileContent(path = str)
+  
+        // ---------------------------------------------------------------------------
+        def readFileLines(): List[Line] = utils.FileUtils.readFileLines(path = str)
+        def readFileTsv  (): List[Vector[Cell]] = readFileLines().map(_.splitBy("\t").toVector)    
+        def readFileCsv  (): List[Vector[Cell]] = readFileLines().map(_.splitBy( ",").toVector)
 
-      def readFileTsv(): Seq[Vector[String]] = readFileLines().map(_.splitBy("\t").toVector)    
-      def readFileCsv(): Seq[Vector[String]] = readFileLines().map(_.splitBy( ",").toVector)
-
-      def streamFileLines(): (Iterator[String], Closeable) = utils.FileUtils.streamFileLines(path = str)
+        def streamFileLines(): (Iterator[Line],         Closeable) = utils.FileUtils.streamFileLines(path = str)
+        def streamFileTsv  (): (Iterator[Vector[Cell]], Closeable) = str.streamFileLines().mapFirst(_.map(_.splitXsv('\t').toVector))
+        def streamFileCsv  (): (Iterator[Vector[Cell]], Closeable) = str.streamFileLines().mapFirst(_.map(_.splitXsv(',') .toVector))
 
     // ===========================================================================
     def readUrlContent(): Content   = utils.UrlUtils.content(str)
@@ -265,7 +281,9 @@ package object aptus
     def joinlnln             = coll.mkString("\n\n")
     def jointab              = coll.mkString("\t")
 
-    def #@@ = s"#${coll.size}:${coll.mkString("[", ", ", "]")}"
+    // ---------------------------------------------------------------------------
+    def  @@ = coll.mkString("[", ", ", "]")
+    def #@@ = s"#${coll.size}:${@@}"
 
     // ---------------------------------------------------------------------------
     def section                : String = section("")
@@ -289,6 +307,22 @@ package object aptus
     // ---------------------------------------------------------------------------
     def zipWithRank: Collection[(A, aptus.Rank)] = coll.zipWithIndex.map { case (value, index) => value -> (index + 1) }
 
+    def zipSameSize[B](that: Seq[B])                      : Seq[(A, B)] = zipSameSize(that, _.size)
+    def zipSameSize[B](that: Seq[B], debug: Seq[_] => Any): Seq[(A, B)] = { require(coll.size == that.size, (debug(coll), debug(that))); coll.zip(that) }
+    
+    // ---------------------------------------------------------------------------
+    def slidingList(n: Int): List[List[A]] = coll.sliding(n).toList.map(_.toList)
+    def slidingPairs: List[(A, A)] = coll match {
+        case Seq() | Seq(_) => Nil
+        case seq            => seq.slidingList(2).map(_.force.tuple2) }
+
+    // ---------------------------------------------------------------------------
+    def splitHead: (A, Seq[A]) = coll.splitAt(            1).mapFirst (_.force.one)
+    def splitLast: (Seq[A], A) = coll.splitAt(coll.size - 1).mapSecond(_.force.one)    
+    
+    // ---------------------------------------------------------------------------
+    def distinctByAdjacency: Seq[A] = utils.IterableUtils.distinctByAdjacency(coll).toList // TODO: test for 1
+    
     // ===========================================================================
     def mean(implicit num: Numeric[A]): Double = (num.toDouble(coll.foldLeft(num.zero)(num.plus)) / coll.size)
 
@@ -314,6 +348,8 @@ package object aptus
     def groupByKeyWithListMap[K, V](implicit ev: A <:< (K, V)                  ): immutable.ListMap[K, Seq[V]] = utils.MapUtils.groupByKeyWithListMap(coll.iterator.asInstanceOf[Iterator[(K, V)]])
     def groupByKeyWithTreeMap[K, V](implicit ev: A <:< (K, V), ord: Ordering[K]): immutable.TreeMap[K, Seq[V]] = utils.MapUtils.groupByKeyWithTreeMap(coll.iterator.asInstanceOf[Iterator[(K, V)]])
 
+    def countBySelf: List[(A, Int)] = coll.groupBy(identity).view.map { x => x._1 -> x._2.size }.toList.sortBy(-_._2) // TODO: t211004120452 - more efficient version
+    
     // ===========================================================================
     def toOption[B](implicit ev: A <:< Option[B]): Option[Collection[B]] = if (coll.contains(None)) None else Some(coll.map(_.get))
   }
@@ -369,6 +405,21 @@ package object aptus
     def join(sep: String) = Seq(tup._1, tup._2).mkString(sep)
   }
 
+  // ---------------------------------------------------------------------------
+  implicit class Tuple3_[A, B, C](val tup: Tuple3[A, B, C]) extends AnyVal {       
+    def toSeq[Z](implicit ev1: A <:< Z, ev2: B <:< Z, ev3: C <:< Z) = Seq[Z](tup._1, tup._2, tup._3)
+  }
+
+  // ---------------------------------------------------------------------------
+  implicit class Tuple4_[A, B, C, D](val tup: Tuple4[A, B, C, D]) extends AnyVal {       
+    def toSeq[Z](implicit ev1: A <:< Z, ev2: B <:< Z, ev3: C <:< Z, ev4: D <:< Z) = Seq[Z](tup._1, tup._2, tup._3, tup._4)
+  }
+
+  // ---------------------------------------------------------------------------
+  implicit class Tuple5_[A, B, C, D, E](val tup: Tuple5[A, B, C, D, E]) extends AnyVal {       
+    def toSeq[Z](implicit ev1: A <:< Z, ev2: B <:< Z, ev3: C <:< Z, ev4: D <:< Z, ev5: E <:< Z) = Seq[Z](tup._1, tup._2, tup._3, tup._4, tup._5)
+  }
+
   // ===========================================================================
   // ===========================================================================
   // ===========================================================================
@@ -398,11 +449,15 @@ package object aptus
       def isNanOrInfinity: Boolean = nmbr.isNaN || nmbr.isInfinity
 
       // ---------------------------------------------------------------------------
-      def divideBy  (n: Number): Double = nmbr / n.doubleValue()
-      def multiplyBy(n: Number): Double = nmbr * n.doubleValue()
-      def add       (n: Number): Double = nmbr + n.doubleValue()
-      def subtract  (n: Number): Double = nmbr - n.doubleValue()
+      def combine(n: Number)(f: (Double, Double) => Double): Double = f(nmbr, n.doubleValue)
 
+        def add       (n: Number): Double = combine(n)(_ + _)
+        def subtract  (n: Number): Double = combine(n)(_ - _)     
+        def divideBy  (n: Number): Double = combine(n)(_ / _)
+        def multiplyBy(n: Number): Double = combine(n)(_ * _)
+
+      def log2(n: Number): Double = math.log10(n.doubleValue) / math.log10(2.0)
+      
       // ---------------------------------------------------------------------------
       def formatUsLocale               : FormattedNumber = utils.NumberUtils.NumberFormatter.format(nmbr)
       def formatExplicit               : FormattedNumber = f"${nmbr}%.16f".stripTrailingZeros

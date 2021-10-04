@@ -2,7 +2,6 @@
 
 "Aptus" is latin for suitable, appropriate, fitting. It is a utility library to help smooth certain pain points of the Java/Scala ecosystem.
 
-It is currenly used as part of [Gallia](https://github.com/galliaproject/gallia-core/blob/master/README.md#210129170214), a Scala library for data manipulation.
 
 ## SBT
 `libraryDependencies += "io.github.aptusproject" %% "aptus-core" % "0.2.0"`
@@ -13,14 +12,14 @@ Then import the following:
 import aptus._ // or more specific imports, eg import.aptus.String_
 ```
 
-The library is available for Scala 3.0, 2.13 and 2.12
+The library is available for Scala [3.0](TODO), [2.13](TODO) and [2.12](TODO)
 
 <a name="210121153149"></a>
 **aptus-core** dependency graph:<br/><br/>
 <div style="text-align:center"><img src="./dependencies.png" alt="core dependency graph"></div>
 
 <a name="210531095628"></a>
-A big motivation for including all these dependencies is that I find myself constantly adding them to my projects, in order to get things done.
+A big motivation for including all these dependencies is that I found myself constantly adding them to most non-trivial projects, in order to get things done.
 A great example of this being a method like `splitByWholeSeparatorPreserveAllTokens` (from `org.apache.commons.lang3.StringUtils`)
 whose semantics feel [more intuitive](https://github.com/aptusproject/aptus-core/blob/d548ae4/src/test/scala/aptustesting/StringTests.scala#L12-L20) to me than those of `java.lang.String.split`. Meanwhile using:
 

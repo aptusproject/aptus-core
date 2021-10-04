@@ -9,8 +9,8 @@ import aptus.Unit_
 // ===========================================================================
 object FileUtils {
 
-  def readFileContent(path: FilePath): Content     = { val src = io.Source.fromInputStream(inputStream(quickNormalize(path))); val content = src.mkString       ; src.close; content }
-  def readFileLines  (path: FilePath): Seq[String] = { val src = io.Source.fromInputStream(inputStream(quickNormalize(path))); val lines   = src.getLines.toList; src.close; lines   }
+  def readFileContent(path: FilePath): Content      = { val src = io.Source.fromInputStream(inputStream(quickNormalize(path))); val content = src.mkString       ; src.close; content }
+  def readFileLines  (path: FilePath): List[String] = { val src = io.Source.fromInputStream(inputStream(quickNormalize(path))); val lines   = src.getLines.toList; src.close; lines   }
 
   def streamFileLines  (path: FilePath): (Iterator[String], Closeable) = { val src = io.Source.fromInputStream(inputStream(quickNormalize(path))); src.getLines -> src }
   

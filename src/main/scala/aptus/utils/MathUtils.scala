@@ -1,6 +1,5 @@
-package aptus.utils
-
-import aptus.Anything_
+package aptus
+package utils
 
 // ===========================================================================
 object MathUtils {
@@ -22,6 +21,38 @@ object MathUtils {
       .toArray
       .thn(new org.apache.commons.math3.stat.descriptive.DescriptiveStatistics(_))
       .getPercentile(n.require(_ >= 0).require(_ <= 100))
+
+  // ===========================================================================
+  def trimmedMean[T : Numeric](diffs: Seq[T]): Double = {
+    val fullSize    = diffs.size
+    val outlierSize = (fullSize * 0.05).toInt
+    diffs
+      .sorted
+      .drop(outlierSize)
+      .dropRight(outlierSize)
+      .mean
+  }
+  
+  // ---------------------------------------------------------------------------
+  def trimmedMedian[T : Numeric](diffs: Seq[T]): Double = {
+    val fullSize    = diffs.size
+    val outlierSize = (fullSize * 0.05).toInt
+    diffs
+      .sorted
+      .drop(outlierSize)
+      .dropRight(outlierSize)
+      .median      
+  }
+  
+  // ---------------------------------------------------------------------------
+  def trimmedCumulative[T : Numeric](diffs: Seq[T]): T = {
+    val fullSize    = diffs.size
+    val outlierSize = (fullSize * 0.05).toInt
+    diffs
+      .drop(outlierSize)
+      .dropRight(outlierSize)
+      .sum      
+  }
 
 }
 

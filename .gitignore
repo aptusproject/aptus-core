@@ -1,3 +1,14 @@
 project/project/
 project/target/
 target/
+
+.cache-main
+.cache-tests
+.classpath
+.project
+.settings/
+bin/
+.bsp/
+
+src/main/scala/aptustest/
+

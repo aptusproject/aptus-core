@@ -4,9 +4,10 @@ import scala.collection.immutable.{ListMap, TreeMap}
 
 // ===========================================================================
 private[aptus] final class Force[A] private[aptus] (private val coll: Seq[A]) {
-  def one: A = { assert(coll.size == 1,  coll.size); coll.head }
-
-  def distinct: Seq[A] = { val coll2 = coll.distinct; Predef.assert(coll.size == coll2.size, (coll.size, coll2.size)); coll2 }
+  def one     :        A  = { assert(coll.size == 1,  coll.size); coll.head }
+  def option  : Option[A] = if (coll.isEmpty) None else Some(coll.force.one)
+  def distinct: Seq   [A] = { val coll2 = coll.distinct; Predef.assert(coll.size == coll2.size, (coll.size, coll2.size)); coll2 }
+  def set     : Set   [A] = { val coll2 = coll.toSet   ; Predef.assert(coll.size == coll2.size, (coll.size, coll2.size)); coll2 }
 
   // ---------------------------------------------------------------------------
   //t201117175058 - TODO: add useful error messages...

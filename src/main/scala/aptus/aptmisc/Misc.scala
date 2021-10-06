@@ -4,7 +4,7 @@ package aptmisc
 import scala.util.chaining._
 
 // ===========================================================================
-object Environment {
+object AptusSystem {
   def userName         (): String   = System.getProperty("user.name")
   def hostName         (): HostName = java.net.InetAddress.getLocalHost().getHostName() // TODO: https://stackoverflow.com/questions/7348711/recommended-way-to-get-hostname-in-java
   
@@ -13,10 +13,13 @@ object Environment {
   def osName(): String = System.getProperty("os.name")
   
   // ---------------------------------------------------------------------------
-  def isLinux  (): Boolean = osName().toLowerCase.startsWith("linux")
-  def isMac    (): Boolean = osName().toLowerCase.startsWith("mac")
-  def isWindows(): Boolean = osName().toLowerCase.startsWith("windows")
-  // TODO: FreeBSD and SunOS?
+  def isUnix(): Boolean = org.apache.commons.lang3.SystemUtils.IS_OS_UNIX
+
+    def isLinux  (): Boolean = org.apache.commons.lang3.SystemUtils.IS_OS_LINUX
+    def isMac    (): Boolean = org.apache.commons.lang3.SystemUtils.IS_OS_MAC
+    def isWindows(): Boolean = org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS
+    def isFreeBSD(): Boolean = org.apache.commons.lang3.SystemUtils.IS_OS_FREE_BSD
+    def isSunOS  (): Boolean = org.apache.commons.lang3.SystemUtils.IS_OS_SUN_OS     
 }
 
 // ===========================================================================

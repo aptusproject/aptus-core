@@ -1,11 +1,15 @@
 // ===========================================================================
 package object aptustesting {
+  import aptus._
   import scala.reflect._
   import scala.util._
   
   // ===========================================================================
-  def noop   [A](actual: A)              = compare(actual, actual)
-  def compare[A](actual: A, expected: A) = { assert(actual == expected, message = actual -> expected) }
+  def noop   [A](actual: A)             : Unit = compare(actual, actual)
+  def compare[A](actual: A, expected: A): Unit = { assert(actual == expected, message = actual -> expected) }
+  
+  def compare      [A](enabled: Boolean)(actual: => A, expected: A): Unit = { if (enabled) compare(actual, expected) else () }
+  def compareIfUnix[A]                  (actual: => A, expected: A): Unit = compare(().system.isUnix())(actual, expected)
 
   // ---------------------------------------------------------------------------
   def fail[$Throwable <: Throwable : ClassTag](f: => Any)              = { _fail[$Throwable](f, msgOpt = None) }

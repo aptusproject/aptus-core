@@ -29,7 +29,13 @@ object AnythingTests extends TestSuite {
 
     test(noop                                    ("hello".require(_.nonEmpty)))
     test(fail[java.lang.IllegalArgumentException]("hello".require(_. isEmpty)))
-    test(fail[java.lang.IllegalArgumentException]("hello".require(_. isEmpty, x => s"input: ${x}"), msg = "requirement failed: input: hello"))    
+    test(fail[java.lang.IllegalArgumentException]("hello".require(_. isEmpty, x => s"input: ${x}"), msg = "requirement failed: input: hello"))
+    
+    // ---------------------------------------------------------------------------
+    // in.{none,some}If
+
+    test("foo".in.someIf(_.size < 3), Some("foo"))
+    test("foo".in.noneIf(_.size < 3), None)    
   }
 }
 

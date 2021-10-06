@@ -23,22 +23,39 @@ object SeqUtils {
     coll
   }
   
-  // =========================================================================== 
-  private[aptus] def listOrdering[T : Ordering]: Ordering[List[T]] = new Ordering[List[T]] { // 210827123947
-    override def compare(x: List[T], y: List[T]): Int = {            
-      val sizeComparison = x.size.compare(y.size)
-      
-      if (sizeComparison != 0) sizeComparison
-      else {
-        val ordering = implicitly[Ordering[T]]
-
-        x .zip(y)
-          .map { case (l, r) => ordering.compare(l, r) }
-          .find(_ != 0)
-          .getOrElse(0)
+  // ===========================================================================
+  private[aptus] def seqOrdering[T : Ordering]: Ordering[Seq[T]] = new Ordering[Seq[T]] { // 210827123947
+      override def compare(x: Seq[T], y: Seq[T]): Int = {            
+        val sizeComparison = x.size.compare(y.size)
+        
+        if (sizeComparison != 0) sizeComparison
+        else {
+          val ordering = implicitly[Ordering[T]]
+  
+          x .zip(y)
+            .map { case (l, r) => ordering.compare(l, r) }
+            .find(_ != 0)
+            .getOrElse(0)
+        }
       }
     }
-  }
+    
+    // ---------------------------------------------------------------------------
+    private[aptus] def listOrdering[T : Ordering]: Ordering[List[T]] = new Ordering[List[T]] { // 210827123947
+      override def compare(x: List[T], y: List[T]): Int = {            
+        val sizeComparison = x.size.compare(y.size)
+        
+        if (sizeComparison != 0) sizeComparison
+        else {
+          val ordering = implicitly[Ordering[T]]
+  
+          x .zip(y)
+            .map { case (l, r) => ordering.compare(l, r) }
+            .find(_ != 0)
+            .getOrElse(0)
+        }
+      }
+    }
 
 }
 

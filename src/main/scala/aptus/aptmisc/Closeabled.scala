@@ -4,21 +4,21 @@ package aptmisc
 import scala.util.chaining._
 
 // ===========================================================================
-private[aptus] final class Closeabled[A](val u: A, val cls: Closeable) extends Closeable { // TODO: look into geny for Iterator version?
+private[aptus] final class Closeabled[T](val underlying: T, val cls: Closeable) extends Closeable { // TODO: look into geny for Iterator version?
     override def close() = { cls.close() }
 
     // ---------------------------------------------------------------------------
-    def consume[B](f: A =>            B ):            B  = { val result = f(u); close(); result }
-    def     map[B](f: A =>            B ): Closeabled[B] = Closeabled.fromPair(f(u), cls)
-    def flatMap[B](f: A => Closeabled[B]): Closeabled[B] = f(u).pipe { x => Closeabled.from(x.u, Seq(x.cls, this.cls)) }
+    def consume[U](f: T =>            U ):            U  = { val result = f(underlying); close(); result }
+    def     map[U](f: T =>            U ): Closeabled[U] = Closeabled.fromPair(f(underlying), cls)
+    def flatMap[U](f: T => Closeabled[U]): Closeabled[U] = f(underlying).pipe { x => Closeabled.from(x.underlying, Seq(x.cls, this.cls)) }
   }
 
   // ===========================================================================
   private[aptus] object Closeabled {
 
-    def from    [A <: Closeable](a: A)                        : Closeabled[A] = new Closeabled(a, a)
-    def from    [A]             (a: A, values: Seq[Closeable]): Closeabled[A] = new Closeabled(a, closeable(values))
-    def fromPair[A]             (pair: (A, Closeable))        : Closeabled[A] = new Closeabled(pair._1, closeable(pair._2))
+    def from    [T <: Closeable](underlying: T)                        : Closeabled[T] = new Closeabled(underlying, underlying)
+    def from    [T]             (underlying: T, values: Seq[Closeable]): Closeabled[T] = new Closeabled(underlying, closeable(values))
+    def fromPair[T]             (pair: (T, Closeable))                 : Closeabled[T] = new Closeabled(pair._1, closeable(pair._2))
 
     // ---------------------------------------------------------------------------
     @ordermatters private def closeable[A](values: Seq[Closeable]           ): Closeable = new java.io.Closeable { def close() = { values.foreach(_.close()) } }

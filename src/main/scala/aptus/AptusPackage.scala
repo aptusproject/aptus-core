@@ -14,13 +14,17 @@ package object aptus
     extends AptusAnnotations
     with    AptusAliases
     with    AptusCommonAliases {
+  // TODO: t211006141756 - should most of them have @inline? is there a downside?
+
   /* for extends AnyVals, see https://stackoverflow.com/questions/14929422/should-implicit-classes-always-extend-anyval */
 
-  def illegalState   (x: Any*): Nothing = { throw new IllegalStateException   (x.toString) }
-  def illegalArgument(x: Any*): Nothing = { throw new IllegalArgumentException(x.toString) }
+  def illegalState   (x: Any*): Nothing = { throw new IllegalStateException   (x.mkString(", ")) }
+  def illegalArgument(x: Any*): Nothing = { throw new IllegalArgumentException(x.mkString(", ")) }
   
+  // ---------------------------------------------------------------------------
+  def  seqOrdering[T : Ordering]: Ordering[Seq [T]] = SeqUtils. seqOrdering[T]
   def listOrdering[T : Ordering]: Ordering[List[T]] = SeqUtils.listOrdering[T]
-
+  
   // ---------------------------------------------------------------------------
   def zip[T1, T2, T3]        (a: Iterable[T1], b: Iterable[T2], c: Iterable[T3])                                  : Iterable[(T1, T2, T3)]         = a.zip(b).zip(c)              .map { case   ((a, b), c)         => (a, b, c) }
   def zip[T1, T2, T3, T4]    (a: Iterable[T1], b: Iterable[T2], c: Iterable[T3], d: Iterable[T4])                 : Iterable[(T1, T2, T3, T4)]     = a.zip(b).zip(c).zip(d)       .map { case  (((a, b), c), d)     => (a, b, c, d) }
@@ -29,7 +33,7 @@ package object aptus
 
   // ===========================================================================
   implicit class Unit_(val u: Unit) extends AnyVal { // TODO: t201213095810 anyway to add that to Predef? implicit class doesn't seem to work
-    def environment = aptmisc.Environment
+    def system      = aptmisc.AptusSystem
     def fs          = aptmisc.Fs
     def hardware    = aptmisc.Hardware
     def random      = aptmisc.Random                
@@ -44,8 +48,11 @@ package object aptus
 
   // ===========================================================================
   implicit class Anything_[A](private val a: A) extends AnyVal {
-    def str = a.toString
-
+    def str: String = a.toString
+    def prt: A      = { System.out.println(a); a }
+    
+    def inspect(f: A => Any): A = { f(a).prt; a }
+    
     // ---------------------------------------------------------------------------
    //@inline def pipe      [B     ]                    (f: A => B)           : B =              f(a)
              def pipeIf            (test: Boolean)     (f: A => A)           : A = if (test)    f(a) else   a
@@ -71,15 +78,17 @@ package object aptus
       def sideEffectIf    (pred: A => Boolean)(f: A => Unit)              : A  = { if (pred(a)) { f(a) }              ; a }
     
     // ---------------------------------------------------------------------------
-    @fordevonly def __exit: A = { ReflectionUtils.formatExitTrace(().reflect.stackTrace(), "intentionally stopping").p; System.exit(0); a }
+    @fordevonly def __exit: A = { ReflectionUtils.formatExitTrace(().reflect.stackTrace(), "intentionally stopping").p; System.exit(0); a }   
 
-    @fordevonly def p      : A = { System.out.println(a)     ; a      }
-    @fordevonly def p__    : A = { System.out.println(a)     ; __exit }
+    @fordevonly def p      : A =   prt
+    @fordevonly def p__    : A = { prt; __exit }
     @fordevonly def pp     : A = { System.out.println(s"a\n"); a      }
 
     // "i" for "inspect"
-    @fordevonly def i(f: A => Any                ): A = { System.out.println(               f(a)  ); a }
-    @fordevonly def i(f: A => Any, prefix: String): A = { System.out.println(s"${prefix}\t${f(a)}"); a }
+    @fordevonly def i  (f: A => Any                ): A = inspect(f)
+    @fordevonly def i  (f: A => Any, prefix: String): A = { System.out.println(s"${prefix}\t${f(a)}"); a }
+    @fordevonly def i__(f: A => Any                ): A = { System.out.println(               f(a)  ); __exit }
+    @fordevonly def i__(f: A => Any, prefix: String): A = { System.out.println(s"${prefix}\t${f(a)}"); __exit }
 
     // ---------------------------------------------------------------------------
     def assert(p: A => Boolean):              A = assert(p, identity)
@@ -89,9 +98,7 @@ package object aptus
     def require(p: A => Boolean, f: A => Any): A = { Predef.require(p(a), f(a)); a }
 
     // ---------------------------------------------------------------------------
-    // TODO: t210116165559 - rename to "in"?
-    @deprecated def as: aptus.aptmisc.As[A] = new aptus.aptmisc.As[A](a)
-                def in: aptus.aptmisc.As[A] = new aptus.aptmisc.As[A](a)
+    def in: aptus.aptmisc.As[A] = new aptus.aptmisc.As[A](a)
 
       // most common ones
       def inNoneIf(p: A => Boolean): Option[A] = in.noneIf(p)
@@ -119,7 +126,7 @@ package object aptus
     // ---------------------------------------------------------------------------
     def systemCallLines(): Seq[String] = systemCall().splitBy("\n")
 
-    import scala.language.postfixOps; def systemCall(): String = sys.process.Process(str) !!    
+    import scala.language.postfixOps; def systemCall(): String = (sys.process.Process(str) !!).replaceAll("\n$", "")    
 
     // ===========================================================================
     def path = new aptmisc.AptusPath(str)
@@ -182,10 +189,10 @@ package object aptus
       def indentAll(n: Int, indenter: String): String = StringUtils.indentAll(n    , indenter       )(str)
 
       // ---------------------------------------------------------------------------
-      def sectionAllOff                : String =                  StringUtils.sectionAllOff(n = 1, indenter = "\t")(str)
-      def sectionAllOff(n: Int)        : String =                  StringUtils.sectionAllOff(n    , indenter = "\t")(str)
+      def sectionAllOff                : String =                StringUtils.sectionAllOff(n = 1, indenter = "\t")(str)
+      def sectionAllOff(n: Int)        : String =                StringUtils.sectionAllOff(n    , indenter = "\t")(str)
 
-      def sectionAllOff(prefix: String): String = s"${prefix}\n" + StringUtils.sectionAllOff(n = 1, indenter = "\t")(str)
+      def sectionAllOff(prefix: String): String = s"${prefix}" + StringUtils.sectionAllOff(n = 1, indenter = "\t")(str)
 
     // ===========================================================================
     def isTrimmed     : Boolean = str == str.trim
@@ -317,8 +324,8 @@ package object aptus
         case seq            => seq.slidingList(2).map(_.force.tuple2) }
 
     // ---------------------------------------------------------------------------
-    def splitHead: (A, Seq[A]) = coll.splitAt(            1).mapFirst (_.force.one)
-    def splitLast: (Seq[A], A) = coll.splitAt(coll.size - 1).mapSecond(_.force.one)    
+    def splitAtHead: (A, Seq[A]) = coll.splitAt(            1).mapFirst (_.force.one)
+    def splitAtLast: (Seq[A], A) = coll.splitAt(coll.size - 1).mapSecond(_.force.one)    
     
     // ---------------------------------------------------------------------------
     def distinctByAdjacency: Seq[A] = IterableUtils.distinctByAdjacency(coll).toList // TODO: test for 1
@@ -351,7 +358,7 @@ package object aptus
     def countBySelf: List[(A, Int)] = coll.groupBy(identity).view.map { x => x._1 -> x._2.size }.toList.sortBy(-_._2) // TODO: t211004120452 - more efficient version
     
     // ===========================================================================
-    def toOption[B](implicit ev: A <:< Option[B]): Option[Seq[B]] = if (coll.contains(None)) None else Some(coll.map(_.get))
+    def toOptionalSeq[B](implicit ev: A <:< Option[B]): Option[Seq[B]] = if (coll.contains(None)) None else Some(coll.map(_.get))
   }
 
   // ===========================================================================
@@ -409,6 +416,10 @@ package object aptus
   // ---------------------------------------------------------------------------
   implicit class Tuple3_[A, B, C](val tup: Tuple3[A, B, C]) extends AnyVal {       
     def toSeq[Z](implicit ev1: A <:< Z, ev2: B <:< Z, ev3: C <:< Z) = Seq[Z](tup._1, tup._2, tup._3)
+
+    def mapFirst [A2](fa: A => A2) = (fa(tup._1),   tup._2,     tup._3 )
+    def mapSecond[B2](fb: B => B2) = (   tup._1, fb(tup._2),    tup._3 )
+    def mapThird [C2](fc: C => C2) = (   tup._1,    tup._2 , fc(tup._3))    
   }
 
   // ---------------------------------------------------------------------------
@@ -457,8 +468,10 @@ package object aptus
         def divideBy  (n: Number): Double = combine(n)(_ / _)
         def multiplyBy(n: Number): Double = combine(n)(_ * _)
 
-      def log2(n: Number): Double = math.log10(n.doubleValue) / math.log10(2.0)
-      
+      // ---------------------------------------------------------------------------
+      def exp : Double = math.exp  (nmbr.doubleValue)
+      def log2: Double = math.log10(nmbr.doubleValue) / math.log10(2.0)
+
       // ---------------------------------------------------------------------------
       def formatUsLocale               : FormattedNumber = NumberUtils.NumberFormatter.format(nmbr)
       def formatExplicit               : FormattedNumber = f"${nmbr}%.16f".stripTrailingZeros
@@ -472,8 +485,8 @@ package object aptus
 
   // ===========================================================================
   implicit class Throwable_(val throwable: Throwable) extends AnyVal {
-    def       stackTrace: Seq[StackTraceElement] = throwable.getStackTrace.toList              	
-    def formatStackTrace: String                 = ThrowableUtils.stackTraceString(throwable)  	
+    def       stackTrace: Seq[StackTraceElement] = throwable.getStackTrace.toList
+    def formatStackTrace: String                 = ThrowableUtils.stackTraceString(throwable)
   }
 
   // ---------------------------------------------------------------------------
@@ -488,7 +501,7 @@ package object aptus
 
   // ---------------------------------------------------------------------------
   implicit class InputStream_(is: java.io.InputStream) {
-    def closeabledBufferedReader                  : aptus.Closeabled[java.io.BufferedReader] = InputStreamUtils.closeabledBufferedReader(is, UTF_8)
+    def closeabledBufferedReader                  : aptus.Closeabled[java.io.BufferedReader] = InputStreamUtils.closeabledBufferedReader(is, aptus.UTF_8)
     def closeabledBufferedReader(charset: Charset): aptus.Closeabled[java.io.BufferedReader] = InputStreamUtils.closeabledBufferedReader(is, charset)
   }
 

@@ -38,6 +38,19 @@ object StringTests extends TestSuite {
     test(compare("HELLO_WORLD".snakeToCamelCase.camelCaseToSnake, "hello_world"))
     test(compare("HelloWorld" .camelCaseToSnake                 , "hello_world"))
     test(compare("helloWorld" .camelCaseToSnake                 , "hello_world"))
+    
+    // ---------------------------------------------------------------------------
+    test(compare("foo".padRight(5, ' '), "foo  "))
+    test(compare("foo".padLeft (5, ' '), "  foo"))
+
+    test(compare(1.str.padRight(3, '0'), "100"))
+    test(compare(1.str.padLeft (3, '0'), "001"))
+    
+    // ===========================================================================
+    // system calls
+
+    test(compareIfUnix("echo     hello"        .systemCall(),          "hello"))    
+    test(compareIfUnix("echo -e 'hello\nworld'".systemCallLines(), Seq("hello", "world")))
   }
 }
 

@@ -41,7 +41,7 @@ object Zip {
               .pipe(aptus.Closeabled.fromPair(_, zipFile)),
             StandardCharsets.UTF_8)
 
-        pair.u -> pair }
+        pair.underlying -> pair }
 
   // ---------------------------------------------------------------------------
   def content(in: FilePath)                         : Content = content(in, _ => true)

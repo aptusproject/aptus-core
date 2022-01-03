@@ -25,36 +25,19 @@ object MathUtils {
       .getPercentile(n.require(_ >= 0).require(_ <= 100))
 
   // ===========================================================================
-  def trimmedMean[T : Numeric](diffs: Seq[T]): Double = {
-    val fullSize    = diffs.size
-    val outlierSize = (fullSize * 0.05).toInt
-    diffs
-      .sorted
-      .drop(outlierSize)
-      .dropRight(outlierSize)
-      .mean
-  }
-  
-  // ---------------------------------------------------------------------------
-  def trimmedMedian[T : Numeric](diffs: Seq[T]): Double = {
-    val fullSize    = diffs.size
-    val outlierSize = (fullSize * 0.05).toInt
-    diffs
-      .sorted
-      .drop(outlierSize)
-      .dropRight(outlierSize)
-      .median      
-  }
-  
-  // ---------------------------------------------------------------------------
-  def trimmedCumulative[T : Numeric](diffs: Seq[T]): T = {
-    val fullSize    = diffs.size
-    val outlierSize = (fullSize * 0.05).toInt
-    diffs
-      .drop(outlierSize)
-      .dropRight(outlierSize)
-      .sum      
-  }
+  def trimmedMean      [T : Numeric](diffs: Seq[T]): Double = _trimmed(diffs).mean
+  def trimmedMedian    [T : Numeric](diffs: Seq[T]): Double = _trimmed(diffs).median          
+  def trimmedStdev     [T : Numeric](diffs: Seq[T]): Double = _trimmed(diffs).stdev
+  def trimmedCumulative[T : Numeric](diffs: Seq[T]): T      = _trimmed(diffs).sum
+
+    // ---------------------------------------------------------------------------
+    private def _trimmed[T : Numeric](diffs: Seq[T]): Seq[T] = {
+      val fullSize    = diffs.size
+      val outlierSize = (fullSize * 0.05).toInt
+      diffs
+        .sorted
+        .drop(outlierSize)
+        .dropRight(outlierSize) }
 
 }
 

@@ -520,7 +520,7 @@ package object aptus
   
   // ===========================================================================
   implicit class Future_[T](fut: concurrent.Future[T]) {
-	  def awaitIndefinitely() = concurrent.Await.result(fut, concurrent.duration.Duration.Inf)    
+    def awaitIndefinitely() = concurrent.Await.result(fut, concurrent.duration.Duration.Inf)    
   }  
 }
 

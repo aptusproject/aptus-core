@@ -27,7 +27,7 @@ private[aptus] final class AptusPath(path: String) {
   def listFileNames(): List[FileName] = listNames().filter(x => new File(path / x).isFile())
   def listDirNames (): List[DirName]  = listNames().filter(x => new File(path / x).isDirectory())
 
-  def listPaths    (): List[Path]     = listNames.map(path / _)
+  def listPaths    (): List[Path]     = listNames().map(path / _)
   def listFilePaths(): List[FilePath] = listPaths().filter(new File(_).isFile())
   def listDirPaths (): List[DirPath]  = listPaths().filter(new File(_).isDirectory())
   

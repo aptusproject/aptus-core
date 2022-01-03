@@ -12,6 +12,11 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   type Rank              = Int // = index + 1
 
   // ---------------------------------------------------------------------------
+  type Probability       = Double
+  type Ratio             = Double
+  type Cumul             = Double  
+
+  // ---------------------------------------------------------------------------
   type Separator         = String
 
   type Name              = String
@@ -24,6 +29,7 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   type DirPath           = String
   type FilePath          = String
   type FileName          = String
+  type DirName           = String
 
   type JsonString        = String
   type JsonPretty        = String

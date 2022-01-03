@@ -69,20 +69,20 @@ package object aptus
 
       /** thrush combinator (see https://users.scala-lang.org/t/implicit-class-for-any-and-or-generic-type/501);
        *  I guess the altenative is to do ` match { case ... ` */
-      @inline def thn      [B     ]                    (f: A => B)           : B =              f(a)
-              def thnIf            (test: Boolean)     (f: A => A)           : A = if (test)    f(a) else   a
-              def thnIf    [B <: A](pred: A => Boolean)(f: A => B)           : A = if (pred(a)) f(a) else   a
-              def thnOpt   [B     ](opt : Option[B]   )(f: B => A => A)      : A = opt.map(f(_)(a)).getOrElse(a)
+      @deprecated("use pipe now") @inline def thn      [B     ]                    (f: A => B)           : B =              f(a)
+      @deprecated("use pipe now")         def thnIf            (test: Boolean)     (f: A => A)           : A = if (test)    f(a) else   a
+      @deprecated("use pipe now")         def thnIf    [B <: A](pred: A => Boolean)(f: A => B)           : A = if (pred(a)) f(a) else   a
+      @deprecated("use pipe now")         def thnOpt   [B     ](opt : Option[B]   )(f: B => A => A)      : A = opt.map(f(_)(a)).getOrElse(a)
 
-      def sideEffect                          (f: A => Unit)              : A  = {                f(a)                ; a }
-      def sideEffectIf    (pred: A => Boolean)(f: A => Unit)              : A  = { if (pred(a)) { f(a) }              ; a }
-    
+      @deprecated("use tap now") def sideEffect                          (f: A => Unit)              : A  = {                f(a)                ; a }
+      @deprecated("use tap now") def sideEffectIf    (pred: A => Boolean)(f: A => Unit)              : A  = { if (pred(a)) { f(a) }              ; a }
+
     // ---------------------------------------------------------------------------
-    @fordevonly def __exit: A = { ReflectionUtils.formatExitTrace(().reflect.stackTrace(), "intentionally stopping").p; System.exit(0); a }   
+    @fordevonly def __exit: Nothing = { ReflectionUtils.formatExitTrace(().reflect.stackTrace(), "intentionally stopping").p; System.exit(0); illegalState("can't happen") }
 
     @fordevonly def p      : A =   prt
     @fordevonly def p__    : A = { prt; __exit }
-    @fordevonly def pp     : A = { System.out.println(s"a\n"); a      }
+    @fordevonly def pp     : A = { System.out.print(s"${a}\n\n"); a      }
 
     // "i" for "inspect"
     @fordevonly def i  (f: A => Any                ): A = inspect(f)
@@ -114,6 +114,9 @@ package object aptus
     // ---------------------------------------------------------------------------
     def associateLeft [K](f: A => K): (K, A) = (f(a), a)
     def associateRight[V](f: A => V): (A, V) = (a, f(a))
+    
+    // ---------------------------------------------------------------------------
+    def mkString[C, D](sep: String)(implicit ev: A <:< (C, D)): String = s"${a._1}${sep}${a._2}"
   }
 
   // ===========================================================================
@@ -177,6 +180,8 @@ package object aptus
     def padLeft (length: Int, char: Char): String = lang3.StringUtils. leftPad(str, length, char.toString)
     def padRight(length: Int, char: Char): String = lang3.StringUtils.rightPad(str, length, char.toString)
 
+    def trimLines: String = str.replaceAll("\\s*\n\\s*", "\n")
+    
     // ===========================================================================
     // TODO: quite inefficient
       def indent                          : String = StringUtils.indent(1, indenter = "\t")(str)
@@ -322,6 +327,8 @@ package object aptus
     def slidingPairs: List[(A, A)] = coll match {
         case Seq() | Seq(_) => Nil
         case seq            => seq.slidingList(2).map(_.force.tuple2) }
+
+    def slidingPairsWithPrevious: Seq[(Option[A], A)] = (None -> coll.head) +: coll.slidingPairs.map(_.mapFirst(Some.apply))
 
     // ---------------------------------------------------------------------------
     def splitAtHead: (A, Seq[A]) = coll.splitAt(            1).mapFirst (_.force.one)
@@ -511,6 +518,10 @@ package object aptus
     def rawRdbmsEntries : Iterator[RawRdbmsEntries] = SqlUtils.rawRdbmsEntries(rs)
   }
   
+  // ===========================================================================
+  implicit class Future_[T](fut: concurrent.Future[T]) {
+	  def awaitIndefinitely() = concurrent.Await.result(fut, concurrent.duration.Duration.Inf)    
+  }  
 }
 
 // ===========================================================================

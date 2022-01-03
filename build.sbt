@@ -10,7 +10,7 @@ lazy val root = (project in file("."))
     organizationName     := "Aptus Project",
     organization         := "io.github.aptusproject", // *must* match groupId for sonatype
     name                 := "aptus-core",
-    version              := "0.3.0",
+    version              := "0.3.1",
 	homepage             := Some(url("https://github.com/aptusproject/aptus-core")),
 	organizationHomepage := Some(url("https://github.com/aptusproject")),
     startYear            := Some(2021),
@@ -44,12 +44,11 @@ val compatVersion              = "2.4.1"
 val parallelCollectionsVersion = "1.0.0"
 
 // ---------------------------------------------------------------------------
-val enumeratumVersion          = "1.5.13" 
 val commonsMathVersion         = "3.5"
 val commonsLangVersion         = "3.5"
 val commonsIoVersion           = "2.8.0"
 val commonsCsvVersion          = "1.8"
-val commonsCompressVersion     = "1.20"
+val commonsCompressVersion     = "1.21"
 val guavaVersion               = "30.1.1-jre"
 val gsonVersion                = "2.8.6"
 
@@ -110,6 +109,7 @@ publishMavenStyle      := true
 publishTo              := sonatypePublishToBundle.value
 //pomIncludeRepository := { _ => false }
 //credentials += Credentials(Path.userHome / ".sbt" / ".credentials")
+
 // ===========================================================================
 // assembly (uberjar); run: sbt +assembly
 

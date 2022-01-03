@@ -23,8 +23,14 @@ private[aptus] final class AptusPath(path: String) {
   def createNewDir(): DirPath = { new File(path).mkdir(); path }
 
   // ---------------------------------------------------------------------------
-  def listFileNames(): List[String] = new java.io.File(path).list().toList // see org.apache.commons.io.FileUtils for more involved
+  def listNames    (): List[Name]     = new java.io.File(path).list().toList // see org.apache.commons.io.FileUtils for more involved
+  def listFileNames(): List[FileName] = listNames().filter(x => new File(path / x).isFile())
+  def listDirNames (): List[DirName]  = listNames().filter(x => new File(path / x).isDirectory())
 
+  def listPaths    (): List[Path]     = listNames.map(path / _)
+  def listFilePaths(): List[FilePath] = listPaths().filter(new File(_).isFile())
+  def listDirPaths (): List[DirPath]  = listPaths().filter(new File(_).isDirectory())
+  
   // ---------------------------------------------------------------------------
   //TODO: mkdirs, glob, ... (more needs to be ported from original aptus, see t210116165619)
 }

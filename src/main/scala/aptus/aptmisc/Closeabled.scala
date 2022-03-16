@@ -6,6 +6,9 @@ import scala.util.chaining._
 // ===========================================================================
 private[aptus] final class Closeabled[T](val underlying: T, val cls: Closeable) extends Closeable { // TODO: look into geny for Iterator version?
     override def close() = { cls.close() }
+    
+    // ---------------------------------------------------------------------------
+    def consumeToList[U](implicit ev: T =:= Iterator[U]): List[U] = consume(_.toList) // fairly common
 
     // ---------------------------------------------------------------------------
     def consume[U](f: T =>            U ):            U  = { val result = f(underlying); close(); result }

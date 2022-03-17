@@ -20,39 +20,42 @@ package object aptus
 
   def illegalState   (x: Any*): Nothing = { throw new IllegalStateException   (x.mkString(", ")) }
   def illegalArgument(x: Any*): Nothing = { throw new IllegalArgumentException(x.mkString(", ")) }
-  
+
   // ---------------------------------------------------------------------------
-  def  seqOrdering[T : Ordering]: Ordering[Seq [T]] = SeqUtils. seqOrdering[T]
-  def listOrdering[T : Ordering]: Ordering[List[T]] = SeqUtils.listOrdering[T]
-  
+  def iterableOrdering[T : Ordering]: Ordering[Iterable[T]] = SeqUtils.iterableOrdering[T] // note: Ordering is invariant
+
+  def   seqOrdering[T : Ordering]: Ordering[Seq  [T]] = SeqUtils.  seqOrdering[T]
+  def  listOrdering[T : Ordering]: Ordering[List [T]] = SeqUtils. listOrdering[T]
+  def arrayOrdering[T : Ordering]: Ordering[Array[T]] = SeqUtils.arrayOrdering[T]
+
   // ---------------------------------------------------------------------------
   def zip[T1, T2, T3]        (a: Iterable[T1], b: Iterable[T2], c: Iterable[T3])                                  : Iterable[(T1, T2, T3)]         = a.zip(b).zip(c)              .map { case   ((a, b), c)         => (a, b, c) }
   def zip[T1, T2, T3, T4]    (a: Iterable[T1], b: Iterable[T2], c: Iterable[T3], d: Iterable[T4])                 : Iterable[(T1, T2, T3, T4)]     = a.zip(b).zip(c).zip(d)       .map { case  (((a, b), c), d)     => (a, b, c, d) }
   def zip[T1, T2, T3, T4, T5](a: Iterable[T1], b: Iterable[T2], c: Iterable[T3], d: Iterable[T4], e: Iterable[T5]): Iterable[(T1, T2, T3, T4, T5)] = a.zip(b).zip(c).zip(d).zip(e).map { case ((((a, b), c), d), e) => (a, b, c, d, e) }
-  def zip[T1, T2](a: Iterable[T1], b: Iterable[T2]): Iterable[(T1, T2)] = a.zip(b) // for good measure, should favor: a.zip(b)  
+  def zip[T1, T2](a: Iterable[T1], b: Iterable[T2]): Iterable[(T1, T2)] = a.zip(b) // for good measure, should favor: a.zip(b)
 
   // ===========================================================================
   implicit class Unit_(val u: Unit) extends AnyVal { // TODO: t201213095810 anyway to add that to Predef? implicit class doesn't seem to work
     def system      = aptmisc.AptusSystem
     def fs          = aptmisc.Fs
     def hardware    = aptmisc.Hardware
-    def random      = aptmisc.Random                
+    def random      = aptmisc.Random
     def reflect     = aptmisc.Reflect
     def time        = aptmisc.Time
-    
+
     // ---------------------------------------------------------------------------
     // convenience
-    
-    //@fordevonly def tid(): Long = concurrency.threadId     
+
+    //@fordevonly def tid(): Long = concurrency.threadId
   }
 
   // ===========================================================================
   implicit class Anything_[A](private val a: A) extends AnyVal {
     def str: String = a.toString
     def prt: A      = { System.out.println(a); a }
-    
+
     def inspect(f: A => Any): A = { f(a).prt; a }
-    
+
     // ---------------------------------------------------------------------------
    //@inline def pipe      [B     ]                    (f: A => B)           : B =              f(a)
              def pipeIf            (test: Boolean)     (f: A => A)           : A = if (test)    f(a) else   a
@@ -60,7 +63,7 @@ package object aptus
              def pipeOpt   [B     ](opt : Option[B]   )(f: B => A => A)      : A = opt.map(f(_)(a)).getOrElse(a)
 
     //def tap                          (f: A => Unit)  : A = {                f(a)  ; a }
-      def tapIf    (test: Boolean)     (f: A => Unit)  : A = { if (test)    { f(a) }; a }              
+      def tapIf    (test: Boolean)     (f: A => Unit)  : A = { if (test)    { f(a) }; a }
       def tapIf    (pred: A => Boolean)(f: A => Unit)  : A = { if (pred(a)) { f(a) }; a }
       def tapOpt[B](opt : Option[B]   )(f: B => A => A): A = { opt.map(f(_)(a)).getOrElse(a); a }
 
@@ -103,7 +106,7 @@ package object aptus
       // most common ones
       def inNoneIf(p: A => Boolean): Option[A] = in.noneIf(p)
       def inSomeIf(p: A => Boolean): Option[A] = in.someIf(p)
-      
+
     // ---------------------------------------------------------------------------
     @inline def    containedIn(values: Set[A]): Boolean =  values.contains(a)
     @inline def    containedIn(values: Seq[A]): Boolean =  values.contains(a)
@@ -114,7 +117,7 @@ package object aptus
     // ---------------------------------------------------------------------------
     def associateLeft [K](f: A => K): (K, A) = (f(a), a)
     def associateRight[V](f: A => V): (A, V) = (a, f(a))
-    
+
     // ---------------------------------------------------------------------------
     def mkString[C, D](sep: String)(implicit ev: A <:< (C, D)): String = s"${a._1}${sep}${a._2}"
   }
@@ -127,27 +130,39 @@ package object aptus
     def pattern: JavaPattern = str.r.pattern
 
     // ---------------------------------------------------------------------------
-    def systemCallLines(): Seq[String] = systemCall().splitBy("\n")
+    def sys()                           : String = SystemUtils.runCommand                    (str).stripSuffix("\n")
+    def systemCall()                    : String = SystemUtils.runCommand                    (str).stripSuffix("\n")
+    def systemCallWithErrorRedirection(): String = SystemUtils.runCommandWithErrorRedirection(str).stripSuffix("\n")
 
-    import scala.language.postfixOps; def systemCall(): String = (sys.process.Process(str) !!).replaceAll("\n$", "")    
+    def systemCallLines()               : Seq[String] = systemCall().splitBy("\n")
+
+    // ---------------------------------------------------------------------------
+    // encoding
+    def toBase64   : String = str.getBytes.toBase64
+    def toHexString: String = str.getBytes.toHexString
 
     // ===========================================================================
-    def path = new aptmisc.AptusPath(str)
+    def path = new aptmisc.AptusPath(if (str.startsWith("~/")) ().fs.homeDirectoryPath() / str.drop(2) else str)
 
       // ---------------------------------------------------------------------------
       // TODO: t211004131206 - move to path?
       def writeFileContent(path: String): FilePath = FileUtils.writeContent(path, content = str)
       def  readFileContent()            : Content  = FileUtils.readFileContent(path = str)
-  
+
         // ---------------------------------------------------------------------------
         def readFileLines(): List[Line] = FileUtils.readFileLines(path = str)
-        def readFileTsv  (): List[Vector[Cell]] = readFileLines().map(_.splitBy("\t").toVector)    
+        def readFileTsv  (): List[Vector[Cell]] = readFileLines().map(_.splitBy("\t").toVector)
         def readFileCsv  (): List[Vector[Cell]] = readFileLines().map(_.splitBy( ",").toVector)
 
         def streamFileLines(): (Iterator[Line],         Closeable) = FileUtils.streamFileLines(path = str)
         def streamFileTsv  (): (Iterator[Vector[Cell]], Closeable) = str.streamFileLines().mapFirst(_.map(_.splitXsv('\t').toVector))
         def streamFileCsv  (): (Iterator[Vector[Cell]], Closeable) = str.streamFileLines().mapFirst(_.map(_.splitXsv(',') .toVector))
 
+        // TODO: rename
+        def streamFileLines2(): CloseabledIterator[Line]         = FileUtils.streamFileLines(path = str).pipe(CloseabledIterator.fromPair)
+        def streamFileTsv2  (): CloseabledIterator[Vector[Cell]] = str.streamFileLines2().map(_.splitXsv('\t').toVector)
+        def streamFileCsv2  (): CloseabledIterator[Vector[Cell]] = str.streamFileLines2().map(_.splitXsv(',') .toVector)
+        
     // ===========================================================================
     def readUrlContent(): Content   = UrlUtils.content(str)
     def readUrlLines()  : Seq[Line] = UrlUtils.  lines(str)
@@ -158,6 +173,8 @@ package object aptus
 
     def surroundWith(boundary: String)               = s"$boundary$str$boundary"
     def surroundWith(prefix: String, suffix: String) = s"$prefix$str$suffix"
+    
+    @fordevonly def swp: String = surroundWith("|") // convenient for debugging (shows leading/trailing whitespaces)
 
     // ---------------------------------------------------------------------------
     // to improve fluency
@@ -181,7 +198,7 @@ package object aptus
     def padRight(length: Int, char: Char): String = lang3.StringUtils.rightPad(str, length, char.toString)
 
     def trimLines: String = str.replaceAll("\\s*\n\\s*", "\n")
-    
+
     // ===========================================================================
     // TODO: quite inefficient
       def indent                          : String = StringUtils.indent(1, indenter = "\t")(str)
@@ -218,7 +235,7 @@ package object aptus
 
     // ---------------------------------------------------------------------------
     // TODO: replaceGroup (see 211004151531)
-    
+
     // ===========================================================================
     def splitBy(separator: String        ): Seq[String] = if (str.isEmpty()) List(str) else lang3.StringUtils.splitByWholeSeparatorPreserveAllTokens(str, separator   ).toList
     def splitBy(separator: String, n: Int): Seq[String] = if (str.isEmpty()) List(str) else lang3.StringUtils.splitByWholeSeparatorPreserveAllTokens(str, separator, n).toList
@@ -231,18 +248,36 @@ package object aptus
     def splitCommas        : List[Cell] = splitXsv(',')
 
     // ===========================================================================
-    def date = toLocalDateFromIso // "2021-01-08".date
-      def toLocalDateFromIso                           : LocalDate     = DateTimeFormatter.ISO_LOCAL_DATE     .pipe(toLocalDate)
-      def toLocalDate    (pattern:   String           ): LocalDate     = DateTimeFormatter.ofPattern(pattern) .pipe(toLocalDate)
-      def toLocalDate    (formatter: DateTimeFormatter): LocalDate     = LocalDate.parse(str, formatter)
+    import aptutils.TimeUtils._
 
-    def datetime = toLocalDateTimeFromIso // "2021-01-08T...".datetime
-      def toLocalDateTimeFromIso                       : LocalDateTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME.pipe(toLocalDateTime)
-      def toLocalDateTime(pattern:   String           ): LocalDateTime = DateTimeFormatter.ofPattern(pattern) .pipe(toLocalDateTime)
-      def toLocalDateTime(formatter: DateTimeFormatter): LocalDateTime = LocalDateTime.parse(str, formatter)
+      def parseInstant        : Instant        = Instant.from(             IsoFormatterInstant.parse(str))
+      def parseLocalDateTime  :  LocalDateTime =  LocalDateTime.parse(str, IsoFormatterLocalDateTime)
+      def parseOffsetDateTime : OffsetDateTime = OffsetDateTime.parse(str, IsoFormatterOffsetDateTime)
+      def parseZonedDateTime  :  ZonedDateTime =  ZonedDateTime.parse(str, IsoFormatterZonedDateTime)
+
+      def parseLocalDate      :  LocalDate     =  LocalDate    .parse(str, IsoFormatterLocalDate)
+      def parseLocalTime      :  LocalTime     =  LocalTime    .parse(str, IsoFormatterLocalTime)
+
+      // ===========================================================================
+      def parseLocalDateTime(pattern: String): LocalDateTime = DateTimeFormatter.ofPattern(pattern).pipe(LocalDateTime.parse(str, _))
+      def parseLocalDate    (pattern: String): LocalDate     = DateTimeFormatter.ofPattern(pattern).pipe(LocalDate    .parse(str, _))
+      def parseLocalTime    (pattern: String): LocalTime     = DateTimeFormatter.ofPattern(pattern).pipe(LocalTime    .parse(str, _))
+
+      // ---------------------------------------------------------------------------
+      def parseLocalDateTime(formatter: DateTimeFormatter): LocalDateTime = LocalDateTime.parse(str, formatter)
+      def parseLocalDate    (formatter: DateTimeFormatter): LocalDate     = LocalDate    .parse(str, formatter)
+      def parseLocalTime    (formatter: DateTimeFormatter): LocalTime     = LocalTime    .parse(str, formatter)
+
+      // ---------------------------------------------------------------------------
+      def dateTime = parseLocalDateTime // eg "2021-01-08T01:02:03".dateTime
+      def date     = parseLocalDate     // eg "2021-01-08"         .date
+      def time     = parseLocalTime     // eg            "01:02:03".time
 
     // ===========================================================================
-    def removeIfApplicable(potentialSubStr: String) = str.replace(potentialSubStr, "")
+    @deprecated
+    def removeIfApplicable( potentialSubStr: String) = str.replace( potentialSubStr, "")
+    def remove            ( potentialSubStr: String) = str.replace( potentialSubStr, "")
+    def removeGuaranteed  (guaranteedSubStr: String) = str.replace(guaranteedSubStr, "").assert(_ != str)
 
     // ---------------------------------------------------------------------------
     def stripTrailingZeros: String = if (!org.apache.commons.lang3.math.NumberUtils.isCreatable(str)) str else new java.math.BigDecimal(str).stripTrailingZeros().toPlainString()
@@ -283,6 +318,9 @@ package object aptus
     // ---------------------------------------------------------------------------
     def writeFileLines(path: FilePath): FilePath = FileUtils.writeLines(path, coll.map(_.toString))
 
+    def systemCall                    ()(implicit ev: A =:= String): String = SystemUtils.run                    (coll.asInstanceOf[Seq[String]]:_*).stripSuffix("\n")
+    def systemCallWithErrorRedirection()(implicit ev: A =:= String): String = SystemUtils.runWithErrorRedirection(coll.asInstanceOf[Seq[String]]:_*).stripSuffix("\n")
+
     // ---------------------------------------------------------------------------
     def force = new aptus.aptmisc.Force(coll) // TODO: conflicts with view's...
 
@@ -297,6 +335,8 @@ package object aptus
     def  @@ = coll.mkString("[", ", ", "]")
     def #@@ = s"#${coll.size}:${@@}"
 
+    @fordevonly def debug: Seq[A] = { println(coll.map(_.toString.swp).section(coll.size.str)); coll } // convenient for debugging (shows leading/trailing whitespaces)
+    
     // ---------------------------------------------------------------------------
     def section                : String = section("")
     def section (title: String): String = StringUtils.section(coll, 1, title)
@@ -307,6 +347,7 @@ package object aptus
     // ---------------------------------------------------------------------------
     def isDistinct                               : Boolean = coll.size == coll.toSet.size
     def isDisjointWith[B >: A](that: Iterable[B]): Boolean = coll.intersect(that.toSeq).isEmpty
+    def isSorted(implicit ev: Ordering[A])       : Boolean = coll.sorted == coll // TODO: more efficient version
 
     // ---------------------------------------------------------------------------
     def duplicates                : Seq[A] = coll.diff(coll.distinct)
@@ -321,7 +362,10 @@ package object aptus
 
     def zipSameSize[B](that: Seq[B])                      : Seq[(A, B)] = zipSameSize(that, _.size)
     def zipSameSize[B](that: Seq[B], debug: Seq[_] => Any): Seq[(A, B)] = { require(coll.size == that.size, (debug(coll), debug(that))); coll.zip(that) }
-    
+
+    def zipWithIsFirst: Seq[(A, Boolean)] = coll.zipWithIndex.map { case (x, i) => x -> (i == 0) }             // TODO: more efficient versions
+    def zipWithIsLast : Seq[(A, Boolean)] = coll.zipWithIndex.map { case (x, i) => x -> (i == coll.size - 1) } // TODO: more efficient versions
+
     // ---------------------------------------------------------------------------
     def slidingList(n: Int): List[List[A]] = coll.sliding(n).toList.map(_.toList)
     def slidingPairs: List[(A, A)] = coll match {
@@ -332,11 +376,11 @@ package object aptus
 
     // ---------------------------------------------------------------------------
     def splitAtHead: (A, Seq[A]) = coll.splitAt(            1).mapFirst (_.force.one)
-    def splitAtLast: (Seq[A], A) = coll.splitAt(coll.size - 1).mapSecond(_.force.one)    
-    
+    def splitAtLast: (Seq[A], A) = coll.splitAt(coll.size - 1).mapSecond(_.force.one)
+
     // ---------------------------------------------------------------------------
     def distinctByAdjacency: Seq[A] = IterableUtils.distinctByAdjacency(coll).toList // TODO: test for 1
-    
+
     // ===========================================================================
     def mean(implicit num: Numeric[A]): Double = (num.toDouble(coll.foldLeft(num.zero)(num.plus)) / coll.size)
 
@@ -362,27 +406,29 @@ package object aptus
     def groupByKeyWithListMap[K, V](implicit ev: A <:< (K, V)                  ): immutable.ListMap[K, Seq[V]] = MapUtils.groupByKeyWithListMap(coll.iterator.asInstanceOf[Iterator[(K, V)]])
     def groupByKeyWithTreeMap[K, V](implicit ev: A <:< (K, V), ord: Ordering[K]): immutable.TreeMap[K, Seq[V]] = MapUtils.groupByKeyWithTreeMap(coll.iterator.asInstanceOf[Iterator[(K, V)]])
 
+    def groupByAdjacency[B](f: A => B): Seq[(B, Seq[A])] = MapUtils.groupByAdjacency(coll)(f)
+
     def countBySelf: List[(A, Int)] = coll.groupBy(identity).view.map { x => x._1 -> x._2.size }.toList.sortBy(-_._2) // TODO: t211004120452 - more efficient version
-    
-    // ===========================================================================
+
+    // ---------------------------------------------------------------------------
     def toOptionalSeq[B](implicit ev: A <:< Option[B]): Option[Seq[B]] = if (coll.contains(None)) None else Some(coll.map(_.get))
   }
 
   // ===========================================================================
   implicit class Iterator_[A](val itr: Iterator[A]) extends AnyVal {
     def last(): A = itr.next().assert(_ => !itr.hasNext)
-    
+
     // ---------------------------------------------------------------------------
     def groupByKey           [K, V](implicit ev: A <:< (K, V))                  :               Map[K, Seq[V]]  = MapUtils.groupByKey              (itr.asInstanceOf[Iterator[(K, V)]])
     def groupByKeyWithListMap[K, V](implicit ev: A <:< (K, V))                  : immutable.ListMap[K, Seq[V]]  = MapUtils.groupByKeyWithListMap   (itr.asInstanceOf[Iterator[(K, V)]])
-    def groupByKeyWithTreeMap[K, V](implicit ev: A <:< (K, V), ord: Ordering[K]): immutable.TreeMap[K, Seq[V]]  = MapUtils.groupByKeyWithTreeMap   (itr.asInstanceOf[Iterator[(K, V)]])    
+    def groupByKeyWithTreeMap[K, V](implicit ev: A <:< (K, V), ord: Ordering[K]): immutable.TreeMap[K, Seq[V]]  = MapUtils.groupByKeyWithTreeMap   (itr.asInstanceOf[Iterator[(K, V)]])
     def groupByPreSortedKey[K, V](implicit ev: A <:< (K, V))                    :         Iterator[(K, Seq[V])] = IteratorUtils.groupByPreSortedKey(itr.asInstanceOf[Iterator[(K, V)]])
   }
-  
+
   // ===========================================================================
   implicit class Map_[K, V](val mp: Map[K, V]) extends AnyVal {
     def force(key: K): V = mp.get(key).get // stdlib polyseme (see Option's)
-    
+
     // ---------------------------------------------------------------------------
     def toMutableMap                        :   mutable.    Map[K, V] = MapUtils.toMutableMap(mp)
     def toListMap                           : immutable.ListMap[K, V] = MapUtils.toListMap   (mp)
@@ -392,8 +438,10 @@ package object aptus
   // ===========================================================================
   implicit class Option_[A](val opt: Option[A]) extends AnyVal {
     @inline def force = opt.get // stdlib polyseme (see Map's)
-    
+
     def swap[B](f: => B): Option[B] = if (opt.isDefined) None else Some(f)
+
+    def isExclusiveWith[B](that: Option[B]): Boolean = (opt.isDefined && that.isEmpty) || (opt.isEmpty && that.isDefined) // convenient for assertions
   }
 
   // ===========================================================================
@@ -401,7 +449,7 @@ package object aptus
     def mapFirst [A2](fa: A => A2) = (fa(tup._1),   tup._2)
     def mapSecond[B2](fb: B => B2) = (   tup._1, fb(tup._2))
 
-    def mapAll[A2, B2](fa: A => A2, fb: B => B2)                            = (fa(tup._1), fb(tup._2))        
+    def mapAll[A2, B2](fa: A => A2, fb: B => B2)                            = (fa(tup._1), fb(tup._2))
     def mapAll[C1, C2](f : C1 => C2)(implicit ev1: A <:< C1, ev2: B <:< C1) = (f (tup._1), f (tup._2))
 
     def toOptionalTuple[Z, Y](implicit ev1: A <:< Option[Z], ev2: B <:< Option[Y]): Option[(Z, Y)] = for { a <- tup._1; b <- tup._2 } yield (a, b)
@@ -421,21 +469,21 @@ package object aptus
   }
 
   // ---------------------------------------------------------------------------
-  implicit class Tuple3_[A, B, C](val tup: Tuple3[A, B, C]) extends AnyVal {       
+  implicit class Tuple3_[A, B, C](val tup: Tuple3[A, B, C]) extends AnyVal {
     def toSeq[Z](implicit ev1: A <:< Z, ev2: B <:< Z, ev3: C <:< Z) = Seq[Z](tup._1, tup._2, tup._3)
 
     def mapFirst [A2](fa: A => A2) = (fa(tup._1),   tup._2,     tup._3 )
     def mapSecond[B2](fb: B => B2) = (   tup._1, fb(tup._2),    tup._3 )
-    def mapThird [C2](fc: C => C2) = (   tup._1,    tup._2 , fc(tup._3))    
+    def mapThird [C2](fc: C => C2) = (   tup._1,    tup._2 , fc(tup._3))
   }
 
   // ---------------------------------------------------------------------------
-  implicit class Tuple4_[A, B, C, D](val tup: Tuple4[A, B, C, D]) extends AnyVal {       
+  implicit class Tuple4_[A, B, C, D](val tup: Tuple4[A, B, C, D]) extends AnyVal {
     def toSeq[Z](implicit ev1: A <:< Z, ev2: B <:< Z, ev3: C <:< Z, ev4: D <:< Z) = Seq[Z](tup._1, tup._2, tup._3, tup._4)
   }
 
   // ---------------------------------------------------------------------------
-  implicit class Tuple5_[A, B, C, D, E](val tup: Tuple5[A, B, C, D, E]) extends AnyVal {       
+  implicit class Tuple5_[A, B, C, D, E](val tup: Tuple5[A, B, C, D, E]) extends AnyVal {
     def toSeq[Z](implicit ev1: A <:< Z, ev2: B <:< Z, ev3: C <:< Z, ev4: D <:< Z, ev5: E <:< Z) = Seq[Z](tup._1, tup._2, tup._3, tup._4, tup._5)
   }
 
@@ -443,35 +491,68 @@ package object aptus
   // ===========================================================================
   // ===========================================================================
   implicit class Int_(val nmbr: Int) extends AnyVal {
+      def isInBetween         (fromInclusive: Int, toExclusive: Int): Boolean = nmbr >= fromInclusive && nmbr <  toExclusive
+      def isInBetweenInclusive(fromInclusive: Int, toInclusive: Int): Boolean = nmbr >= fromInclusive && nmbr <= toInclusive
+
+      // ---------------------------------------------------------------------------
+      def assertRange         (fromInclusive: Int, toExclusive: Int): Int     = nmbr.assert(_.isInBetween         (fromInclusive, toExclusive), x => s"out of range: ${x} ([${fromInclusive}, ${toExclusive}[)")
+      def assertRangeInclusive(fromInclusive: Int, toInclusive: Int): Int     = nmbr.assert(_.isInBetweenInclusive(fromInclusive, toInclusive), x => s"out of range: ${x} ([${fromInclusive}, ${toInclusive}])")
+
+      // ---------------------------------------------------------------------------
       def add       (n: Int): Int = nmbr + n
       def subtract  (n: Int): Int = nmbr - n
-      
+
       def multiplyBy(n: Int)   : Int    = nmbr * n
       def multiplyBy(n: Number): Double = nmbr * n.doubleValue()
-  
+
       def divideBy(n: Int)   : Int    = nmbr / n
-      def divideBy(n: Number): Double = nmbr / n.doubleValue()    
-      
+      def divideBy(n: Number): Double = nmbr / n.doubleValue()
+
       // ---------------------------------------------------------------------------
       def formatUsLocale: String = NumberUtils.IntegerFormatter.format(nmbr)
-      def formatExplicit: String = formatUsLocale.replace(",", "") //def formatExplicit: String = f"${int}%0f" // TODO: try      
+      def formatExplicit: String = formatUsLocale.replace(",", "") //def formatExplicit: String = f"${int}%0f" // TODO: try
+
+      // ---------------------------------------------------------------------------
+      def toLocalDateTime: LocalDateTime = java.time.LocalDateTime.ofEpochSecond(nmbr.assertRange(0, 2000000000), 0, TimeUtils.currentZoneOffset()) // in seconds; eg     1,647,447,105 -> 2022-03-16T12:11:45
+      def toLocalDate    : LocalDate     = java.time.LocalDate    .ofEpochDay   (nmbr.assertRange(0, 50000))                                        // in days   ; eg            19,067 -> 2022-03-16
     }
 
     // ---------------------------------------------------------------------------
     implicit class Long_(val nmbr: Long) extends AnyVal {
+      def isInBetween         (fromInclusive: Long, toExclusive: Long): Boolean = nmbr >= fromInclusive && nmbr <  toExclusive
+      def isInBetweenInclusive(fromInclusive: Long, toInclusive: Long): Boolean = nmbr >= fromInclusive && nmbr <= toInclusive
+
+      // ---------------------------------------------------------------------------
+      def assertRange         (fromInclusive: Long, toExclusive: Long): Long    = nmbr.assert(_.isInBetween         (fromInclusive, toExclusive), x => s"out of range: ${x} ([${fromInclusive}, ${toExclusive}[)")
+      def assertRangeInclusive(fromInclusive: Long, toInclusive: Long): Long    = nmbr.assert(_.isInBetweenInclusive(fromInclusive, toInclusive), x => s"out of range: ${x} ([${fromInclusive}, ${toInclusive}])")
+
+      // ---------------------------------------------------------------------------
       def formatUsLocale: String = NumberUtils.IntegerFormatter.format(nmbr)
       def formatExplicit: String = formatUsLocale.replace(",", "")
+
+      // ---------------------------------------------------------------------------
+      def toInstant       : Instant       = java.time.Instant      .ofEpochMilli (nmbr.assertRange(0, 2000000000000L))                               // in milliseconds ; eg 1,647,447,105,888 -> 2022-03-16T16:11:45.888Z
+      def toLocalDateTime : LocalDateTime = java.time.LocalDateTime.ofEpochSecond(nmbr.assertRange(0, 2000000000), 0, TimeUtils.currentZoneOffset()) // in seconds      ; eg     1,647,447,105 -> 2022-03-16T12:11:45
+      def toLocalDate     : LocalDate     = java.time.LocalDate    .ofEpochDay   (nmbr.assertRange(0, 50000))                                        // in days         ; eg            19,067 -> 2022-03-16
     }
 
-    // ---------------------------------------------------------------------------
+    // ===========================================================================
     implicit class Double_(val nmbr: Double) extends AnyVal {
+      def isInBetween         (fromInclusive: Double, toExclusive: Double): Boolean = nmbr >= fromInclusive && nmbr <  toExclusive
+      def isInBetweenInclusive(fromInclusive: Double, toInclusive: Double): Boolean = nmbr >= fromInclusive && nmbr <= toInclusive
+
+      // ---------------------------------------------------------------------------
+      def assertRange         (fromInclusive: Double, toExclusive: Double): Double  = nmbr.assert(_.isInBetween         (fromInclusive, toExclusive), x => s"out of range: ${x} ([${fromInclusive}, ${toExclusive}[)")
+      def assertRangeInclusive(fromInclusive: Double, toInclusive: Double): Double  = nmbr.assert(_.isInBetweenInclusive(fromInclusive, toInclusive), x => s"out of range: ${x} ([${fromInclusive}, ${toInclusive}])")
+
+      // ---------------------------------------------------------------------------
       def isNanOrInfinity: Boolean = nmbr.isNaN || nmbr.isInfinity
 
       // ---------------------------------------------------------------------------
       def combine(n: Number)(f: (Double, Double) => Double): Double = f(nmbr, n.doubleValue)
 
         def add       (n: Number): Double = combine(n)(_ + _)
-        def subtract  (n: Number): Double = combine(n)(_ - _)     
+        def subtract  (n: Number): Double = combine(n)(_ - _)
         def divideBy  (n: Number): Double = combine(n)(_ / _)
         def multiplyBy(n: Number): Double = combine(n)(_ * _)
 
@@ -491,6 +572,90 @@ package object aptus
     }
 
   // ===========================================================================
+  // ===========================================================================
+  // ===========================================================================
+  implicit class Instant_(instant: Instant) { import TimeUtils._
+      def formatIso: String = DateTimeFormatter.ISO_INSTANT.format(instant) // default behavior but more explicit
+
+      // ---------------------------------------------------------------------------
+      def atLocal        : LocalDateTime  = LocalDateTime.ofInstant(instant, DefaultZoneId)
+      def atOffsetDefault: OffsetDateTime = instant.atOffset                (currentZoneOffset())
+      def atZoneDefault  : ZonedDateTime  = instant.atZone                  (DefaultZoneId)
+
+      // ---------------------------------------------------------------------------
+      def truncateToSeconds: Instant = instant.truncatedTo(java.time.temporal.ChronoUnit.SECONDS)
+
+      // ---------------------------------------------------------------------------
+      def offsetFor(zone: ZoneId): ZoneOffset = zone.getRules.getOffset(instant)
+    }
+
+    // ===========================================================================
+    implicit class LocalDateTime_(date: LocalDateTime) { import TimeUtils._
+      def formatIso: String = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(date) // default behavior but more explicit
+
+      // ---------------------------------------------------------------------------
+      def atInstantDefault: Instant        = date.toInstant(currentZoneOffset())
+      def atOffsetDefault : OffsetDateTime = date.atOffset (currentZoneOffset())
+      def atZoneDefault   :  ZonedDateTime = date.atZone   (DefaultZoneId)
+
+      // ---------------------------------------------------------------------------
+      def truncateToSeconds: LocalDateTime = date.truncatedTo(java.time.temporal.ChronoUnit.SECONDS)
+    }
+
+    // ===========================================================================
+    implicit class OffsetDateTime_(date: OffsetDateTime) {
+      def formatIso: String = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(date) // default behavior but more explicit
+
+      // ---------------------------------------------------------------------------
+      def atInstant     : Instant       = date.toInstant // for consistency
+      def atLocal       : LocalDateTime = date.toLocalDateTime
+      def atZoneDefault : ZonedDateTime = date.toLocalDateTime.atZoneDefault // also see atZoneSameInstant and atZoneSimilarLocal
+
+      // ---------------------------------------------------------------------------
+      def truncateToSeconds: OffsetDateTime = date.truncatedTo(java.time.temporal.ChronoUnit.SECONDS)
+    }
+
+    // ===========================================================================
+    implicit class ZonedDateTime_(date: ZonedDateTime) {
+      def formatIso: String = DateTimeFormatter.ISO_ZONED_DATE_TIME.format(date) // default behavior but more explicit
+
+      // ---------------------------------------------------------------------------
+      def atInstant      : Instant        = date.toInstant // for consistency
+      def atLocal        : LocalDateTime  = date.toLocalDateTime
+      def atOffsetDefault: OffsetDateTime = date.toLocalDateTime.atOffsetDefault // no direct way?
+
+      // ---------------------------------------------------------------------------
+      def truncateToSeconds: ZonedDateTime = date.truncatedTo(java.time.temporal.ChronoUnit.SECONDS)
+    }
+
+  // ===========================================================================
+  implicit class LocalDate_(date: LocalDate) {
+      def formatIso: String = DateTimeFormatter.ISO_DATE.format(date) // default behavior but more explicit
+    }
+
+    // ---------------------------------------------------------------------------
+    implicit class LocalTime_(time: LocalTime) {
+      def formatIso                : String = DateTimeFormatter.ISO_TIME             .format(time) // default behavior but more explicit
+
+      def formatHoursMinutes       : String = DateTimeFormatter.ofPattern("HH:mm")   .format(time) // TODO: cache
+      def formatHoursMinutesSeconds: String = DateTimeFormatter.ofPattern("HH:mm:ss").format(time) // TODO: cache
+    }
+
+  // ===========================================================================
+  implicit class ArrayByte_[T](bytes: Array[Byte]) {
+    def toHexString    : String = BinaryUtils.bytesToHexString(bytes)
+
+    // ---------------------------------------------------------------------------
+    def toBase64       : String = BinaryUtils.bytesToBase64   (bytes)
+    def toBase64Trimmed: String = BinaryUtils.bytesToBase64   (bytes).takeWhile(_ != '=')
+
+    // ---------------------------------------------------------------------------
+    def toUsAsciiString: String = new String(bytes, java.nio.charset.StandardCharsets.US_ASCII  )
+    def toIsoString    : String = new String(bytes, java.nio.charset.StandardCharsets.ISO_8859_1)
+    def toUtf8String   : String = new String(bytes, java.nio.charset.StandardCharsets.UTF_8     )
+  }
+
+  // ===========================================================================
   implicit class Throwable_(val throwable: Throwable) extends AnyVal {
     def       stackTrace: Seq[StackTraceElement] = throwable.getStackTrace.toList
     def formatStackTrace: String                 = ThrowableUtils.stackTraceString(throwable)
@@ -501,7 +666,7 @@ package object aptus
     def fullPath: String = klass.getCanonicalName.replace(".package.", ".") /* TODO */.replaceAll("\\$$", "")
   }
 
-  // ===========================================================================
+  // ---------------------------------------------------------------------------
   implicit class URL_(url: java.net.URL) {
     def smartCloseabledInputStream: Closeabled[java.io.InputStream] = InputStreamUtils.smartCloseabledInputStream(url.openStream())
   }
@@ -512,16 +677,17 @@ package object aptus
     def closeabledBufferedReader(charset: Charset): aptus.Closeabled[java.io.BufferedReader] = InputStreamUtils.closeabledBufferedReader(is, charset)
   }
 
-  // ===========================================================================
+  // ---------------------------------------------------------------------------
   implicit class ResultSet_(val rs: java.sql.ResultSet) extends AnyVal {
     def closeable = new java.io.Closeable { override def close() = { rs.close() } }
     def rawRdbmsEntries : Iterator[RawRdbmsEntries] = SqlUtils.rawRdbmsEntries(rs)
   }
-  
-  // ===========================================================================
+
+  // ---------------------------------------------------------------------------
   implicit class Future_[T](fut: concurrent.Future[T]) {
-    def awaitIndefinitely() = concurrent.Await.result(fut, concurrent.duration.Duration.Inf)    
-  }  
+    def awaitIndefinitely() = concurrent.Await.result(fut, concurrent.duration.Duration.Inf)
+  }
+
 }
 
 // ===========================================================================

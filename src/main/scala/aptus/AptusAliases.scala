@@ -74,6 +74,9 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   type Closeabled[T] = aptmisc.Closeabled[T]
   val  Closeabled    = aptmisc.Closeabled
 
+  type CloseabledIterator[T] = aptmisc.CloseabledIterator[T]
+  val  CloseabledIterator    = aptmisc.CloseabledIterator
+  
   // ---------------------------------------------------------------------------
   type JavaPattern = java.util.regex.Pattern
 }

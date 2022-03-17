@@ -89,6 +89,36 @@ object MapUtils {
 
       b.result
     }
+
+    // ===========================================================================
+    def groupByAdjacency[A, B](coll: Seq[A])(f: A => B): Seq[(B, Seq[A])] = {
+      var previous: B = null.asInstanceOf[B]
+
+      val mut1 = cross.MutList[A]()
+      val mut2 = cross.MutList[(B, Seq[A])]()
+
+      coll
+        .map { value =>
+          if (previous != null &&
+              previous != f(value)) {
+            val pair = (previous,  mut1.toList)
+            mut2 += pair
+            mut1.clear()
+          }
+          mut1 += value
+          previous = f(value)
+        }
+
+      val pair = (previous, mut1.toList)
+      mut2 += pair
+      mut1.clear()
+
+      val res = mut2.toList
+      mut2.clear()
+
+      res
+    }
+
 }
 
 // ===========================================================================

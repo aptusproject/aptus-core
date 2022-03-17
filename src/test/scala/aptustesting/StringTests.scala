@@ -49,8 +49,8 @@ object StringTests extends TestSuite {
     // ===========================================================================
     // system calls
 
-    test(compareIfUnix("echo     hello"        .systemCall(),          "hello"))    
-    test(compareIfUnix("echo -e 'hello\nworld'".systemCallLines(), Seq("hello", "world")))
+    test(compareIfUnix(    "echo          hello"        .systemCall(),                   "hello"))
+    test(compareIfUnix(Seq("echo", "-e", "hello\nworld").systemCall().splitBy("\n"), Seq("hello", "world")))
   }
 }
 

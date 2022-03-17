@@ -5,9 +5,12 @@ import java. io._
 import java.nio.file.{Path => NioPath, Paths => NioPaths, Files => NioFiles}
 
 // ===========================================================================
-private[aptus] final class AptusPath(path: String) {
+private[aptus] final class AptusPath(path: String) { // TODO: as AnyVal?
   private lazy val  ioFile = new java.io.File(path)
   private lazy val nioPath = NioPaths.get(path)
+
+  // ---------------------------------------------------------------------------
+  override def toString: String = path
 
   // ---------------------------------------------------------------------------
   def isFile   (): Boolean = NioFiles.isRegularFile (nioPath)

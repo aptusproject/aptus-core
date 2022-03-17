@@ -24,10 +24,10 @@ object AptusSystem {
 
 // ===========================================================================
 object Fs { 
-  def homeDirectoryPath(): DirPath  = System.getProperty("user.home")    
-  def workingDir       (): DirPath  = System.getProperty("user.dir" ) // directory where java was run from, where you started the JVM
-  def pwd              (): DirPath  = workingDir()
-  
+  def homeDirectoryPath(): DirPath  = System.getProperty("user.home") // does not include a trailing slash    
+  def workingDir       (): DirPath  = System.getProperty("user.dir" ) // does not include a trailing slash; directory where java was run from, where you started the JVM
+  def pwd              (): DirPath  = workingDir()                    // does not include a trailing slash
+
   // ---------------------------------------------------------------------------
   /** eg /tmp/1428129663834606041 */    
   def tempFilePath: FilePath = javaTempFile().pipe { f => f.getParent.slash(f.getName.pipe(extractRandomPart)) }

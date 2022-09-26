@@ -10,6 +10,7 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   type Count             = Int
   type Index             = Int
   type Rank              = Int // = index + 1
+  type Depth             = Int
 
   // ---------------------------------------------------------------------------
   type Probability       = Double
@@ -30,6 +31,18 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   type FilePath          = String
   type FileName          = String
   type DirName           = String
+
+    type InputPath       = String
+    type InputDirPath    = String
+    type InputFilePath   = String
+    type InputFileName   = String
+    type InputDirName    = String
+
+    type OutputPath      = String
+    type OutputDirPath   = String
+    type OutputFilePath  = String
+    type OutputFileName  = String
+    type OutputDirName   = String
 
   type JsonString        = String
   type JsonPretty        = String
@@ -79,6 +92,15 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   
   // ---------------------------------------------------------------------------
   type JavaPattern = java.util.regex.Pattern
+
+  // ===========================================================================
+  val system   = aptmisc.AptusSystem
+  val fs       = aptmisc.Fs
+  val hardware = aptmisc.Hardware
+  val random   = aptmisc.Random
+  val reflect  = aptmisc.Reflect
+  val time     = aptmisc.Time
+
 }
 
 // ===========================================================================

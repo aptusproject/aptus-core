@@ -28,6 +28,36 @@ object FileUtils {
   def writePlainLines(path: FilePath, values: Seq[Line]): FilePath = { val fw = plainFileWriter(path); values.map(x => s"${x}\n").foreach(fw.write) /* TODO: flush often? */; fw.close(); path }
   def writeGzipLines (path: FilePath, values: Seq[Line]): FilePath = { val fw =  gzipFileWriter(path); values.map(x => s"${x}\n").foreach(fw.write) /* TODO: flush often? */; fw.close(); path }
 
+  // ---------------------------------------------------------------------------
+  def writeGzipLines(
+        out         : FilePath,
+        flushModulo : Long,
+        logModulo   : Option[Long => Unit])
+        (iter: Iterator[Line])
+      : OutputFilePath = {
+    val gfw = gzipFileWriter(out)
+
+    var counter: Long = 0
+
+    iter
+      .map(_.newline)
+      .foreach { line =>
+        counter += 1
+
+        if ((counter % flushModulo) == 0) {
+          gfw.flush()
+
+          logModulo.foreach(_.apply(counter))
+        }
+
+        gfw.write(line)
+      }
+
+    gfw.close()
+
+    out
+  }
+
   // ===========================================================================
   // writers
 

@@ -57,8 +57,6 @@ object SystemUtils {
     val os = process.getOutputStream() // to write input into
     val is = process.getInputStream () // to obtain output from
 
-    Future.apply { process.waitFor() } (ec)
-
     (os, is)    
   }
 

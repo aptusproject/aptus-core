@@ -22,7 +22,7 @@ object CloseabledTests extends TestSuite {
         Seq(
           s.substring(0, 2),
           s.substring(2)) }
-      .consumeToList
+      .consumeAll
 
 }
 

@@ -5,16 +5,21 @@ import scala.util.chaining._
 
 // ===========================================================================
 object MathUtils {
-
-  def stdev[A](coll: Seq[A], mean: Double)(implicit num: Numeric[A]): Double =
-    ((coll
-          .iterator
-          .map(num.toDouble)
-          .map(_ - mean)
-          .map(math.pow(_, 2)) // .squared
-          .sum) /
-        coll.size)
-      .pipe(math.sqrt) // .squareRooted
+  
+  def variancePopulation[A](coll: Seq[A], mean: Double)(implicit num: Numeric[A]): Double = _variance(coll, mean, correction = false)
+  def varianceSample    [A](coll: Seq[A], mean: Double)(implicit num: Numeric[A]): Double = _variance(coll, mean, correction = true )
+    
+  def stdevPopulation   [A](coll: Seq[A], mean: Double)(implicit num: Numeric[A]): Double = _variance(coll, mean, correction = false).pipe(math.sqrt)
+  def stdevSample       [A](coll: Seq[A], mean: Double)(implicit num: Numeric[A]): Double = _variance(coll, mean, correction = true ).pipe(math.sqrt)
+  
+    private def _variance[A](coll: Seq[A], mean: Double, correction: Boolean)(implicit num: Numeric[A]): Double =
+      ((coll
+            .iterator
+            .map(num.toDouble)
+            .map(_ - mean)
+            .map(math.pow(_, 2))
+            .sum) /
+          coll.size + (if (correction) -1 else 0))
 
   // ---------------------------------------------------------------------------
   def percentile[A](coll: Seq[A], n: Double)(implicit num: Numeric[A]): Double =

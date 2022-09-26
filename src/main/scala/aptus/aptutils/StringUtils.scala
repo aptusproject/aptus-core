@@ -1,12 +1,21 @@
 package aptus
 package aptutils
 
+import org.apache.commons.csv.CSVFormat
+
 import scala.collection.JavaConverters._
 
 // ===========================================================================
 object StringUtils {
 
-  lazy val Default = org.apache.commons.csv.CSVFormat.DEFAULT
+  lazy val Default = CSVFormat.DEFAULT
+
+  // ---------------------------------------------------------------------------
+  def csvFormat(sep: Char): CSVFormat =
+    Default
+      .withDelimiter(sep) // TODO: cache common ones
+      .withAllowDuplicateHeaderNames()
+      // use default RecordSeparator
 
   // ===========================================================================
   // TODO: efficiency
@@ -35,10 +44,7 @@ object StringUtils {
       coll
         .mkString("\n")
         .sectionAllOff(n)
-        .prepend(
-          title
-            .pipeIf(!_.endsWith(":")) {
-              _.append(":") } )
+        .prepend(title)
 
   // ===========================================================================  
   def unquoteLeft(value: String) = value.headOption match {
@@ -59,8 +65,7 @@ object StringUtils {
     require(!line.contains("\n"), line)
 
     val parser =
-      Default
-        .withDelimiter(sep)
+      csvFormat(sep)
         .parse(new java.io.StringReader(line))
 
     val cells =

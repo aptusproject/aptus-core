@@ -35,7 +35,7 @@ object Zip {
         val zipEntry = entry(zipFile, pred)
 
         val pair =
-          aptutils.InputStreamUtils.lines (
+          aptutils.InputStreamUtils.lines(
             zipFile
               .getInputStream(zipEntry)
               .pipe(aptus.Closeabled.fromPair(_, zipFile)),

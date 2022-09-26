@@ -14,12 +14,13 @@ object InputStreamUtils {
   def content(cis: Closeabled[InputStream], charset: Charset): Content = cis.consume(toStr(_, charset))
 
   // ---------------------------------------------------------------------------
-  def lines(url: URL                    , charset: Charset): Closeabled[Iterator[Line]] = lines(url.smartCloseabledInputStream, charset)
-  def lines(cis: Closeabled[InputStream], charset: Charset): Closeabled[Iterator[Line]] =
+  def lines(url: URL                    , charset: Charset): CloseabledIterator[Line] = lines(url.smartCloseabledInputStream, charset)
+  def lines(cis: Closeabled[InputStream], charset: Charset): CloseabledIterator[Line] =
     cis // TODO: too cryptic, take apart
       .flatMap {
         _ .closeabledBufferedReader(charset)
           .map(_.lines().iterator.asScala) }
+      .toCloseabledIterator
 
   // ===========================================================================
   def toStr(is: InputStream, charset: Charset): String = {

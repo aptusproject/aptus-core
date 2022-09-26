@@ -67,6 +67,11 @@ object Reflect {
 
 // ===========================================================================
 object Time { import aptutils.TimeUtils.elapsed
+  lazy val TimestampFormat = new java.text.SimpleDateFormat("yyMMddHHmmss")
+
+  def stamp(): String = TimestampFormat.format(new java.util.Date())
+
   def seconds[A](block: => A): A = { val (result, time) = elapsed(block); (time / 1000.0).formatDecimals(2).pipe(elapsed => println(s"done: ${elapsed} seconds")); result }
 }
+
 // ===========================================================================

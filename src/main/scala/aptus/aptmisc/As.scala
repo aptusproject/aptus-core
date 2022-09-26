@@ -4,8 +4,9 @@ package aptmisc
 // ===========================================================================
 private[aptus] final class As[A] private[aptus](private val a: A) {
   def some: Option[A]  = Some(a)
-  def seq : Seq   [A]  = Seq(a)
+  def seq : Seq   [A]  = Seq (a)
   def list: List  [A]  = List(a)
+  def set : Set   [A]  = Set (a)
 
   // ---------------------------------------------------------------------------
   def left [$Right]: Either[A, $Right] = Left(a)

@@ -1,12 +1,13 @@
 import org.apache.commons.lang3
 import com.google.common.base.CaseFormat
 
+import scala.sys.process._
+import scala.language.postfixOps
 import scala.collection.{mutable,immutable}
 import scala.util.chaining._
 
 import java.time._
 import java.time.format.DateTimeFormatter
-import java.lang.IllegalStateException
 import aptus.aptutils._
 
 // ===========================================================================
@@ -18,15 +19,21 @@ package object aptus
 
   /* for extends AnyVals, see https://stackoverflow.com/questions/14929422/should-implicit-classes-always-extend-anyval */
 
-  def illegalState   (x: Any*): Nothing = { throw new IllegalStateException   (x.mkString(", ")) }
-  def illegalArgument(x: Any*): Nothing = { throw new IllegalArgumentException(x.mkString(", ")) }
+  def illegalState        (x: Any*): Nothing = { throw new IllegalStateException        (x.mkString(", ")) }
+  def illegalArgument     (x: Any*): Nothing = { throw new IllegalArgumentException     (x.mkString(", ")) }
+  def unsupportedOperation(x: Any*): Nothing = { throw new UnsupportedOperationException(x.mkString(", ")) }
+
+  // ---------------------------------------------------------------------------
 
   // ---------------------------------------------------------------------------
   def iterableOrdering[T : Ordering]: Ordering[Iterable[T]] = SeqUtils.iterableOrdering[T] // note: Ordering is invariant
+  def   optionOrdering[T : Ordering]: Ordering[Option  [T]] = SeqUtils.  optionOrdering[T]
 
   def   seqOrdering[T : Ordering]: Ordering[Seq  [T]] = SeqUtils.  seqOrdering[T]
   def  listOrdering[T : Ordering]: Ordering[List [T]] = SeqUtils. listOrdering[T]
   def arrayOrdering[T : Ordering]: Ordering[Array[T]] = SeqUtils.arrayOrdering[T]
+
+  def listListOrdering[T : Ordering]: Ordering[List[List[T]]] = SeqUtils.listListOrdering[T]
 
   // ---------------------------------------------------------------------------
   def zip[T1, T2, T3]        (a: Iterable[T1], b: Iterable[T2], c: Iterable[T3])                                  : Iterable[(T1, T2, T3)]         = a.zip(b).zip(c)              .map { case   ((a, b), c)         => (a, b, c) }
@@ -51,28 +58,24 @@ package object aptus
 
   // ===========================================================================
   implicit class Anything_[A](private val a: A) extends AnyVal {
-    def str: String = a.toString
-    def prt: A      = { System.out.println(a); a }
-
-    def inspect(f: A => Any): A = { f(a).prt; a }
+    def str                 : String = a.toString
+    def prt                 : A      = { System.out.println(  a ); a }
+    def inspect(f: A => Any): A      = { System.out.println(f(a)); a }
 
     // ---------------------------------------------------------------------------
-   //@inline def pipe      [B     ]                    (f: A => B)           : B =              f(a)
-             def pipeIf            (test: Boolean)     (f: A => A)           : A = if (test)    f(a) else   a
-             def pipeIf    [B <: A](pred: A => Boolean)(f: A => B)           : A = if (pred(a)) f(a) else   a
-             def pipeOpt   [B     ](opt : Option[B]   )(f: B => A => A)      : A = opt.map(f(_)(a)).getOrElse(a)
+    def pipeIf            (test: Boolean)     (f: A => A)           : A = if (test)    f(a) else   a
+    def pipeIf    [B <: A](pred: A => Boolean)(f: A => B)           : A = if (pred(a)) f(a) else   a
+    def pipeOpt   [B     ](opt : Option[B]   )(f: B => A => A)      : A = opt.map(f(_)(a)).getOrElse(a)
 
-    //def tap                          (f: A => Unit)  : A = {                f(a)  ; a }
-      def tapIf    (test: Boolean)     (f: A => Unit)  : A = { if (test)    { f(a) }; a }
-      def tapIf    (pred: A => Boolean)(f: A => Unit)  : A = { if (pred(a)) { f(a) }; a }
-      def tapOpt[B](opt : Option[B]   )(f: B => A => A): A = { opt.map(f(_)(a)).getOrElse(a); a }
+    def tapIf    (test: Boolean)     (f: A => Unit)  : A = { if (test)    { f(a) }; a }
+    def tapIf    (pred: A => Boolean)(f: A => Unit)  : A = { if (pred(a)) { f(a) }; a }
+    def tapOpt[B](opt : Option[B]   )(f: B => A => A): A = { opt.map(f(_)(a)).getOrElse(a); a }
 
       // ---------------------------------------------------------------------------
       // formerly (before pipe/tap available via import scala.util.chaining._):
 
       /** thrush combinator (see https://users.scala-lang.org/t/implicit-class-for-any-and-or-generic-type/501);
        *  I guess the altenative is to do ` match { case ... ` */
-      @deprecated("use pipe now") @inline def thn      [B     ]                    (f: A => B)           : B =              f(a)
       @deprecated("use pipe now")         def thnIf            (test: Boolean)     (f: A => A)           : A = if (test)    f(a) else   a
       @deprecated("use pipe now")         def thnIf    [B <: A](pred: A => Boolean)(f: A => B)           : A = if (pred(a)) f(a) else   a
       @deprecated("use pipe now")         def thnOpt   [B     ](opt : Option[B]   )(f: B => A => A)      : A = opt.map(f(_)(a)).getOrElse(a)
@@ -85,7 +88,8 @@ package object aptus
 
     @fordevonly def p      : A =   prt
     @fordevonly def p__    : A = { prt; __exit }
-    @fordevonly def pp     : A = { System.out.print(s"${a}\n\n"); a      }
+    @fordevonly def pp     : A = { System.out.print  (s"${a}\n\n"); a      }
+    @fordevonly def dbg    : A = { System.out.println(s"${a.getClass}: |${a}|"); a }
 
     // "i" for "inspect"
     @fordevonly def i  (f: A => Any                ): A = inspect(f)
@@ -107,6 +111,8 @@ package object aptus
       def inNoneIf(p: A => Boolean): Option[A] = in.noneIf(p)
       def inSomeIf(p: A => Boolean): Option[A] = in.someIf(p)
 
+      def inNoneIfEmpty(implicit ev: A <:< Iterable[_]): Option[A] = if (a.isEmpty) None else Some(a) // TODO: any way to make it work for String as well?
+
     // ---------------------------------------------------------------------------
     @inline def    containedIn(values: Set[A]): Boolean =  values.contains(a)
     @inline def    containedIn(values: Seq[A]): Boolean =  values.contains(a)
@@ -119,7 +125,8 @@ package object aptus
     def associateRight[V](f: A => V): (A, V) = (a, f(a))
 
     // ---------------------------------------------------------------------------
-    def mkString[C, D](sep: String)(implicit ev: A <:< (C, D)): String = s"${a._1}${sep}${a._2}"
+    def mkString [C, D]   (sep: String)(implicit ev: A <:< (C, D))   : String = s"${a._1}${sep}${a._2}"
+    def mkString3[C, D, E](sep: String)(implicit ev: A <:< (C, D, E)): String = s"${a._1}${sep}${a._2}${sep}${a._3}"
   }
 
   // ===========================================================================
@@ -130,8 +137,8 @@ package object aptus
     def pattern: JavaPattern = str.r.pattern
 
     // ---------------------------------------------------------------------------
-    def sys()                           : String = SystemUtils.runCommand                    (str).stripSuffix("\n")
-    def systemCall()                    : String = SystemUtils.runCommand                    (str).stripSuffix("\n")
+    def sys()                           : String = str !! // SystemUtils.runCommand          (str).stripSuffix("\n")
+    def systemCall()                    : String = str !! // SystemUtils.runCommand          (str).stripSuffix("\n")
     def systemCallWithErrorRedirection(): String = SystemUtils.runCommandWithErrorRedirection(str).stripSuffix("\n")
 
     def systemCallLines()               : Seq[String] = systemCall().splitBy("\n")
@@ -140,7 +147,13 @@ package object aptus
     // encoding
     def toBase64   : String = str.getBytes.toBase64
     def toHexString: String = str.getBytes.toHexString
-
+    // TODO: crc32
+    
+    // ---------------------------------------------------------------------------
+    def unBase64: Array[Byte] = BinaryUtils.base64ToBytes(str)
+    def unHex   : Array[Byte] = ???
+    // TODO: crc32
+    
     // ===========================================================================
     def path = new aptmisc.AptusPath(if (str.startsWith("~/")) ().fs.homeDirectoryPath() / str.drop(2) else str)
 
@@ -174,7 +187,8 @@ package object aptus
     def surroundWith(boundary: String)               = s"$boundary$str$boundary"
     def surroundWith(prefix: String, suffix: String) = s"$prefix$str$suffix"
     
-    @fordevonly def swp: String = surroundWith("|") // convenient for debugging (shows leading/trailing whitespaces)
+    @fordevonly def swp : String = surroundWith("|")   // convenient for debugging (shows leading/trailing whitespaces)
+    @fordevonly def swpp: String = surroundWith("|").p // convenient for debugging (shows leading/trailing whitespaces)
 
     // ---------------------------------------------------------------------------
     // to improve fluency
@@ -250,10 +264,10 @@ package object aptus
     // ===========================================================================
     import aptutils.TimeUtils._
 
-      def parseInstant        : Instant        = Instant.from(             IsoFormatterInstant.parse(str))
-      def parseLocalDateTime  :  LocalDateTime =  LocalDateTime.parse(str, IsoFormatterLocalDateTime)
-      def parseOffsetDateTime : OffsetDateTime = OffsetDateTime.parse(str, IsoFormatterOffsetDateTime)
-      def parseZonedDateTime  :  ZonedDateTime =  ZonedDateTime.parse(str, IsoFormatterZonedDateTime)
+      def parseInstant        : Instant        = Instant.from(                               IsoFormatterInstant.parse(str))
+      def parseLocalDateTime  :  LocalDateTime =  LocalDateTime.parse(str.replace(" ", "T"), IsoFormatterLocalDateTime) // https://stackoverflow.com/questions/9531524/in-an-iso-8601-date-is-the-t-character-mandatory
+      def parseOffsetDateTime : OffsetDateTime = OffsetDateTime.parse(str,                   IsoFormatterOffsetDateTime)
+      def parseZonedDateTime  :  ZonedDateTime =  ZonedDateTime.parse(str,                   IsoFormatterZonedDateTime)
 
       def parseLocalDate      :  LocalDate     =  LocalDate    .parse(str, IsoFormatterLocalDate)
       def parseLocalTime      :  LocalTime     =  LocalTime    .parse(str, IsoFormatterLocalTime)
@@ -264,23 +278,26 @@ package object aptus
       def parseLocalTime    (pattern: String): LocalTime     = DateTimeFormatter.ofPattern(pattern).pipe(LocalTime    .parse(str, _))
 
       // ---------------------------------------------------------------------------
-      def parseLocalDateTime(formatter: DateTimeFormatter): LocalDateTime = LocalDateTime.parse(str, formatter)
-      def parseLocalDate    (formatter: DateTimeFormatter): LocalDate     = LocalDate    .parse(str, formatter)
-      def parseLocalTime    (formatter: DateTimeFormatter): LocalTime     = LocalTime    .parse(str, formatter)
-
-      // ---------------------------------------------------------------------------
-      def dateTime = parseLocalDateTime // eg "2021-01-08T01:02:03".dateTime
-      def date     = parseLocalDate     // eg "2021-01-08"         .date
-      def time     = parseLocalTime     // eg            "01:02:03".time
+      def parseLocalDateTime(formatter: DateTimeFormatter): LocalDateTime = LocalDateTime.parse(str, formatter) // eg "2021-01-08T01:02:03".dateTime
+      def parseLocalDate    (formatter: DateTimeFormatter): LocalDate     = LocalDate    .parse(str, formatter) // eg "2021-01-08"         .date
+      def parseLocalTime    (formatter: DateTimeFormatter): LocalTime     = LocalTime    .parse(str, formatter) // eg            "01:02:03".time
 
     // ===========================================================================
-    @deprecated
     def removeIfApplicable( potentialSubStr: String) = str.replace( potentialSubStr, "")
-    def remove            ( potentialSubStr: String) = str.replace( potentialSubStr, "")
     def removeGuaranteed  (guaranteedSubStr: String) = str.replace(guaranteedSubStr, "").assert(_ != str)
+    def remove            (guaranteedSubStr: String) = str.replace(guaranteedSubStr, "").assert(_ != str)
+    
+    def stripPrefixIfApplicable( potentialSubStr: String) = str.stripPrefix( potentialSubStr)
+    def stripPrefixGuaranteed  (guaranteedSubStr: String) = str.stripPrefix(guaranteedSubStr).assert(_ != str)
+    //  stripPrefix: unfortuntately stdlib semantics are "IfApplicable"
+    
+    def stripSuffixIfApplicable( potentialSubStr: String) = str.stripSuffix( potentialSubStr)
+    def stripSuffixGuaranteed  (guaranteedSubStr: String) = str.stripSuffix(guaranteedSubStr).assert(_ != str)
+    //  stripSuffix: unfortuntately stdlib semantics are "IfApplicable"    
 
     // ---------------------------------------------------------------------------
-    def stripTrailingZeros: String = if (!org.apache.commons.lang3.math.NumberUtils.isCreatable(str)) str else new java.math.BigDecimal(str).stripTrailingZeros().toPlainString()
+    def attemptStripTrailingZeros: String = if (org.apache.commons.lang3.math.NumberUtils.isCreatable(str)) stripTrailingZeros else str
+    def        stripTrailingZeros: String = new java.math.BigDecimal(str).stripTrailingZeros().toPlainString()
 
     // ---------------------------------------------------------------------------
     def   quote      : String = if (isQuoted)       str else s""""$str""""
@@ -312,8 +329,17 @@ package object aptus
   // ===========================================================================
   // TODO: switch it all to List? see https://users.scala-lang.org/t/seq-vs-list-which-should-i-choose/5412/16
   implicit class Seq_[A](val coll: Seq[A]) extends AnyVal { // TODO: t210124092716 - codegen specializations (List, Vector, ...?)
-    def requireDistinct   ()           : Seq[A] = SeqUtils.distinct(coll, Predef.require(_, _))
+    def requireNonEmpty()              : Seq[A] = coll.require(_.nonEmpty)
+    def  assertNonEmpty()              : Seq[A] = coll.require(_.nonEmpty)
+
+    def requireDistinct()              : Seq[A] = SeqUtils.distinct(coll, Predef.require(_, _))
+    def  assertDistinct()              : Seq[A] = SeqUtils.distinct(coll, Predef.require(_, _))
+
     def requireDistinctBy[B](f: A => B): Seq[A] = SeqUtils.requireDistinctBy(coll)(f)
+    def  assertDistinctBy[B](f: A => B): Seq[A] = SeqUtils.requireDistinctBy(coll)(f)
+
+    def requireSorted()(implicit ord: Ordering[A]): Seq[A] = { require(coll.sorted == coll); coll }
+    def  assertSorted()(implicit ord: Ordering[A]): Seq[A] = { require(coll.sorted == coll); coll }
 
     // ---------------------------------------------------------------------------
     def writeFileLines(path: FilePath): FilePath = FileUtils.writeLines(path, coll.map(_.toString))
@@ -350,12 +376,17 @@ package object aptus
     def isSorted(implicit ev: Ordering[A])       : Boolean = coll.sorted == coll // TODO: more efficient version
 
     // ---------------------------------------------------------------------------
-    def duplicates                : Seq[A] = coll.diff(coll.distinct)
+    def duplicates: Seq[A] = coll.diff(coll.distinct)
+
+    def take(n: Option[Int]): Seq[A] = n.map(coll.take).getOrElse(coll)
+    def drop(n: Option[Int]): Seq[A] = n.map(coll.drop).getOrElse(coll)
 
     def filterBy        [B](p: B => Boolean)(f: A => B)= coll.filter   (x =>  p(f(x)))
     def filterByNot     [B](p: B => Boolean)(f: A => B)= coll.filterNot(x =>  p(f(x)))
 
-    def mapIf    [B <: A](pred: A => Boolean)(f: A => B) = coll.map { x => if (pred(x)) f(x) else   x }
+    def mapIf [   B <: A](test  :      Boolean)(f:      A => B): Seq[A] = coll.map { x => if (test)    f(x) else   x }
+    def mapIf [   B <: A](pred  : A => Boolean)(f:      A => B): Seq[A] = coll.map { x => if (pred(x)) f(x) else   x }
+    def mapOpt[C, B <: A](option: Option[C])   (f: C => A => B): Seq[A] = option.map { c => coll.map(f(c)) }.getOrElse(coll)
 
     // ---------------------------------------------------------------------------
     def zipWithRank: Seq[(A, aptus.Rank)] = coll.zipWithIndex.map { case (value, index) => value -> (index + 1) }
@@ -372,7 +403,11 @@ package object aptus
         case Seq() | Seq(_) => Nil
         case seq            => seq.slidingList(2).map(_.force.tuple2) }
 
-    def slidingPairsWithPrevious: Seq[(Option[A], A)] = (None -> coll.head) +: coll.slidingPairs.map(_.mapFirst(Some.apply))
+    def slidingPairsWithPrevious: Seq[(Option[A], A)] = (None -> coll.head) +: coll.slidingPairs.map(_.mapFirst (Some.apply))
+    def slidingPairsWithNext    : Seq[(A, Option[A])] =                        coll.slidingPairs.map(_.mapSecond(Some.apply)) :+ (coll.last -> None)
+
+    // ---------------------------------------------------------------------------
+    def roll(n: Int): Seq[A] = coll.drop(n) ++ coll.take(n) // TODO: add guards
 
     // ---------------------------------------------------------------------------
     def splitAtHead: (A, Seq[A]) = coll.splitAt(            1).mapFirst (_.force.one)
@@ -385,8 +420,8 @@ package object aptus
     def mean(implicit num: Numeric[A]): Double = (num.toDouble(coll.foldLeft(num.zero)(num.plus)) / coll.size)
 
     // ---------------------------------------------------------------------------
-    def stdev              (implicit num: Numeric[A]): Double = stdev(coll.mean(num))(num.asInstanceOf[Numeric[A]])
-    def stdev(mean: Double)(implicit num: Numeric[A]): Double = MathUtils.stdev(coll, mean)
+    def stdev              (implicit num: Numeric[A]): Double = stdev(coll.mean(num))(num)
+    def stdev(mean: Double)(implicit num: Numeric[A]): Double = MathUtils.stdevPopulation(coll, mean)
 
     // ---------------------------------------------------------------------------
     def median               (implicit num: Numeric[A]): Double = MathUtils.percentile(coll, 50)
@@ -423,6 +458,26 @@ package object aptus
     def groupByKeyWithListMap[K, V](implicit ev: A <:< (K, V))                  : immutable.ListMap[K, Seq[V]]  = MapUtils.groupByKeyWithListMap   (itr.asInstanceOf[Iterator[(K, V)]])
     def groupByKeyWithTreeMap[K, V](implicit ev: A <:< (K, V), ord: Ordering[K]): immutable.TreeMap[K, Seq[V]]  = MapUtils.groupByKeyWithTreeMap   (itr.asInstanceOf[Iterator[(K, V)]])
     def groupByPreSortedKey[K, V](implicit ev: A <:< (K, V))                    :         Iterator[(K, Seq[V])] = IteratorUtils.groupByPreSortedKey(itr.asInstanceOf[Iterator[(K, V)]])
+
+    // ---------------------------------------------------------------------------
+    def zipSameSize[B](that: Iterator[B]): Iterator[(A, B)] = { //TODO: to IteratorUtils
+      new collection.AbstractIterator[(A, B)] { // TODO: knownSize
+        def    next() = (itr.next() , that.next())
+        def hasNext   = (itr.hasNext, that.hasNext) match {
+          case (false, false) => false
+          case (true , true ) => true
+          case (x, y)         => illegalState("not the same size (hasNext/hasNext): ", x, y) } } }
+
+    def writeLines(path: String)(implicit ev: A <:< String) = writeGzipLines(path, 100)
+
+    // ===========================================================================
+    // TODO: bzip2 counterpart
+    def writeGzipLines
+       (out         : FilePath /* TODO: temp file */,
+        flushModulo : Long,
+        logModulo   : Option[Long => Unit] = None /* eg Some(println) */)
+        (implicit ev: A <:< String) =
+      FileUtils.writeGzipLines(out, flushModulo, logModulo)(itr.asInstanceOf[Iterator[String]])
   }
 
   // ===========================================================================
@@ -509,7 +564,7 @@ package object aptus
       def divideBy(n: Number): Double = nmbr / n.doubleValue()
 
       // ---------------------------------------------------------------------------
-      def formatUsLocale: String = NumberUtils.IntegerFormatter.format(nmbr)
+      def formatUsLocale: String = NumberUtils.IntegerFormatter.format(nmbr) // actually uses long
       def formatExplicit: String = formatUsLocale.replace(",", "") //def formatExplicit: String = f"${int}%0f" // TODO: try
 
       // ---------------------------------------------------------------------------
@@ -527,7 +582,7 @@ package object aptus
       def assertRangeInclusive(fromInclusive: Long, toInclusive: Long): Long    = nmbr.assert(_.isInBetweenInclusive(fromInclusive, toInclusive), x => s"out of range: ${x} ([${fromInclusive}, ${toInclusive}])")
 
       // ---------------------------------------------------------------------------
-      def formatUsLocale: String = NumberUtils.IntegerFormatter.format(nmbr)
+      def formatUsLocale: String = NumberUtils.IntegerFormatter.format(nmbr) // actually uses long
       def formatExplicit: String = formatUsLocale.replace(",", "")
 
       // ---------------------------------------------------------------------------
@@ -646,8 +701,8 @@ package object aptus
     def toHexString    : String = BinaryUtils.bytesToHexString(bytes)
 
     // ---------------------------------------------------------------------------
-    def toBase64       : String = BinaryUtils.bytesToBase64   (bytes)
-    def toBase64Trimmed: String = BinaryUtils.bytesToBase64   (bytes).takeWhile(_ != '=')
+    def toBase64       : String = BinaryUtils.bytesToBase64(bytes)
+    def toBase64Trimmed: String = BinaryUtils.bytesToBase64(bytes).takeWhile(_ != '=')
 
     // ---------------------------------------------------------------------------
     def toUsAsciiString: String = new String(bytes, java.nio.charset.StandardCharsets.US_ASCII  )

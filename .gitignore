@@ -2,6 +2,8 @@ project/project/
 project/target/
 target/
 
+.idea/
+
 .cache-main
 .cache-tests
 .classpath

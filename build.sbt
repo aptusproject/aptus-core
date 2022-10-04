@@ -10,7 +10,7 @@ lazy val root = (project in file("."))
     organizationName     := "Aptus Project",
     organization         := "io.github.aptusproject", // *must* match groupId for sonatype
     name                 := "aptus-core",
-    version              := "0.3.1",
+    version              := "0.4.0",
 	homepage             := Some(url("https://github.com/aptusproject/aptus-core")),
 	organizationHomepage := Some(url("https://github.com/aptusproject")),
     startYear            := Some(2021),
@@ -26,8 +26,8 @@ lazy val root = (project in file("."))
         connection =     "scm:git@github.com:aptusproject/aptus-core.git")),
 	licenses             := Seq("Apache 2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),	
     description          := "Basic utilities for Scala.",
-    scalaVersion         :=      "3.0.0",
-    crossScalaVersions   := List("3.0.0", "2.13.9", "2.12.17") )
+    scalaVersion         :=      "3.0.2",
+    crossScalaVersions   := List("3.0.2", "2.13.9", "2.12.17") )
 
 // ---------------------------------------------------------------------------    
 scalacOptions ++= Seq("-encoding", "UTF-8") ++ //"-Yimports:java.lang,scala,scala.Predef,scala.util.chaining" -- not possible for 2.12 it seems (TODO: t210308154253 confirm)

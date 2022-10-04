@@ -40,7 +40,7 @@ object GsonParser {
   // ===========================================================================
   /** unfortunately no access to underlying Object value in gson; TODO: t201103154749 - look into cost of reflection setAccessible(true) or do a PR */
   def jsonPrimitiveToAny(x: JsonPrimitive): Any =
-         if (x.isString ) x.getAsString
+    /**/ if (x.isString ) x.getAsString
     else if (x.isBoolean) x.getAsBoolean
     else
       /*

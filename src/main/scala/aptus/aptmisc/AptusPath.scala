@@ -80,7 +80,7 @@ trait _AptusPath {
 // ===========================================================================
 private[aptus] final class AptusDirPath(override val path: String) extends _AptusPath {
   def  isEmpty(): Boolean = listContent().isEmpty
-  def nonEmpty(): Boolean = !isEmpty
+  def nonEmpty(): Boolean = !isEmpty()
 }
 
 // ===========================================================================

@@ -63,7 +63,7 @@ object Rdbms {
     private def connection(): Connection = DriverManager.getConnection(uri.toString)
 
     // ---------------------------------------------------------------------------
-    def columns(query: QueryString): Columns = super.columns(connection)(query)
+    def columns(query: QueryString): Columns = super.columns(connection())(query)
 
     // ---------------------------------------------------------------------------
     def selectAll(table: TableName): (ResultSet, Closeable) =

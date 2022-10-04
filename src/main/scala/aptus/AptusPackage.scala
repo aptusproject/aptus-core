@@ -443,7 +443,11 @@ package object aptus
 
     def groupByAdjacency[B](f: A => B): Seq[(B, Seq[A])] = MapUtils.groupByAdjacency(coll)(f)
 
+    // ---------------------------------------------------------------------------
     def countBySelf: List[(A, Int)] = coll.groupBy(identity).view.map { x => x._1 -> x._2.size }.toList.sortBy(-_._2) // TODO: t211004120452 - more efficient version
+
+    // TODO: t220929165238 - more efficient version (see groupByKey)
+    def countByKey[K, V](implicit ev: A <:< (K, V)): Seq[(Count, K)] = groupByKey.view.mapValues(_.size).toList.sortBy(-_._2).map(_.swap)
 
     // ---------------------------------------------------------------------------
     def toOptionalSeq[B](implicit ev: A <:< Option[B]): Option[Seq[B]] = if (coll.contains(None)) None else Some(coll.map(_.get))

@@ -7,7 +7,7 @@
 <!-- =========================================================================== -->
 ## SBT
 <a name="211006113932"></a>
-`libraryDependencies += "io.github.aptusproject" %% "aptus-core" % "0.3.0"`
+`libraryDependencies += "io.github.aptusproject" %% "aptus-core" % "0.4.0"`
 
 Then import the following:
 
@@ -16,9 +16,9 @@ import aptus._ // or more specific imports, eg import.aptus.String_
 ```
 
 The library is available for Scala
-[3.0](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_3/0.3.0/jar),
-[2.13](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.13/0.3.0/jar), and 
-[2.12](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.12/0.3.0/jar)
+[3.0](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_3/0.4.0/jar),
+[2.13](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.13/0.4.0/jar), and 
+[2.12](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.12/0.4.0/jar)
 
 
 <!-- =========================================================================== -->
@@ -236,6 +236,7 @@ Seq(1, 2, 3).force.tuple2   // error
 ... and so on
 ```
 
+The `.force.one` mechanism is one of the most useful operations, and a much safer bet than simply doing `.head`.
 
 <!-- =========================================================================== -->
 ### Help with Options
@@ -359,6 +360,30 @@ Seq("foo", "bar").map(_.associateLeft(_.toUpperCase)).force.map.p
 Seq("foo", "bar").map(_.associateRight(_.size)).force.map.p
   // returns: Map("foo" -> 3, "bar" -> 3)
 ```
+
+<!-- --------------------------------------------------------------------------- -->
+Group by key:
+<a name="221004113246"></a><a name="group-by-key"></a>
+
+```scala
+Seq("foo" -> 1, "bar" -> 2, "foo" -> 3).groupByKey.p
+  // returns: Map(bar -> List(2), foo -> List(1, 3))
+Seq("foo" -> 1, "bar" -> 2, "foo" -> 3).groupByKeyWithTreeMap.p
+  // returns: TreeMap(bar -> List(2), foo -> List(1, 3))
+Seq("foo" -> 1, "bar" -> 2, "foo" -> 3).groupByKeyWithListMap.p
+  // returns: ListMap(foo -> List(1, 3), bar -> List(2))
+```
+
+
+<!-- --------------------------------------------------------------------------- -->
+Count by key:
+<a name="221004113247"></a><a name="count-by-key"></a>
+
+```scala
+Seq("foo" -> 1, "bar" -> 2, "foo" -> 3).countByKey.p
+  // returns: List((2,foo), (1,bar))
+```
+
 
 <!-- =========================================================================== -->
 ### Help with Tuples
@@ -558,6 +583,7 @@ Notes:
 - Lots more tests to be written, though many methods in aptus are too trivial to warrant a test, e.g. `def pipeIf(test: Boolean)(f: A => A): A = if (test) f(a) else a`
 - More useful methods remain to be ported from Aptus' prototype (not published because too messy)
 - See all the `TODO`s in the code
+- Also see Gallia's [backlog](https://github.com/galliaproject/gallia-docs/blob/master/tasks.md#aptus)
 
 <!-- =========================================================================== -->
 ## Contributing

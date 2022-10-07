@@ -24,8 +24,6 @@ package object aptus
   def unsupportedOperation(x: Any*): Nothing = { throw new UnsupportedOperationException(x.mkString(", ")) }
 
   // ---------------------------------------------------------------------------
-
-  // ---------------------------------------------------------------------------
   def iterableOrdering[T : Ordering]: Ordering[Iterable[T]] = SeqUtils.iterableOrdering[T] // note: Ordering is invariant
   def   optionOrdering[T : Ordering]: Ordering[Option  [T]] = SeqUtils.  optionOrdering[T]
 
@@ -58,8 +56,9 @@ package object aptus
 
   // ===========================================================================
   implicit class Anything_[A](private val a: A) extends AnyVal {
-    def str                 : String = a.toString
-    def prt                 : A      = { System.out.println(  a ); a }
+    def str: String = a.toString
+
+    def prt    ()           : A      = { System.out.println(  a ); a }
     def inspect(f: A => Any): A      = { System.out.println(f(a)); a }
 
     // ---------------------------------------------------------------------------
@@ -76,9 +75,9 @@ package object aptus
 
       /** thrush combinator (see https://users.scala-lang.org/t/implicit-class-for-any-and-or-generic-type/501);
        *  I guess the altenative is to do ` match { case ... ` */
-      @deprecated("use pipe now")         def thnIf            (test: Boolean)     (f: A => A)           : A = if (test)    f(a) else   a
-      @deprecated("use pipe now")         def thnIf    [B <: A](pred: A => Boolean)(f: A => B)           : A = if (pred(a)) f(a) else   a
-      @deprecated("use pipe now")         def thnOpt   [B     ](opt : Option[B]   )(f: B => A => A)      : A = opt.map(f(_)(a)).getOrElse(a)
+      @deprecated("use pipe now") def thnIf            (test: Boolean)     (f: A => A)           : A = if (test)    f(a) else   a
+      @deprecated("use pipe now") def thnIf    [B <: A](pred: A => Boolean)(f: A => B)           : A = if (pred(a)) f(a) else   a
+      @deprecated("use pipe now") def thnOpt   [B     ](opt : Option[B]   )(f: B => A => A)      : A = opt.map(f(_)(a)).getOrElse(a)
 
       @deprecated("use tap now") def sideEffect                          (f: A => Unit)              : A  = {                f(a)                ; a }
       @deprecated("use tap now") def sideEffectIf    (pred: A => Boolean)(f: A => Unit)              : A  = { if (pred(a)) { f(a) }              ; a }
@@ -86,10 +85,10 @@ package object aptus
     // ---------------------------------------------------------------------------
     @fordevonly def __exit: Nothing = { ReflectionUtils.formatExitTrace(().reflect.stackTrace(), "intentionally stopping").p; System.exit(0); illegalState("can't happen") }
 
-    @fordevonly def p      : A =   prt
-    @fordevonly def p__    : A = { prt; __exit }
-    @fordevonly def pp     : A = { System.out.print  (s"${a}\n\n"); a      }
-    @fordevonly def dbg    : A = { System.out.println(s"${a.getClass}: |${a}|"); a }
+    @fordevonly def p      : A =   prt                                               // intentionally not using () for brevity (non-idiosyncratic in Scala)
+    @fordevonly def p__    : A = { prt; __exit }                                     // intentionally not using () for brevity (non-idiosyncratic in Scala)
+    @fordevonly def pp     : A = { System.out.print  (s"${a}\n\n"); a }              // intentionally not using () for brevity (non-idiosyncratic in Scala)
+    @fordevonly def dbg    : A = { System.out.println(s"${a.getClass}: |${a}|"); a } // intentionally not using () for brevity (non-idiosyncratic in Scala)
 
     // "i" for "inspect"
     @fordevonly def i  (f: A => Any                ): A = inspect(f)
@@ -98,11 +97,11 @@ package object aptus
     @fordevonly def i__(f: A => Any, prefix: String): A = { System.out.println(s"${prefix}\t${f(a)}"); __exit }
 
     // ---------------------------------------------------------------------------
-    def assert(p: A => Boolean):              A = assert(p, identity)
-    def assert(p: A => Boolean, f: A => Any): A = { Predef.assert(p(a), f(a)); a }
+    @deprecated("use .ensuring instead") def assert(p: A => Boolean):              A = assert(p, identity)
+    @deprecated("use .ensuring instead") def assert(p: A => Boolean, f: A => Any): A = { Predef.assert(p(a), f(a)); a }
 
-    def require(p: A => Boolean):              A = require(p, identity)
-    def require(p: A => Boolean, f: A => Any): A = { Predef.require(p(a), f(a)); a }
+    @deprecated("use .ensuring instead") def require(p: A => Boolean):              A = require(p, identity)
+    @deprecated("use .ensuring instead") def require(p: A => Boolean, f: A => Any): A = { Predef.require(p(a), f(a)); a }
 
     // ---------------------------------------------------------------------------
     def in: aptus.aptmisc.As[A] = new aptus.aptmisc.As[A](a)

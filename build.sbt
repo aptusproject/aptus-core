@@ -39,7 +39,7 @@ scalacOptions ++= Seq("-encoding", "UTF-8") ++ //"-Yimports:java.lang,scala,scal
 // ===========================================================================    
 // dependencies
 
-val compatVersion              = "2.4.1"
+val compatVersion              = "2.8.1"
 val parallelCollectionsVersion = "1.0.0"
 
 // ---------------------------------------------------------------------------

@@ -14,7 +14,7 @@ private[aptus] final class Closeabled[T](val underlying: T, val cls: Closeable) 
       // ---------------------------------------------------------------------------
       def consumeToList       [U](implicit ev: T =:= Iterator[U]): List[U]               = consume(_.toList) // fairly common
       def toCloseabledIterator[U](implicit ev: T =:= Iterator[U]): CloseabledIterator[U] = new CloseabledIterator[U](underlying, cls)
-
+def toCloseabledIterator0[U](implicit ev: T <:< Iterator[U]): CloseabledIterator[U] = new CloseabledIterator[U](underlying, cls) // version with =:= seems to cause problems for 2.12
       // ---------------------------------------------------------------------------
       def consume[U](f: T =>            U ):            U  = { val result = f(underlying); close(); result }
       def     map[U](f: T =>            U ): Closeabled[U] = Closeabled.fromPair(f(underlying), cls)

@@ -51,6 +51,8 @@ val commonsCompressVersion     = "1.21"
 val guavaVersion               = "30.1.1-jre"
 val gsonVersion                = "2.8.9"
 
+val uTestVersion               = "0.7.10"
+
 // ---------------------------------------------------------------------------
 libraryDependencies ++= // hard to do anything on the JVM without those nowadays
   Seq(
@@ -95,7 +97,7 @@ shadingRules  += ShadingRule.moveUnder("com.google.common", "guava28")
 // ===========================================================================
 // testing
 
-libraryDependencies += "com.lihaoyi" %% "utest" % "0.7.10" % "test"
+libraryDependencies += "com.lihaoyi" %% "utest" % uTestVersion % "test"
 
 testFrameworks += new TestFramework("utest.runner.Framework")
 

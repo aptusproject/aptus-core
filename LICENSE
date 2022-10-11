@@ -216,7 +216,6 @@ This product bundles:
 		Google Guava               30.1.1-jre (for details see https://github.com/google/guava)
 		SBT                        1.5.2      (for details see https://github.com/sbt/sbt)
 		SBT Sonatype               3.9.7      (for details see https://github.com/xerial/sbt-sonatype/tags)
-		SBT PGP                    2.0.1      (for details see https://github.com/sbt/sbt-pgp)
 		Scala                      2.13.4     (for details see https://github.com/scala/scala)
 		Scala Collection Compat    2.8.1      (for details see https://github.com/scala/scala-collection-compat)
 		Scala Parallel Collections 1.0.0      (for details see https://github.com/scala/scala-parallel-collections)

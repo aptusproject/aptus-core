@@ -3,7 +3,7 @@ package aptutils
 
 import scala.util.chaining._
 import scala.collection.JavaConverters._
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.ExecutionContext
 import java.io.{OutputStream, InputStream}
 import org.apache.commons.io.IOUtils
 

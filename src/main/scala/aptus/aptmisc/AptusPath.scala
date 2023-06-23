@@ -2,7 +2,7 @@ package aptus
 package aptmisc
 
 import java.io._
-import java.nio.file.{CopyOption, StandardCopyOption, Files => NioFiles, Path => NioPath, Paths => NioPaths}
+import java.nio.file.{CopyOption, Files => NioFiles, Paths => NioPaths}
 
 // ===========================================================================
 trait _AptusPath {
@@ -24,7 +24,7 @@ trait _AptusPath {
 
   // ===========================================================================
   def touchFile()               : Unit = com.google.common.io.Files.touch(ioFile)
-  def writeFile(content: String): Unit = content.writeFileContent(path) /* see String_ */
+  def writeFile(content: String): Unit = { content.writeFileContent(path) /* see String_ */; () }
 
   def ensureDir   (): DirPath = if (_isDir()) path else createNewDir()
   def createNewDir(): DirPath = { assert(ioFile.mkdirs(), path); path }

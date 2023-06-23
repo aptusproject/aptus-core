@@ -1,4 +1,4 @@
-package aptustest
+package aptustesting
 
 import aptus._
 
@@ -6,7 +6,7 @@ import aptus._
 @deprecated object AptusQuicktest { // TODO: t230623142128 - to be ported to actual tests
 
   // ===========================================================================
-  def main(args: Array[String]): Unit = {    
+  def main(args: Array[String]): Unit = { // run with: sbt "Test / runMain aptustesting.AptusQuicktest"
     init ()
     init2()
 

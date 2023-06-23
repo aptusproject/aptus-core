@@ -27,7 +27,7 @@ lazy val root = (project in file("."))
 	licenses             := Seq("Apache 2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),	
     description          := "Basic utilities for Scala.",
     scalaVersion         :=               "2.13.11",
-    crossScalaVersions   := List("3.0.2", "2.13.11", "2.12.17") )
+    crossScalaVersions   := List("3.0.2", "2.13.11", "2.12.18") )
 
 // ---------------------------------------------------------------------------    
 scalacOptions ++= Seq("-encoding", "UTF-8") ++ //"-Yimports:java.lang,scala,scala.Predef,scala.util.chaining" -- not possible for 2.12 it seems (TODO: t210308154253 confirm)
@@ -39,19 +39,19 @@ scalacOptions ++= Seq("-encoding", "UTF-8") ++ //"-Yimports:java.lang,scala,scal
 // ===========================================================================    
 // dependencies
 
-val compatVersion              = "2.8.1"
-val parallelCollectionsVersion = "1.0.0"
+val compatVersion              = "2.11.0"
+val parallelCollectionsVersion = "1.0.4"
 
 // ---------------------------------------------------------------------------
-val commonsMathVersion         = "3.5"
-val commonsLangVersion         = "3.5"
-val commonsIoVersion           = "2.8.0"
-val commonsCsvVersion          = "1.8"
-val commonsCompressVersion     = "1.21"
-val guavaVersion               = "30.1.1-jre"
-val gsonVersion                = "2.8.9"
+val commonsMathVersion         = "3.6.1"
+val commonsLangVersion         = "3.12.0"
+val commonsIoVersion           = "2.13.0"
+val commonsCsvVersion          = "1.10.0"
+val commonsCompressVersion     = "1.23.0"
+val guavaVersion               = "32.0.1-jre"
+val gsonVersion                = "2.10.1"
 
-val uTestVersion               = "0.7.10"
+val uTestVersion               = "0.8.1"
 
 // ---------------------------------------------------------------------------
 libraryDependencies ++= // hard to do anything on the JVM without those nowadays
@@ -77,7 +77,7 @@ libraryDependencies ++= // hard to do anything on the JVM without those nowadays
 
     // ---------------------------------------------------------------------------
     // JSON
-    "com.google.code.gson" % "gson" % gsonVersion) ++
+    "com.google.code.gson" % "gson" % gsonVersion) ++ // TODO: t230623160248 - switch to ujson rather
   //
   // ---------------------------------------------------------------------------
   (scalaBinaryVersion.value match {

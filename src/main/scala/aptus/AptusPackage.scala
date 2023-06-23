@@ -209,11 +209,17 @@ package object aptus
     def readUrlLines()  : Seq[Line] = UrlUtils.  lines(str)
 
     // ===========================================================================
-    def prepend(prefix: String)                      = s"$prefix$str"
-    def append (suffix: String)                      = s"$str$suffix"
+    def prepend(prefix: String)                     : String = s"$prefix$str"
+    def append (suffix: String)                     : String = s"$str$suffix"
 
-    def surroundWith(boundary: String)               = s"$boundary$str$boundary"
-    def surroundWith(prefix: String, suffix: String) = s"$prefix$str$suffix"
+    def prependTab                                  : String = prepend("\t")
+    def  appendTab                                  : String =  append("\t")
+
+    def prependNewline                              : String = prepend("\n")
+    def  appendNewline                              : String =  append("\n")
+
+    def surroundWith(boundary: String)              : String = s"$boundary$str$boundary"
+    def surroundWith(prefix: String, suffix: String): String = s"$prefix$str$suffix"
     
     @fordevonly def swp : String = surroundWith("|")   // convenient for debugging (shows leading/trailing whitespaces)
     @fordevonly def swpp: String = surroundWith("|").p // convenient for debugging (shows leading/trailing whitespaces)
@@ -369,6 +375,9 @@ package object aptus
     def requireSorted()(implicit ord: Ordering[A]): Seq[A] = { require(coll.sorted == coll); coll }
     def  assertSorted()(implicit ord: Ordering[A]): Seq[A] = { require(coll.sorted == coll); coll }
 
+    def requireSortedBy[B : Ordering](f: A => B): Seq[A] = { val tmp = coll.map(f); require(tmp.sorted == tmp); coll }
+    def  assertSortedBy[B : Ordering](f: A => B): Seq[A] = { val tmp = coll.map(f); require(tmp.sorted == tmp); coll }
+
     // ---------------------------------------------------------------------------
     def writeFileLines(path: FilePath): FilePath = FileUtils.writeLines(path, coll.map(_.toString))
 
@@ -401,7 +410,8 @@ package object aptus
     // ---------------------------------------------------------------------------
     def isDistinct                               : Boolean = coll.size == coll.toSet.size
     def isDisjointWith[B >: A](that: Iterable[B]): Boolean = coll.intersect(that.toSeq).isEmpty
-    def isSorted(implicit ev: Ordering[A])       : Boolean = coll.sorted == coll // TODO: more efficient version
+    def isSorted(implicit ev: Ordering[A])       : Boolean = coll.sorted    == coll // TODO: more efficient version
+    def isSortedBy[B: Ordering](f: A => B)       : Boolean = coll.sortBy(f) == coll // TODO: more efficient version
 
     // ---------------------------------------------------------------------------
     def duplicates: Seq[A] = coll.diff(coll.distinct)
@@ -479,7 +489,13 @@ package object aptus
 
     // ---------------------------------------------------------------------------
     def toOptionalSeq[B](implicit ev: A <:< Option[B]): Option[Seq[B]] = if (coll.contains(None)) None else Some(coll.map(_.get))
-  }
+
+    // ---------------------------------------------------------------------------
+    def tailOption: Option[Seq[A]] = if (coll.size > 0) Some(coll.tail) else None
+    def initOption: Option[Seq[A]] = if (coll.size > 0) Some(coll.init) else None
+
+    // ---------------------------------------------------------------------------
+    def containsAllOf(that: Seq[A]): Boolean = that.diff(coll).isEmpty }
 
   // ===========================================================================
   implicit class Iterator_[A](val itr: Iterator[A]) extends AnyVal {
@@ -492,13 +508,7 @@ package object aptus
     def groupByPreSortedKey[K, V](implicit ev: A <:< (K, V))                    :         Iterator[(K, Seq[V])] = IteratorUtils.groupByPreSortedKey(itr.asInstanceOf[Iterator[(K, V)]])
 
     // ---------------------------------------------------------------------------
-    def zipSameSize[B](that: Iterator[B]): Iterator[(A, B)] = { //TODO: to IteratorUtils
-      new collection.AbstractIterator[(A, B)] { // TODO: knownSize
-        def    next() = (itr.next() , that.next())
-        def hasNext   = (itr.hasNext, that.hasNext) match {
-          case (false, false) => false
-          case (true , true ) => true
-          case (x, y)         => illegalState("not the same size (hasNext/hasNext): ", x, y) } } }
+    def zipSameSize[B](that: Iterator[B]): Iterator[(A, B)] = aptutils.IteratorUtils.zipSameSize(itr, that)
 
     def writeLines(path: String)(implicit ev: A <:< String) = writeGzipLines(path, 100)
 
@@ -506,7 +516,7 @@ package object aptus
     // TODO: bzip2 counterpart
     def writeGzipLines
        (out         : FilePath /* TODO: temp file */,
-        flushModulo : Long,
+        flushModulo : Long                 = 100,
         logModulo   : Option[Long => Unit] = None /* eg Some(println) */)
         (implicit ev: A <:< String) =
       FileUtils.writeGzipLines(out, flushModulo, logModulo)(itr.asInstanceOf[Iterator[String]])
@@ -514,7 +524,8 @@ package object aptus
 
   // ===========================================================================
   implicit class Map_[K, V](val mp: Map[K, V]) extends AnyVal {
-    def force(key: K): V = mp.get(key).get // stdlib polyseme (see Option's)
+    def force(key: K):        V  = mp.get(key).get // stdlib polyseme (see Option's)
+    def opt  (key: K): Option[V] = mp.get(key)     // stdlib polyseme (see Option's)
 
     // ---------------------------------------------------------------------------
     def toMutableMap                        :   mutable.    Map[K, V] = MapUtils.toMutableMap(mp)

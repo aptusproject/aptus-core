@@ -4,24 +4,6 @@ package aptutils
 // ===========================================================================
 object IteratorUtils {
 
-  def selfClosing[A](parent: Iterator[A], cls: Closeable*): Iterator[A] =
-    new Iterator[A] with Closeable {
-      private var closed: Boolean = false
-
-      // ===========================================================================
-      override def hasNext: Boolean = !closed && parent.hasNext
-
-      override def next(): A = {
-        val next = parent.next()
-        if (!parent.hasNext) { close() }
-        next
-      }
-
-      // ---------------------------------------------------------------------------
-      override def close() = { closed = true; cls.foreach(_.close()) }
-    }
-  
-  // ===========================================================================
   def groupByPreSortedKey[K, V](itr: Iterator[(K, V)]): Iterator[(K, List[V])] = {
     var previousKeyOpt: Option[K] = None
     
@@ -48,7 +30,16 @@ object IteratorUtils {
         tmp } ++
       previousKeyOpt.map(_ -> cross.mutList(currentGroup)).iterator
   }
-    
+
+  // ===========================================================================
+  def zipSameSize[A, B](itr: Iterator[A], that: Iterator[B]): Iterator[(A, B)] =
+    new collection.AbstractIterator[(A, B)] { // TODO: knownSize
+      def    next() = (itr.next() , that.next())
+      def hasNext   = (itr.hasNext, that.hasNext) match {
+        case (false, false) => false
+        case (true , true ) => true
+        case (x, y)         => illegalState("not the same size (hasNext/hasNext): ", x, y) } }
+
 }
 
 // ===========================================================================

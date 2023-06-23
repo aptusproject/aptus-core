@@ -7,7 +7,7 @@ object SeqUtils {
   def distinct[A](a: Seq[A], f: (Boolean, Any) => Unit): Seq[A] = {
     f(
       a.isDistinct,
-      (a.size, a.duplicates.#@@.sectionAllOff(2)))
+      (a.size -> a.distinct.size, a.duplicates.#@@.sectionAllOff(2)))
 
     a
   }

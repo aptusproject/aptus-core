@@ -58,8 +58,9 @@ package object aptus
   implicit class Anything_[A](private val a: A) extends AnyVal {
     def str: String = a.toString
 
-    def prt    ()           : A      = { System.out.println(  a ); a }
-    def inspect(f: A => Any): A      = { System.out.println(f(a)); a }
+    def prt    ()           : A = { System.out.println(  a )                   ; a }
+    def prt2   (s: String)  : A = { System.out.println(  a.toString.prepend(s)); a}
+    def inspect(f: A => Any): A = { System.out.println(f(a))                   ; a }
 
     // ---------------------------------------------------------------------------
     def pipeIf            (test: Boolean)     (f: A => A)           : A = if (test)    f(a) else   a

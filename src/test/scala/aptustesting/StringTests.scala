@@ -9,8 +9,13 @@ object StringTests extends TestSuite {
   val tests = Tests {
     
     // ===========================================================================
-    // splitBy
-    
+    // split
+
+    // ---------------------------------------------------------------------------
+    test(assert("hello|world".split  ("|").toList.p == List("h", "e", "l", "l", "o", "|", "w", "o", "r", "l", "d"))) // unintuitive (java's)
+    test(assert("hello|world".splitBy("|") == Seq("hello", "world")))
+
+    // ---------------------------------------------------------------------------
     // noop-like
     test(compare( ""        .splitBy("|"), Seq("")))
     test(compare( " "       .splitBy("|"), Seq(" ")))
@@ -20,7 +25,16 @@ object StringTests extends TestSuite {
     test(compare("|foo|bar" .splitBy("|"), Seq("", "foo", "bar")))
     test(compare( "foo|bar|".splitBy("|"), Seq(    "foo", "bar", "")))
     test(compare("|foo|bar|".splitBy("|"), Seq("", "foo", "bar", "")))
-    
+
+    // ---------------------------------------------------------------------------
+    test("hello\tworld\thow\tare\tyou".splitUntil('\t', 3) == Seq("hello", "world", "how\tare\tyou"))
+
+    // ---------------------------------------------------------------------------
+    test(assert("a"        .splitBy("\n").size == 1))
+    test(assert("a\n"      .splitBy("\n").size == 2))
+    test(assert("a\nb\nc"  .splitBy("\n").size == 3))
+    test(assert("a\nb\nc\n".splitBy("\n").size == 4))
+
     // ===========================================================================
     // camelCaseToSnake <-> snakeToCamelCase
 

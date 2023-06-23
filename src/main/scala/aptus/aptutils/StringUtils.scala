@@ -78,6 +78,18 @@ object StringUtils {
     cells
   }
 
+  // ===========================================================================
+  def splitUntil(str: String)(char: Char, c: Int): Seq[String] = {
+
+    /* TODO: tailrec */
+    def rec(u: Iterator[Char], char: Char, c: Int): Seq[Iterator[Char]] =
+      if  (c == 0) Nil
+      else u.takeWhile(_ != char) +: rec(u, char, c - 1)
+
+    rec(str.iterator, char, c)
+      .map(_.mkString)
+  }
+
 }
 
 // ===========================================================================

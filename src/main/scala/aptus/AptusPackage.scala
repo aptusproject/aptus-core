@@ -11,12 +11,8 @@ import java.time.format.DateTimeFormatter
 import aptus.aptutils._
 
 // ===========================================================================
-package object aptus
-    extends AptusAnnotations
-    with    AptusAliases
-    with    AptusCommonAliases {
-  // TODO: t211006141756 - should most of them have @inline? is there a downside?
-
+package aptus {
+ trait TopLevel {
   /* for extends AnyVals, see https://stackoverflow.com/questions/14929422/should-implicit-classes-always-extend-anyval */
 
   def illegalState        (x: Any*): Nothing = { throw new IllegalStateException        (x.mkString(", ")) }
@@ -26,6 +22,8 @@ package object aptus
   // ---------------------------------------------------------------------------
   def iterableOrdering[T : Ordering]: Ordering[Iterable[T]] = SeqUtils.iterableOrdering[T] // note: Ordering is invariant
   def   optionOrdering[T : Ordering]: Ordering[Option  [T]] = SeqUtils.  optionOrdering[T]
+
+  //def tuple2Ordering[T1 : Ordering, T2: Ordering]: Ordering[Tuple2  [T1, T2]] = ???
 
   def   seqOrdering[T : Ordering]: Ordering[Seq  [T]] = SeqUtils.  seqOrdering[T]
   def  listOrdering[T : Ordering]: Ordering[List [T]] = SeqUtils. listOrdering[T]
@@ -38,6 +36,16 @@ package object aptus
   def zip[T1, T2, T3, T4]    (a: Iterable[T1], b: Iterable[T2], c: Iterable[T3], d: Iterable[T4])                 : Iterable[(T1, T2, T3, T4)]     = a.zip(b).zip(c).zip(d)       .map { case  (((a, b), c), d)     => (a, b, c, d) }
   def zip[T1, T2, T3, T4, T5](a: Iterable[T1], b: Iterable[T2], c: Iterable[T3], d: Iterable[T4], e: Iterable[T5]): Iterable[(T1, T2, T3, T4, T5)] = a.zip(b).zip(c).zip(d).zip(e).map { case ((((a, b), c), d), e) => (a, b, c, d, e) }
   def zip[T1, T2](a: Iterable[T1], b: Iterable[T2]): Iterable[(T1, T2)] = a.zip(b) // for good measure, should favor: a.zip(b)
+ }
+}
+
+// ===========================================================================
+package object aptus
+    extends TopLevel
+    with AptusAnnotations
+    with    AptusAliases
+    with    AptusCommonAliases {
+  // TODO: t211006141756 - should most of them have @inline? is there a downside?
 
   // ===========================================================================
   implicit class Unit_(val u: Unit) extends AnyVal { // TODO: t201213095810 anyway to add that to Predef? implicit class doesn't seem to work
@@ -154,6 +162,9 @@ package object aptus
 
     def systemCallLines()               : Seq[String] = systemCall().splitBy("\n")
 
+    /** convenient if using bash expansion characters for instance */
+    def systemCallViaScript(): String = str.writeFileContent("/tmp/230125112953.sh").pipe(x => s"bash ${x}" !!)
+
     // ---------------------------------------------------------------------------
     // encoding
     def toBase64   : String = str.getBytes.toBase64
@@ -238,6 +249,7 @@ package object aptus
     def pound      : String = append("#" ); def pound     (suffix: Any): String = pound     .append(suffix.toString)
     def at         : String = append("@" ); def at        (suffix: Any): String = at        .append(suffix.toString)
     def space      : String = append(" " ); def space     (suffix: Any): String = space     .append(suffix.toString)
+    def equalSign  : String = append("=" ); def equalSign (suffix: Any): String = equalSign .append(suffix.toString)
 
     def / (suffix: String): String = slash(suffix)
 
@@ -294,6 +306,8 @@ package object aptus
     def splitXsv(sep: Char): List[Cell] = StringUtils.splitXsv(str, sep)
     def splitTabs          : List[Cell] = splitXsv('\t')
     def splitCommas        : List[Cell] = splitXsv(',')
+
+    def splitUntil(char: Char, c: Int): Seq[String] = aptutils.StringUtils.splitUntil(str)(char, c)
 
     // ===========================================================================
     import aptutils.TimeUtils._

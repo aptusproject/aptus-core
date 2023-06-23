@@ -168,25 +168,42 @@ package object aptus
     // ===========================================================================
     def path = new aptmisc.AptusPath(if (str.startsWith("~/")) ().fs.homeDirectoryPath() / str.drop(2) else str)
 
-      // ---------------------------------------------------------------------------
+      // ===========================================================================
       // TODO: t211004131206 - move to path?
       def writeFileContent(path: String): FilePath = FileUtils.writeContent(path, content = str)
       def  readFileContent()            : Content  = FileUtils.readFileContent(path = str)
 
-        // ---------------------------------------------------------------------------
-        def readFileLines(): List[Line] = FileUtils.readFileLines(path = str)
-        def readFileTsv  (): List[Vector[Cell]] = readFileLines().map(_.splitBy("\t").toVector)
-        def readFileCsv  (): List[Vector[Cell]] = readFileLines().map(_.splitBy( ",").toVector)
+      // ---------------------------------------------------------------------------
+      def appendToFile     (out: FilePath): OutputFilePath = if (out.endsWith(".gz")) appendToGzipFile(out) else appendToPlainFile(out)
+      def appendToPlainFile(out: FilePath): OutputFilePath = FileUtils.appendToPlainFile(out, str)
+      def appendToGzipFile (out: FilePath): OutputFilePath = FileUtils.appendToGzipFile (out, str)
 
-        def streamFileLines(): (Iterator[Line],         Closeable) = FileUtils.streamFileLines(path = str)
-        def streamFileTsv  (): (Iterator[Vector[Cell]], Closeable) = str.streamFileLines().mapFirst(_.map(_.splitXsv('\t').toVector))
-        def streamFileCsv  (): (Iterator[Vector[Cell]], Closeable) = str.streamFileLines().mapFirst(_.map(_.splitXsv(',') .toVector))
+      // ===========================================================================
+      def readFileLines(): List[Line] = FileUtils.readFileLines(path = str)
+      def readFileTsv  (): List[Vector[Cell]] = readFileLines().map(_.splitXsv('\t').toVector)
+      def readFileCsv  (): List[Vector[Cell]] = readFileLines().map(_.splitXsv(',') .toVector)
+
+      // ---------------------------------------------------------------------------
+      @deprecated @inline def streamFileLines(): (Iterator[Line],         Closeable) = streamFileLines1()
+      @deprecated @inline def streamFileTsv  (): (Iterator[Vector[Cell]], Closeable) = streamFileTsv1  ()
+      @deprecated @inline def streamFileCsv  (): (Iterator[Vector[Cell]], Closeable) = streamFileCsv1  ()
+
+        // ---------------------------------------------------------------------------
+        // TODO: rename
+        def streamFileLines1(): (Iterator[Line],         Closeable) = FileUtils.streamFileLines(path = str)
+        def streamFileTsv1  (): (Iterator[Vector[Cell]], Closeable) = str.streamFileLines1().mapFirst(_.map(_.splitXsv('\t').toVector))
+        def streamFileCsv1  (): (Iterator[Vector[Cell]], Closeable) = str.streamFileLines1().mapFirst(_.map(_.splitXsv(',') .toVector))
 
         // TODO: rename
-        def streamFileLines2(): CloseabledIterator[Line]         = FileUtils.streamFileLines(path = str).pipe(CloseabledIterator.fromPair)
-        def streamFileTsv2  (): CloseabledIterator[Vector[Cell]] = str.streamFileLines2().map(_.splitXsv('\t').toVector)
-        def streamFileCsv2  (): CloseabledIterator[Vector[Cell]] = str.streamFileLines2().map(_.splitXsv(',') .toVector)
-        
+        def streamFileLines2(): CloseabledIterator[Line]         = streamFileLines1().pipe(CloseabledIterator.fromPair)
+        def streamFileTsv2  (): CloseabledIterator[Vector[Cell]] = streamFileTsv1  ().pipe(CloseabledIterator.fromPair)
+        def streamFileCsv2  (): CloseabledIterator[Vector[Cell]] = streamFileCsv1  ().pipe(CloseabledIterator.fromPair)
+
+        // TODO: rename
+        def streamFileLines3(): SelfClosingIterator[Line]         = streamFileLines1().pipe(SelfClosingIterator.fromPair)
+        def streamFileTsv3  (): SelfClosingIterator[Vector[Cell]] = streamFileTsv1()  .pipe(SelfClosingIterator.fromPair)
+        def streamFileCsv3  (): SelfClosingIterator[Vector[Cell]] = streamFileCsv1()  .pipe(SelfClosingIterator.fromPair)
+
     // ===========================================================================
     def readUrlContent(): Content   = UrlUtils.content(str)
     def readUrlLines()  : Seq[Line] = UrlUtils.  lines(str)

@@ -63,7 +63,7 @@ package object aptus
     def inspect(f: A => Any): A = { System.out.println(f(a))                   ; a }
 
     // ---------------------------------------------------------------------------
-    def pipeIf            (test: Boolean)     (f: A => A)           : A = if (test)    f(a) else   a
+    def pipeIf    [B <: A](test: Boolean)     (f: A => B)           : A = if (test)    f(a) else   a
     def pipeIf    [B <: A](pred: A => Boolean)(f: A => B)           : A = if (pred(a)) f(a) else   a
     def pipeOpt   [B     ](opt : Option[B]   )(f: B => A => A)      : A = opt.map(f(_)(a)).getOrElse(a)
 
@@ -96,13 +96,20 @@ package object aptus
     @fordevonly def i  (f: A => Any, prefix: String): A = { System.out.println(s"${prefix}\t${f(a)}"); a }
     @fordevonly def i__(f: A => Any                ): A = { System.out.println(               f(a)  ); __exit }
     @fordevonly def i__(f: A => Any, prefix: String): A = { System.out.println(s"${prefix}\t${f(a)}"); __exit }
+    @fordevonly def p___ : A = { System.out.println(s"${a}"); System.in.read(); a }
+  //@fordevonly def i___(f: A => Any, prefix: String): A = { System.out.println(s"${prefix}\t${f(a)}"); System.in.read() }
 
     // ---------------------------------------------------------------------------
+    def ensuring2(p: A => Boolean, f: A => Any): A = { Predef.assert(p(a), f(a)); a }
+
     @deprecated("use .ensuring instead") def assert(p: A => Boolean):              A = assert(p, identity)
-    @deprecated("use .ensuring instead") def assert(p: A => Boolean, f: A => Any): A = { Predef.assert(p(a), f(a)); a }
+                                         def assert(p: A => Boolean, f: A => Any): A = { Predef.assert(p(a), f(a)); a }
 
     @deprecated("use .ensuring instead") def require(p: A => Boolean):              A = require(p, identity)
-    @deprecated("use .ensuring instead") def require(p: A => Boolean, f: A => Any): A = { Predef.require(p(a), f(a)); a }
+                                         def require(p: A => Boolean, f: A => Any): A = { Predef.require(p(a), f(a)); a }
+
+    def assertEquals [B]           (value: B): A = { Predef.assert(  a  == value,   a  -> value); a }
+    def assertEquals2[B](f: A => B)(value: B): A = { Predef.assert(f(a) == value, f(a) -> value); a }
 
     // ---------------------------------------------------------------------------
     def in: aptus.aptmisc.As[A] = new aptus.aptmisc.As[A](a)

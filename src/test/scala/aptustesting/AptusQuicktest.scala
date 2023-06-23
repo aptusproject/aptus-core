@@ -192,12 +192,12 @@ import aptus._
     // ---------------------------------------------------------------------------
     val values1: Nes[Int] = Seq(1, 2, 3)
     val values2: Pes[Int] = Some(Seq(1, 2, 3))
-    println(values1, values2)
+    println(Seq(values1, values2))
 
     @ordermatters
     val a = 1
     val b = 2
-    println(a, b)
+    println(Seq(a, b))
 
     // ---------------------------------------------------------------------------
     Seq(1, 2, 3).splitAtHead.p // (1,List(2, 3))

@@ -94,8 +94,8 @@ package object aptus
     // ---------------------------------------------------------------------------
     @fordevonly def __exit: Nothing = { ReflectionUtils.formatExitTrace(().reflect.stackTrace(), "intentionally stopping").p; System.exit(0); illegalState("can't happen") }
 
-    @fordevonly def p      : A =   prt                                               // intentionally not using () for brevity (non-idiosyncratic in Scala)
-    @fordevonly def p__    : A = { prt; __exit }                                     // intentionally not using () for brevity (non-idiosyncratic in Scala)
+    @fordevonly def p      : A =   prt()                                             // intentionally not using () for brevity (non-idiosyncratic in Scala)
+    @fordevonly def p__    : A = { prt(); __exit }                                   // intentionally not using () for brevity (non-idiosyncratic in Scala)
     @fordevonly def pp     : A = { System.out.print  (s"${a}\n\n"); a }              // intentionally not using () for brevity (non-idiosyncratic in Scala)
     @fordevonly def dbg    : A = { System.out.println(s"${a.getClass}: |${a}|"); a } // intentionally not using () for brevity (non-idiosyncratic in Scala)
 

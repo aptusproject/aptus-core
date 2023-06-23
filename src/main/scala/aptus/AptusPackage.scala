@@ -121,11 +121,13 @@ package object aptus
       def inNoneIfEmpty(implicit ev: A <:< Iterable[_]): Option[A] = if (a.isEmpty) None else Some(a) // TODO: any way to make it work for String as well?
 
     // ---------------------------------------------------------------------------
-    @inline def    containedIn(values: Set[A]): Boolean =  values.contains(a)
-    @inline def    containedIn(values: Seq[A]): Boolean =  values.contains(a)
+    @inline def    containedIn(values: Set[A])     : Boolean =  values.contains(a)
+    @inline def    containedIn(values: Seq[A])     : Boolean =  values.contains(a)
+    @inline def    containedIn(value1: A, more: A*): Boolean = (value1 +: more).contains(a)
 
-    @inline def notContainedIn(values: Seq[A]): Boolean = !values.contains(a)
-    @inline def notContainedIn(values: Set[A]): Boolean = !values.contains(a)
+    @inline def notContainedIn(values: Seq[A])     : Boolean = !values.contains(a)
+    @inline def notContainedIn(values: Set[A])     : Boolean = !values.contains(a)
+    @inline def notContainedIn(value1: A, more: A*): Boolean = !(value1 +: more).contains(a)
 
     // ---------------------------------------------------------------------------
     def associateLeft [K](f: A => K): (K, A) = (f(a), a)

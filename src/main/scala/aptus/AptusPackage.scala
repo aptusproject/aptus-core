@@ -136,7 +136,9 @@ package object aptus
     // ---------------------------------------------------------------------------
     def mkString [C, D]   (sep: String)(implicit ev: A <:< (C, D))   : String = s"${a._1}${sep}${a._2}"
     def mkString3[C, D, E](sep: String)(implicit ev: A <:< (C, D, E)): String = s"${a._1}${sep}${a._2}${sep}${a._3}"
-  }
+
+    // ---------------------------------------------------------------------------
+    def padLeftInt(length: Int, char: Char)(implicit ev: A =:= Int): String = a.toString.padLeft(length, char) }
 
   // ===========================================================================
   implicit class String_(val str: String) extends AnyVal {

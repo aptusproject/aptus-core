@@ -1,8 +1,6 @@
 package aptustest
 
 import aptus._
-import scala.util.chaining._
-import scala.collection.GenTraversableOnce
 
 // ===========================================================================
 @deprecated object AptusQuicktest { // TODO: t230623142128 - to be ported to actual tests
@@ -12,7 +10,7 @@ import scala.collection.GenTraversableOnce
     init ()
     init2()
 
-    "ok".p
+    println("ok")
   }
   
   // ===========================================================================
@@ -194,10 +192,12 @@ import scala.collection.GenTraversableOnce
     // ---------------------------------------------------------------------------
     val values1: Nes[Int] = Seq(1, 2, 3)
     val values2: Pes[Int] = Some(Seq(1, 2, 3))
-    
+    println(values1, values2)
+
     @ordermatters
     val a = 1
     val b = 2
+    println(a, b)
 
     // ---------------------------------------------------------------------------
     Seq(1, 2, 3).splitAtHead.p // (1,List(2, 3))

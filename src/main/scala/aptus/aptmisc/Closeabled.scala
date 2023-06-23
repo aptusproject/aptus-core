@@ -61,7 +61,7 @@ def toCloseabledIterator0[U](implicit ev: T <:< Iterator[U]): CloseabledIterator
 
       // ===========================================================================
       def toCloseabled : Closeabled[Iterator[T]] = new Closeabled(underlying, cls)
-      def toSelfClosing:            Iterator[T]  = aptutils.IteratorUtils.selfClosing(underlying, cls)
+      def toSelfClosing:            Iterator[T]  = new aptmisc.SelfClosingIterator(underlying, cls)
 
       // ---------------------------------------------------------------------------
       def consume[U](f: Iterator[T] => U):      U  = { val result = f(underlying); close(); result }

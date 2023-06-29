@@ -307,7 +307,8 @@ package object aptus
     def splitTabs          : List[Cell] = splitXsv('\t')
     def splitCommas        : List[Cell] = splitXsv(',')
 
-    def splitUntil(char: Char, c: Int): Seq[String] = aptutils.StringUtils.splitUntil(str)(char, c)
+    // ---------------------------------------------------------------------------
+    def splitUntil(char: Char, maxNumberOfElements: Int): Seq[String] = { require(maxNumberOfElements >= 1, maxNumberOfElements); str.split(char.toString, maxNumberOfElements).toList }
 
     // ===========================================================================
     import aptutils.TimeUtils._

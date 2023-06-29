@@ -7,7 +7,7 @@
 <!-- =========================================================================== -->
 ## SBT
 <a name="211006113932"></a>
-`libraryDependencies += "io.github.aptusproject" %% "aptus-core" % "0.4.1"`
+`libraryDependencies += "io.github.aptusproject" %% "aptus-core" % "0.5.1"`
 
 Then import the following:
 

@@ -29,7 +29,7 @@ trait _AptusPath {
   def ensureDir   (): DirPath = if (_isDir()) path else createNewDir()
   def createNewDir(): DirPath = { assert(ioFile.mkdirs(), path); path }
 
-  def ensureEmpty(): DirPath = { listNames().assert(_.isEmpty); path }
+  def ensureEmpty(): DirPath = { listNames().ensuring(_.isEmpty); path }
 
   // ===========================================================================
   // note: may be removed it immediately ("On some operating systems it may not be possible to remove a file when it is open and in use by this Java virtual machine or other programs")

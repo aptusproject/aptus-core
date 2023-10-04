@@ -27,14 +27,14 @@ lazy val root = (project in file("."))
 	licenses             := Seq("Apache 2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),	
     description          := "Basic utilities for Scala.",
     scalaVersion         :=               "2.13.11",
-    crossScalaVersions   := List("3.0.2", "2.13.11", "2.12.18") )
+    crossScalaVersions   := List("3.3.1", "2.13.12", "2.12.18") )
 
 // ---------------------------------------------------------------------------    
 scalacOptions ++= Seq("-encoding", "UTF-8") ++ //"-Yimports:java.lang,scala,scala.Predef,scala.util.chaining" -- not possible for 2.12 it seems (TODO: t210308154253 confirm)
   (scalaBinaryVersion.value match {
-    case "3" | "3.0" => Seq("-unchecked")
-    case "2.13"      => Seq("-Ywarn-value-discard", "-Ywarn-unused:imports,privates,locals")
-    case "2.12"      => Seq("-Ywarn-value-discard", "-Ywarn-unused-import" ) })
+    case "3"    => Seq("-unchecked")
+    case "2.13" => Seq("-Ywarn-value-discard", "-Ywarn-unused:imports,privates,locals")
+    case "2.12" => Seq("-Ywarn-value-discard", "-Ywarn-unused-import" ) })
 
 // ===========================================================================    
 // dependencies
@@ -77,13 +77,15 @@ libraryDependencies ++= // hard to do anything on the JVM without those nowadays
 
     // ---------------------------------------------------------------------------
     // JSON
-    "com.google.code.gson" % "gson" % gsonVersion) ++ // TODO: t230623160248 - switch to ujson rather
-  //
+    "com.google.code.gson" % "gson" % gsonVersion, // TODO: t230623160248 - switch to ujson rather
+    
+    // ---------------------------------------------------------------------------    
+    "org.scala-lang.modules" %% "scala-collection-compat" % compatVersion) ++
   // ---------------------------------------------------------------------------
   (scalaBinaryVersion.value match {
-    case "3" | "3.0" => Seq.empty
-    case "2.13"      => Seq("org.scala-lang.modules" %% "scala-collection-compat" % compatVersion, "org.scala-lang.modules" %% "scala-parallel-collections" % parallelCollectionsVersion)    
-    case "2.12"      => Seq("org.scala-lang.modules" %% "scala-collection-compat" % compatVersion) })    
+    case "3"    => Seq("org.scala-lang.modules" %% "scala-parallel-collections" % parallelCollectionsVersion)
+    case "2.13" => Seq("org.scala-lang.modules" %% "scala-parallel-collections" % parallelCollectionsVersion)
+    case "2.12" => Seq.empty })
 
 // ===========================================================================
 // shading; guava - compatibility issues (eg https://issues.apache.org/jira/browse/HADOOP-10961)... TODO: t210121165120: shade
@@ -114,7 +116,7 @@ publishTo              := sonatypePublishToBundle.value
 // ===========================================================================
 // assembly (uberjar); run: sbt +assembly
 
-assemblyMergeStrategy in assembly := {
+ThisBuild / assemblyMergeStrategy := {
   case PathList("META-INF", xs @ _*) => MergeStrategy.discard
   case _                             => MergeStrategy.first }
 

@@ -131,11 +131,11 @@ package object aptus
     // ---------------------------------------------------------------------------
     @inline def    containedIn(values: Set[A])     : Boolean =  values.contains(a)
     @inline def    containedIn(values: Seq[A])     : Boolean =  values.contains(a)
-    @inline def    containedIn(value1: A, more: A*): Boolean = (value1 +: more).contains(a)
+    @inline def    containedIn(value1: A, more: A*): Boolean = (value1 +: more).contains(a) // causes issues with usage in scala 3 (conflicts with Set)?
 
     @inline def notContainedIn(values: Seq[A])     : Boolean = !values.contains(a)
     @inline def notContainedIn(values: Set[A])     : Boolean = !values.contains(a)
-    @inline def notContainedIn(value1: A, more: A*): Boolean = !(value1 +: more).contains(a)
+    @inline def notContainedIn(value1: A, more: A*): Boolean = !(value1 +: more).contains(a) // causes issues with usage in scala 3 (conflicts with Set)?
 
     // ---------------------------------------------------------------------------
     def associateLeft [K](f: A => K): (K, A) = (f(a), a)
@@ -481,6 +481,20 @@ package object aptus
     def percentile(n: Double)(implicit num: Numeric[A]): Double = MathUtils.percentile(coll,  n)
 
     // ---------------------------------------------------------------------------
+    def minMax(implicit num: Numeric[A]) = { // (coll.min, coll.max)
+      // TODO: if empty (reproduce same error message)
+
+val first = coll.head
+var min = first
+var max = first
+coll.foreach { x =>
+       if (num.lt(x, min)) { min = x }
+  else if (num.gt(x, max)) { max = x }
+}
+
+(min, max)
+}
+
     def range[B >: A](implicit cmp: Ordering[B],  num: Numeric[B]): B      = num.minus(coll.max(cmp), coll.min(cmp)) // TODO: optimize; TODO: max if double?
     def IQR          (implicit                    num: Numeric[A]): Double = (coll.percentile(75) - coll.percentile(25)) // TODO: optimize
 
@@ -653,6 +667,7 @@ package object aptus
     implicit class Double_(val nmbr: Double) extends AnyVal {
       def isInBetween         (fromInclusive: Double, toExclusive: Double): Boolean = nmbr >= fromInclusive && nmbr <  toExclusive
       def isInBetweenInclusive(fromInclusive: Double, toInclusive: Double): Boolean = nmbr >= fromInclusive && nmbr <= toInclusive
+      def isInBetweenExclusive(fromExclusive: Double, toExclusive: Double): Boolean = nmbr >  fromExclusive && nmbr <  toExclusive
 
       // ---------------------------------------------------------------------------
       def assertRange         (fromInclusive: Double, toExclusive: Double): Double  = nmbr.assert(_.isInBetween         (fromInclusive, toExclusive), x => s"out of range: ${x} ([${fromInclusive}, ${toExclusive}[)")

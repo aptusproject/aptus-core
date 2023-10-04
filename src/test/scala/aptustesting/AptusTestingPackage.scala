@@ -1,8 +1,8 @@
 // ===========================================================================
 package object aptustesting {
   import aptus._
-  import scala.reflect._
-  import scala.util._
+  import scala.reflect.{classTag, ClassTag}
+  import scala.util.{Try, Failure, Success}
   
   // ===========================================================================
   def noop   [A](actual: A)             : Unit = compare(actual, actual)

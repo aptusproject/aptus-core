@@ -1,4 +1,4 @@
-import scala.collection.mutable._
+import scala.collection.mutable.{MutableList, ListBuffer}
 
 // ===========================================================================
 package object cross { // for 2.12
@@ -8,6 +8,9 @@ package object cross { // for 2.12
   
   // ---------------------------------------------------------------------------
   type SeqView[T] = scala.collection.SeqView[T, scala.collection.Seq[_]]
+
+  // ---------------------------------------------------------------------------
+  def immutableSeqToListBuffer[T](x: collection.Seq[T]): ListBuffer[T] = x.to[ListBuffer] // [] instead of ()
 }
 
 // ===========================================================================

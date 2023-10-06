@@ -1,4 +1,4 @@
-import scala.collection.mutable._
+import scala.collection.mutable.{ArrayDeque, ListBuffer}
 
 // ===========================================================================
 package object cross { // for 2.13
@@ -8,6 +8,9 @@ package object cross { // for 2.13
   
   // ---------------------------------------------------------------------------
   type SeqView[T] = scala.collection.SeqView[T] // no more second type parameter: [T, Seq[_]]
+
+  // ---------------------------------------------------------------------------
+  def immutableSeqToListBuffer[T](x: collection.Seq[T]): ListBuffer[T] = x.to(ListBuffer) // () instead of []
 }
 
 // ===========================================================================

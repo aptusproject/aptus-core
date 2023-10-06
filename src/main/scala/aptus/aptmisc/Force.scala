@@ -12,6 +12,9 @@ private[aptus] final class Force[A] private[aptus] (private val coll: Seq[A]) {
   def set     : Set   [A] = { val coll2 = coll.toSet   ; Predef.assert(coll.size == coll2.size, (coll.size, coll2.size)); coll2 }
 
   // ---------------------------------------------------------------------------
+  def oneExpanded: A  = { assert(coll.size == 1,  coll.size -> coll.joinln); coll.head } // TODO: t231006140710 - as separate class: force.expanded.one
+
+  // ===========================================================================
   //t201117175058 - TODO: add useful error messages...
   def tuple2  = { val iter = coll.iterator; val x = (iter.next(), iter.next()                                                                                                        ); assert(!iter.hasNext, coll); x }
   def tuple3  = { val iter = coll.iterator; val x = (iter.next(), iter.next(), iter.next()                                                                                           ); assert(!iter.hasNext, coll); x }

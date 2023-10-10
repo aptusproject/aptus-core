@@ -47,7 +47,7 @@ val commonsMathVersion         = "3.6.1"
 val commonsLangVersion         = "3.12.0"
 val commonsIoVersion           = "2.13.0"
 val commonsCsvVersion          = "1.10.0"
-val commonsCompressVersion     = "1.23.0"
+val commonsCompressVersion     = "1.24.0"
 val guavaVersion               = "32.0.1-jre"
 val gsonVersion                = "2.10.1"
 

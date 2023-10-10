@@ -173,8 +173,8 @@ import aptus._
 
     // ---------------------------------------------------------------------------
     //.forPathsMatching(_.key.containedIn(Converting.IntegerKeys)).zen(_.convert(_).toInt   )
-    2.   containedIn(Seq(1, 2, 3)).p // true
-    4.notContainedIn(Seq(1, 2, 3)).p // true 
+    2.   containedIn(1, 2, 3).p // true
+    4.notContainedIn(1, 2, 3).p // true
 
     "foo".in.some .p // Some("foo")
     "foo".in.seq  .p // List("foo")

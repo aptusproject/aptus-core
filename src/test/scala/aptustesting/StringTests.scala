@@ -61,7 +61,7 @@ object StringTests extends TestSuite {
     test("splitUntil") {
       test(compare("hello\tworld\thow\tare\tyou".splitUntil('\t', 3), Seq("hello", "world", "how\tare\tyou")))
 
-      test(fail[IllegalArgumentException]("f,o,o,b,a,r".splitUntil(',', 0), Seq("f,o,o,b,a,r")))
+      test(fail[IllegalArgumentException]("f,o,o,b,a,r".splitUntil(',', 0)))
 
       test(compare                       ("f,o,o,b,a,r".splitUntil(',', 1), Seq("f,o,o,b,a,r")))
       test(compare                       ("f,o,o,b,a,r".splitUntil(',', 2), Seq("f", "o,o,b,a,r")))

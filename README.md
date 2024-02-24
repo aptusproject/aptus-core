@@ -1,8 +1,8 @@
 <!-- =========================================================================== -->
 # Aptus
 
-"Aptus" is latin for suitable, appropriate, fitting. It is a utility library to improve the Scala experience.
-
+"Aptus" is latin for suitable, appropriate, fitting. It is a utility library meant to improve the Scala experience for simple tasks,
+when performance isn't most important. It also helps code defensively when representing errors in types isn't important (think `assert`).
 
 <!-- =========================================================================== -->
 ## SBT
@@ -38,7 +38,12 @@ It can also serve as a reference, from which the basic use of underlying abstrac
 
 I included all the dependencies shown above because I found that they are required for most non-trivial projects.
 For instance, what programs nowadays do not need to handle JSON at some point?
-Another good example is a method like `splitByWholeSeparatorPreserveAllTokens` from Apache Commons's `StringUtils`,
+Or parse a CSV file? Or handle a bz2 file?
+
+Note that Aptus is heavily used in my data transformation library: [Gallia](https://github.com/galliaproject/gallia-core), as well as most of my other projects (public and private).
+
+### Succinctness
+A good example of succinctness is a method like `splitByWholeSeparatorPreserveAllTokens` from Apache Commons's `StringUtils`,
 and whose semantics feel [more intuitive](https://github.com/aptusproject/aptus-core/blob/d548ae4/src/test/scala/aptustesting/StringTests.scala#L12-L20) to me than those of Java's `String.split`.
 Meanwhile using:
 
@@ -55,8 +60,33 @@ if (str.isEmpty()) List(str)
 else               StringUtils.splitByWholeSeparatorPreserveAllTokens(str, "|").toList
 ```
 
-I try to illustrate such differences in succinctness throughout the examples below.
+It should be noted that both Java's `String.split` and the stdlib's `StringOps.split` have the very unintuitive behavior of not reporting trailing elements when empty, for instance:
+```scala
+println("1,2,3,,".split(',').toList) // List(1, 2, 3)
+```
 
+I try to illustrate such differences in succinctness/consistency/defensiveness of behavior throughout the examples below.
+
+### Practicality
+Another aspect of Aptus is practicality, for instance I often find myself using expressions such as:
+
+```scala
+"foo=3"
+  .splitBy("=")
+  .force.tuple2
+  .mapSecond(_.toInt)
+```
+
+The stdlib's counterpart would look something like:
+
+```scala
+"foo=3"
+  .split('=')
+   match { case Array(x, y: String) =>
+     (x, y.toInt) }
+```
+
+Which I argue is harder to read/write and less obvious to understand (albeit not a lot more verbose).
 
 <!-- =========================================================================== -->
 ## Examples
@@ -116,14 +146,21 @@ E.g. for quick debugging:
 ```scala
 "hello". append(" you!")  .p // prints "hello you!"
 "hello".prepend("well, ") .p // prints "well, hello"
+
 "hello".colon             .p // prints "hello:"
+"hello".tab               .p // prints "hello<TAB>"
+"hello".newline           .p // prints "hello<new-line>"
+
 "hello".colon  ("human")  .p // prints "hello:human"
 "hello".tab    ("human")  .p // prints "hello<TAB>human"
 "hello".newline("human")  .p // prints "hello<new-line>human"
 
 "hello".quote             .p // prints "\"hello\""
 
-"hello|world".splitBy("|").p // prints Seq(hello, world)
+"hello|world"  .splitBy("|").p // prints Seq(hello, world)
+"hello|world||".splitBy("|").p // prints Seq(hello, world, , ) - won't unexpectely ignore empty trailing elements
+
+"a\tb\tc".splitXsv('\t') // uses commons-csv under the hood to properly handle the split (eg escaping, ...)
 
 "hello".padLeft (8, ' ').p // "   hello"
 "hello".padRight(8, ' ').p // "hello   "
@@ -133,11 +170,48 @@ E.g. for quick debugging:
 "mykey".   contains("my").p // stdlib
 "mykey".notContains("MY").p // negative counterpart
 
-// .. many more, see String_
+// .. many more, see String_, for instance:
+// - strip{Prefix,Suffix}{Guaranteed,IfApplicable}
+// - remove{Guaranteed,IfApplicable}
+// - toBase64
+// ...
 ```
 
 Note: see corresponding [tests](https://github.com/aptusproject/aptus-core/blob/d548ae4/src/test/scala/aptustesting/StringTests.scala#L12-L20)
 
+<!-- =========================================================================== -->
+#### Number operations
+<a name="211006113916"></a>
+
+```scala
+3.1416.add       (1).p // 4.1416
+3.1416.multiplyBy(2).p // 6.2832
+...
+3.1416.isInBetween(fromInclusive = 3.0, toExclusive: 4.0).p // true
+// likewise for Int and Long
+```
+
+For `Double`:
+```
+3.1416     .formatDecimals(2).p // 3.14
+3.1416.exp .formatDecimals(4).p // 23.1409
+3.1416.log2.formatDecimals(4).p // 1.6515
+```
+
+Personally, I always have to look up printf's "% notation" before using it, so a method like `formatDecimals` make things a lot easier.
+
+<!-- =========================================================================== -->
+#### Time operations
+<a name="211006113906"></a>
+
+```scala
+"2023-06-05".parseLocalDate.getYear.p // 2023
+
+// also available:
+//   parseLocalDateTime, parseLocalTime, parseInstant, parseOffsetDateTime and parseZonedDateTime
+// and
+//   parseLocalDateTime(pattern), ...
+```
 
 <!-- =========================================================================== -->
 #### Conditional piping (a.k.a conditional "thrush")
@@ -157,6 +231,12 @@ val suffixOpt = Some("?")
 
 See [discussion](https://users.scala-lang.org/t/implicit-class-for-any-and-or-generic-type/501) on _Scala Users_.
 
+There also is also a `mapIf` counterpart:
+
+```scala
+Seq(1, 2, 3).mapIf(true) (_ + 1).p // List(2, 3, 4)
+Seq(1, 2, 3).mapIf(_ < 2)(_ + 1).p // List(2, 2, 3)
+```
 
 <!-- =========================================================================== -->
 #### In-line "to Option"
@@ -178,13 +258,14 @@ Convenient for chaining, consider the pure stdlib alternative:
 ```scala
 {
   val str = "hello"
-  val opt =
-    if (str.size <= 5) Some(str)
-    else               None
+  val opt = if (str.size <= 5) Some(str) else None
   println(opt)
 }
 ```
 
+Notes:
+- `Option.when` could also be used, but the test part isn't a predicate on the element (which would be much better).
+- Someone on the scala user list also pointed out this alternative: `Some("hello").filter(_.size <= 5)`. While clever, I'd argue the semantics are much less obvious than `"hello".in.someIf(_.size <= 5)`.
 
 <!-- =========================================================================== -->
 #### "force" disambiguator (Option/Map)
@@ -288,11 +369,24 @@ Seq(1, 2, 3).section             ("data:") // returns:
 ```
 
 <!-- --------------------------------------------------------------------------- -->
-<a name="211005132124"></a><a name="zip-same-size"></a>
+### Zip operations
+<a name="211005132124"></a><a name="zip-same-size"><a name="zip"></a>
 Most of the time, we want to zip collections of same size, and we want to code it defensively:
 ```scala
 Seq(1, 2, 3).zipSameSize(Seq(4, 5, 6)).p // Seq((1,4), (2,5), (3,6))
 Seq(1, 2, 3).zipSameSize(Seq(4, 5))   .p // error
+```
+
+Ask yourselves: what are legitimate use cases where we zip two collections of different size and are perfectly happy to have the longuest silently truncated?
+
+Other useful `zip`-related operations are:
+
+```scala
+Seq("a", "b", "c").zipWithIsFirst.map { case (x, first) => if (first) ... else ... }
+Seq("a", "b", "c").zipWithIsLast .map { case (x, last ) => if (last)  ... else ... }
+
+Seq("a", "b", "c").zipWithIndex.p // List((a,0), (b,1), (c,2))
+Seq("a", "b", "c").zipWithRank .p // List((a,1), (b,2), (c,3))
 ```
 
 <!-- --------------------------------------------------------------------------- -->
@@ -421,6 +515,9 @@ Seq("foo" -> 1, "bar" -> 2, "foo" -> 3).countByKey.p
 Seq[Int]()             .slidingPairs // Seq()
 Seq     (1)            .slidingPairs // Seq()
 Seq     (1, 2, 3, 4, 5).slidingPairs // Seq((1, 2), (2, 3), (3, 4), (4, 5))
+
+Seq(1, 2, 3).slidingPairsWithPrevious.p // List((None,1), (Some(1),2), (Some(2),3))
+Seq(1, 2, 3).slidingPairsWithNext    .p // List((1,Some(2)), (2,Some(3)), (3,None))
 ```
 
 <!-- --------------------------------------------------------------------------- -->
@@ -468,14 +565,18 @@ myCloseabled.map(_.map(_.size)).consume(_.toList).p // line pre-processing
 ### Orphan methods
 <a name="211006113942"></a>
 
-We summon methods from `Unit` if no obvious parent can be used.
+We call some method directly from the `aptus` package object if no natural parent can be used.
 
 ```scala
-().fs.homeDirectoryPath().p // "/home/tony"
-().hardware.totalMemory().p // 1011351552
-().random.uuidString()   .p // a1bffc1e-72aa-477e-ac84-e4133ffcafad
+aptus.fs.homeDirectoryPath().p // "/home/tony"
+aptus.hardware.totalMemory().p // 1011351552
+aptus.random.uuidString()   .p // a1bffc1e-72aa-477e-ac84-e4133ffcafad
+aptus.time.stamp().p           // 240224152753
 
-().reflect.formatStackTrace().p // returns:
+aptus.illegalState   ("freeze!") // Exception in thread "main" IllegalStateException: freeze!
+aptus.illegalArgument("freeze!") // Exception in thread "main" IllegalArgumentException: freeze!
+
+aptus.reflect.formatStackTrace().p // returns:
 /*
   java.lang.Throwable
       at aptus.aptmisc.Reflect$.formatStackTrace(Misc.scala:62)
@@ -483,16 +584,8 @@ We summon methods from `Unit` if no obvious parent can be used.
       <where you are in your code>
 */
 
-// ... (see more in aptus.Unit_)
+// ... (see more in aptus.AptusAliases)
 ```
-
-<!-- --------------------------------------------------------------------------- -->
-Or from `aptus` directly if very common (may move to `().exception` in the future, TBD)
-```scala
-illegalState   ("freeze!") // Exception in thread "main" IllegalStateException: freeze!
-illegalArgument("freeze!") // Exception in thread "main" IllegalArgumentException: freeze!
-```
-
 
 <!-- =========================================================================== -->
 ### Conveying intent
@@ -516,19 +609,6 @@ val maybeValues: Pes[Int] = Some(Seq(1, 2, 3))
 ```
 
 Note: Value classes don't accept `require` statements
-
-
-<!-- =========================================================================== -->
-### System calls
-<a name="210601115320"></a><a name="system-calls"></a>
-
-Quick-and-dirty system calls:
-
-```scala
-"echo hello"           .systemCall() // prints: "hello"
-"date +%s"             .systemCall() // prints: "1622562984"
-"head -1 /proc/cpuinfo".systemCall() // prints: "processor: 0"
-```
 
 
 <!-- =========================================================================== -->
@@ -556,6 +636,47 @@ Seq("hello", "world").writeFileLines("/tmp/lines.gz")
 "/tmp/lines.gz".readFileLines().p // prints: Seq("hello", "world")
 
 // note: file -i /tmp/content.gz" shows it's indeed application/gzip
+
+"/data/bigfile.gz".streamFileLines() // returns a SelfClosingIterator[String], which closes itself once all lines have been seen
+```
+
+<!-- --------------------------------------------------------------------------- -->
+JSON:
+<a name="211006113436"></a><a name="json"></a>
+
+A special note about JSON, owing to its ubiquity (and despite its [many flaws](https://github.com/galliaproject/gallia-docs/blob/master/json.md)).
+While [Gallia](https://github.com/galliaproject/gallia-core) is my main project pertaining to data in general (especially transformation thereof), I included a minimal set of functionality in Aptus:
+
+```scala
+""" {"foo": 1} """.jsonObject // returns a com.google.gson.JsonObject
+"""[{"foo": 1}]""".jsonArray  // returns a com.google.gson.JsonArray
+
+"""{"foo": 1, "bar": true}""".prettyJson.p // .compactJson is also available
+/*
+{
+  "foo": 1,
+  "bar": true
+}
+*/
+```
+
+In the future, a subset of Gallia will be created, 
+which will basically offer a similar set of operations 
+but without any concern for the underlying schema: 
+[gallia-dyn](https://github.com/galliaproject/gallia-dyn).
+It will offer a convenient way to perform "dynamic" transformations, 
+and therefore handle JSON. Once ready, 
+a subset of gallia-dyn` will likely be included in Aptus for convenience, 
+so that simple manipulations such as these will be possible OOTB:
+
+```scala
+"""{"foo": "hello", "bar": 2, "baz": true}"""
+  .readObj
+    .toUpperCase("foo")
+    .increment  ("bar")
+    .drop       ("baz")
+  .printCompactJson()
+  // """{"foo": "HELLO", "bar": 3}"""
 ```
 
 <!-- --------------------------------------------------------------------------- -->
@@ -574,6 +695,32 @@ Notes:
 - These may move under `"...".file` and `"...".url` respectively (TBD)
 - In the future we'll allow a basic POST as well
 
+<!-- =========================================================================== -->
+### File System
+<a name="210531093417"></a><a name="file-system"></a>
+
+A very lightweight way to handle the file system, not mean to be comprehensive (use [`os-lib`](https://github.com/com-lihaoyi/os-lib) for more power)
+```scala
+"/tmp/sbt".path.isDir()
+"/tmp/sbt".path.file.removeFile()
+...
+
+"/tmp/sbt".path.dir.listNames()
+...
+"/tmp/sbt".path.dir.listFilePathsRecursively()
+```
+
+<!-- =========================================================================== -->
+### System calls
+<a name="210601115320"></a><a name="system-calls"></a>
+
+Quick-and-dirty system calls:
+
+```scala
+"echo hello"           .systemCall() // prints: "hello"
+"date +%s"             .systemCall() // prints: "1622562984"
+"head -1 /proc/cpuinfo".systemCall() // prints: "processor: 0"
+```
 
 <!-- =========================================================================== -->
 ## Backlog
@@ -593,4 +740,3 @@ Contributions welcome.
 
 
 <!-- =========================================================================== -->
-

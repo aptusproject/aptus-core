@@ -13,7 +13,10 @@ trait AptusAnnotations { import scala.annotation.StaticAnnotation
   class finl(val message: String = "") extends StaticAnnotation
 
   /** to convey explicitly that something is intended to be overriden in some situations (as opposed to having forgotten to make it final). */
-  class nonfinl(val message: String = "") extends StaticAnnotation
+  class nonfinl     (val message: String = "") extends StaticAnnotation
+  class notsealed   (val message: String = "") extends StaticAnnotation
+  class notprivate  (val message: String = "") extends StaticAnnotation
+  class notprotected(val message: String = "") extends StaticAnnotation
 
   /** to convey that the order of the following code is important */
   class ordermatters(val message: String = "") extends StaticAnnotation

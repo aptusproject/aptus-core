@@ -83,7 +83,7 @@ libraryDependencies ++= // hard to do anything on the JVM without those nowadays
     "org.scala-lang.modules" %% "scala-collection-compat" % compatVersion) ++
   // ---------------------------------------------------------------------------
   (scalaBinaryVersion.value match {
-    case "3"    => Seq("org.scala-lang.modules" %% "scala-parallel-collections" % parallelCollectionsVersion)
+    case "3"    => Seq("org.scala-lang.modules" %% "scala-parallel-collections" % parallelCollectionsVersion) // if causes issues (eg with Spark), use: .exclude("org.scala-lang.modules", "scala-parallel-collections_3")
     case "2.13" => Seq("org.scala-lang.modules" %% "scala-parallel-collections" % parallelCollectionsVersion)
     case "2.12" => Seq.empty })
 

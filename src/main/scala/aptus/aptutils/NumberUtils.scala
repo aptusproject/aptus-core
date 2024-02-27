@@ -49,6 +49,21 @@ object NumberUtils {
      (if (str.head == '-') str.tail.isDigits
       else                 str     .isDigits)
 
+  // ===========================================================================
+  def minMax[A](coll: Seq[A])(implicit num: Numeric[A]): (A, A) = {
+    // TODO: if empty (reproduce same error message)
+
+    val first = coll.head
+    var min = first
+    var max = first
+    coll.foreach { x =>
+           if (num.lt(x, min)) { min = x }
+      else if (num.gt(x, max)) { max = x }
+    }
+
+    (min, max)
+  }
+
 }
 
 // ===========================================================================

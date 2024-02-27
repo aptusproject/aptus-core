@@ -200,6 +200,13 @@ For `Double`:
 
 Personally, I always have to look up printf's "% notation" before using it, so a method like `formatDecimals` make things a lot easier.
 
+Aptus also helps with collections of numbers:
+```scala
+Seq(3, 2, 1).mean  .p // 2.0
+Seq(3, 2, 1).minMax.p // (1, 3)
+// ... more: median, stdev, range, IQR, ... (see aptus.Seq_)
+```
+
 <!-- =========================================================================== -->
 #### Time operations
 <a name="211006113906"></a>
@@ -368,6 +375,24 @@ Seq(1, 2, 3).section             ("data:") // returns:
 */
 ```
 
+Aptus also provides help with sorting for common cases, for instance:
+
+```scala
+Seq(
+    Seq("d", "e", "f"),
+    Seq("g", "h", "i"),
+    Seq("a", "b", "c"))
+  .sorted(aptus.seqOrdering[String])
+/*
+returns:
+
+Seq(
+    Seq("a", "b", "c"),
+    Seq("d", "e", "f"),
+    Seq("g", "h", "i") )))
+*/
+```
+
 <!-- --------------------------------------------------------------------------- -->
 ### Zip operations
 <a name="211005132124"></a><a name="zip-same-size"><a name="zip"></a>
@@ -462,10 +487,10 @@ Group by key:
 ```scala
 Seq("foo" -> 1, "bar" -> 2, "foo" -> 3).groupByKey.p
   // returns: Map(bar -> List(2), foo -> List(1, 3))
-Seq("foo" -> 1, "bar" -> 2, "foo" -> 3).groupByKeyWithTreeMap.p
-  // returns: TreeMap(bar -> List(2), foo -> List(1, 3))
-Seq("foo" -> 1, "bar" -> 2, "foo" -> 3).groupByKeyWithListMap.p
-  // returns: ListMap(foo -> List(1, 3), bar -> List(2))
+  
+// if original order must be preserved:
+Seq("bar" -> 2, "foo" -> 1, "foo" -> 3).groupByKeyWithListMap.p
+  // returns: ListMap(bar -> List(2), foo -> List(1, 3))
 ```
 
 
@@ -478,6 +503,15 @@ Seq("foo" -> 1, "bar" -> 2, "foo" -> 3).countByKey.p
   // returns: List((2,foo), (1,bar))
 ```
 
+<!-- --------------------------------------------------------------------------- -->
+Count by self:
+<a name="221004113237"></a><a name="count-by-self"></a>
+
+```scala
+Seq("a", "b", "a", "c").countBySelf.p
+  // returns: Seq(("a", 2), ("b", 1), ("c", 1)))
+  // note: ordered by DESC
+```
 
 <!-- =========================================================================== -->
 ### Help with Tuples

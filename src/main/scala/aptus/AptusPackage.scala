@@ -66,7 +66,7 @@ package object aptus
     def tapOpt[B](opt : Option[B]   )(f: B => A => A): A = { opt.map(f(_)(a)).getOrElse(a); a }
 
     // ---------------------------------------------------------------------------
-    @fordevonly def __exit: Nothing = { ReflectionUtils.formatExitTrace(().reflect.stackTrace(), "intentionally stopping").p; System.exit(0); illegalState("can't happen") }
+    @fordevonly def __exit: Nothing = { ReflectionUtils.formatExitTrace(aptus.reflection.stackTrace(), "intentionally stopping").p; System.exit(0); illegalState("can't happen") }
 
     @fordevonly def p      : A =   prt()                                             // intentionally not using () for brevity (non-idiosyncratic in Scala)
     @fordevonly def p__    : A = { prt(); __exit }                                   // intentionally not using () for brevity (non-idiosyncratic in Scala)
@@ -120,7 +120,8 @@ package object aptus
     def mkString3[C, D, E](sep: String)(implicit ev: A <:< (C, D, E)): String = s"${a._1}${sep}${a._2}${sep}${a._3}"
 
     // ---------------------------------------------------------------------------
-    def padLeftInt(length: Int, char: Char)(implicit ev: A =:= Int): String = a.toString.padLeft(length, char) }
+    def padLeftInt(length: Int, char: Char)(implicit ev: A =:= Int): String = a.toString.padLeft(length, char)
+    def padLeftInt(length: Int)            (implicit ev: A =:= Int): String = a.toString.padLeft(length, ' ') }
 
   // ===========================================================================
   implicit class String_(val str: String) extends AnyVal {
@@ -151,7 +152,7 @@ package object aptus
     // TODO: crc32
     
     // ===========================================================================
-    def path = new aptmisc.AptusPath(if (str.startsWith("~/")) ().fs.homeDirectoryPath() / str.drop(2) else str)
+    def path = new aptmisc.AptusPath(if (str.startsWith("~/")) aptus.fs.homeDirectoryPath() / str.drop(2) else str)
 
       // ===========================================================================
       // TODO: t211004131206 - move to path?
@@ -230,6 +231,10 @@ package object aptus
     // ---------------------------------------------------------------------------
     def padLeft (length: Int, char: Char): String = lang3.StringUtils. leftPad(str, length, char.toString)
     def padRight(length: Int, char: Char): String = lang3.StringUtils.rightPad(str, length, char.toString)
+
+    def padLeftSpaces (length: Int): String = padRight(length, ' ')
+    def padRightSpaces(length: Int): String = padRight(length, ' ')
+    def padLeftZeros  (length: Int): String = padRight(length, '0')
 
     def trimLines: String = str.replaceAll("\\s*\n\\s*", "\n")
 

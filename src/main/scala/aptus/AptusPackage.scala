@@ -459,20 +459,7 @@ package object aptus
     def percentile(n: Double)(implicit num: Numeric[A]): Double = MathUtils.percentile(coll,  n)
 
     // ---------------------------------------------------------------------------
-    def minMax(implicit num: Numeric[A]) = { // (coll.min, coll.max)
-      // TODO: if empty (reproduce same error message)
-
-val first = coll.head
-var min = first
-var max = first
-coll.foreach { x =>
-       if (num.lt(x, min)) { min = x }
-  else if (num.gt(x, max)) { max = x }
-}
-
-(min, max)
-}
-
+    def minMax       (implicit num: Numeric[A])                   : (A, A) = aptutils.NumberUtils.minMax[A](coll)
     def range[B >: A](implicit cmp: Ordering[B],  num: Numeric[B]): B      = num.minus(coll.max(cmp), coll.min(cmp)) // TODO: optimize; TODO: max if double?
     def IQR          (implicit                    num: Numeric[A]): Double = (coll.percentile(75) - coll.percentile(25)) // TODO: optimize
 
@@ -758,41 +745,34 @@ coll.foreach { x =>
     // ---------------------------------------------------------------------------
     def toUsAsciiString: String = new String(bytes, java.nio.charset.StandardCharsets.US_ASCII  )
     def toIsoString    : String = new String(bytes, java.nio.charset.StandardCharsets.ISO_8859_1)
-    def toUtf8String   : String = new String(bytes, java.nio.charset.StandardCharsets.UTF_8     )
-  }
+    def toUtf8String   : String = new String(bytes, java.nio.charset.StandardCharsets.UTF_8     ) }
 
   // ===========================================================================
   implicit class Throwable_(val throwable: Throwable) extends AnyVal {
-    def       stackTrace: Seq[StackTraceElement] = throwable.getStackTrace.toList
-    def formatStackTrace: String                 = ThrowableUtils.stackTraceString(throwable)
-  }
+      def       stackTrace: Seq[StackTraceElement] = throwable.getStackTrace.toList
+      def formatStackTrace: String                 = ThrowableUtils.stackTraceString(throwable) }
 
-  // ---------------------------------------------------------------------------
-  implicit class Class_[A](val klass: Class[A]) extends AnyVal {
-    def fullPath: String = klass.getCanonicalName.replace(".package.", ".") /* TODO */.replaceAll("\\$$", "")
-  }
+    // ---------------------------------------------------------------------------
+    implicit class Class_[A](val klass: Class[A]) extends AnyVal {
+      def fullPath: String = klass.getCanonicalName.replace(".package.", ".") /* TODO */.replaceAll("\\$$", "") }
 
-  // ---------------------------------------------------------------------------
-  implicit class URL_(url: java.net.URL) {
-    def smartCloseabledInputStream: Closeabled[java.io.InputStream] = InputStreamUtils.smartCloseabledInputStream(url.openStream())
-  }
+    // ---------------------------------------------------------------------------
+    implicit class URL_(url: java.net.URL) {
+      def smartCloseabledInputStream: Closeabled[java.io.InputStream] = InputStreamUtils.smartCloseabledInputStream(url.openStream()) }
 
-  // ---------------------------------------------------------------------------
-  implicit class InputStream_(is: java.io.InputStream) {
-    def closeabledBufferedReader                  : aptus.Closeabled[java.io.BufferedReader] = InputStreamUtils.closeabledBufferedReader(is, aptus.UTF_8)
-    def closeabledBufferedReader(charset: Charset): aptus.Closeabled[java.io.BufferedReader] = InputStreamUtils.closeabledBufferedReader(is, charset)
-  }
+    // ---------------------------------------------------------------------------
+    implicit class InputStream_(is: java.io.InputStream) {
+      def closeabledBufferedReader                  : aptus.Closeabled[java.io.BufferedReader] = InputStreamUtils.closeabledBufferedReader(is, aptus.UTF_8)
+      def closeabledBufferedReader(charset: Charset): aptus.Closeabled[java.io.BufferedReader] = InputStreamUtils.closeabledBufferedReader(is, charset) }
 
-  // ---------------------------------------------------------------------------
-  implicit class ResultSet_(val rs: java.sql.ResultSet) extends AnyVal {
-    def closeable = new java.io.Closeable { override def close() = { rs.close() } }
-    def rawRdbmsEntries : Iterator[RawRdbmsEntries] = SqlUtils.rawRdbmsEntries(rs)
-  }
+    // ---------------------------------------------------------------------------
+    implicit class ResultSet_(val rs: java.sql.ResultSet) extends AnyVal {
+      def closeable = new java.io.Closeable { override def close() = { rs.close() } }
+      def rawRdbmsEntries : Iterator[RawRdbmsEntries] = SqlUtils.rawRdbmsEntries(rs) }
 
-  // ---------------------------------------------------------------------------
-  implicit class Future_[T](fut: concurrent.Future[T]) {
-    def awaitIndefinitely() = concurrent.Await.result(fut, concurrent.duration.Duration.Inf)
-  }
+    // ---------------------------------------------------------------------------
+    implicit class Future_[T](fut: concurrent.Future[T]) {
+      def awaitIndefinitely() = concurrent.Await.result(fut, concurrent.duration.Duration.Inf) }
 
   // ===========================================================================
   implicit class JavaList_[T](list: java.util.List[T]) {

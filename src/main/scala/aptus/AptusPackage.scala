@@ -65,18 +65,6 @@ package object aptus
     def tapIf    (pred: A => Boolean)(f: A => Unit)  : A = { if (pred(a)) { f(a) }; a }
     def tapOpt[B](opt : Option[B]   )(f: B => A => A): A = { opt.map(f(_)(a)).getOrElse(a); a }
 
-      // ---------------------------------------------------------------------------
-      // formerly (before pipe/tap available via import scala.util.chaining._):
-
-      /** thrush combinator (see https://users.scala-lang.org/t/implicit-class-for-any-and-or-generic-type/501);
-       *  I guess the altenative is to do ` match { case ... ` */
-      @deprecated("use pipe now") def thnIf            (test: Boolean)     (f: A => A)           : A = if (test)    f(a) else   a
-      @deprecated("use pipe now") def thnIf    [B <: A](pred: A => Boolean)(f: A => B)           : A = if (pred(a)) f(a) else   a
-      @deprecated("use pipe now") def thnOpt   [B     ](opt : Option[B]   )(f: B => A => A)      : A = opt.map(f(_)(a)).getOrElse(a)
-
-      @deprecated("use tap now") def sideEffect                          (f: A => Unit)              : A  = {                f(a)                ; a }
-      @deprecated("use tap now") def sideEffectIf    (pred: A => Boolean)(f: A => Unit)              : A  = { if (pred(a)) { f(a) }              ; a }
-
     // ---------------------------------------------------------------------------
     @fordevonly def __exit: Nothing = { ReflectionUtils.formatExitTrace(().reflect.stackTrace(), "intentionally stopping").p; System.exit(0); illegalState("can't happen") }
 

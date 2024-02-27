@@ -94,16 +94,18 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   val  SelfClosingIterator    = aptmisc.SelfClosingIterator
 
   // ---------------------------------------------------------------------------
+  type Items[$Items <: Items[_, _], $Item] = aptmisc.Items[$Items, $Item]
+
+  // ---------------------------------------------------------------------------
   type JavaPattern = java.util.regex.Pattern
 
   // ===========================================================================
-  val system   = aptmisc.AptusSystem
-  val fs       = aptmisc.Fs
-  val hardware = aptmisc.Hardware
-  val random   = aptmisc.Random
-  val reflect  = aptmisc.Reflect
-  val time     = aptmisc.Time
-
+  val system     = aptmisc.AptusSystem
+  val fs         = aptmisc.Fs
+  val hardware   = aptmisc.Hardware
+  val random     = aptmisc.Random
+  val reflection = aptmisc.Reflection
+  val time       = aptmisc.Time
 }
 
 // ===========================================================================

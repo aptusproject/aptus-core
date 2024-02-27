@@ -9,7 +9,7 @@ package object aptustesting {
   def compare[A](actual: A, expected: A): Unit = { assert(actual == expected, message = actual -> expected) }
   
   def compare      [A](enabled: Boolean)(actual: => A, expected: A): Unit = { if (enabled) compare(actual, expected) else () }
-  def compareIfUnix[A]                  (actual: => A, expected: A): Unit = compare(().system.isUnix())(actual, expected)
+  def compareIfUnix[A]                  (actual: => A, expected: A): Unit = compare(aptus.system.isUnix())(actual, expected)
 
   // ---------------------------------------------------------------------------
   def fail[$Throwable <: Throwable : ClassTag](f: => Any)              = { _fail[$Throwable](f, msgOpt = None) }

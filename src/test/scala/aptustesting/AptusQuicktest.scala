@@ -41,10 +41,9 @@ import aptus._
   
   // ===========================================================================
   def init() = {
-    import aptus.Unit_
-    ().fs.homeDirectoryPath().p
+    aptus.fs.homeDirectoryPath().p
     
-    ().reflect.formatStackTrace().p
+    aptus.reflection.formatStackTrace().p
 
     "hello".p               // prints: "hello"
     "hello".p.toUpperCase.p // prints: "hello", then "HELLO"
@@ -151,10 +150,10 @@ import aptus._
       .toList      
 
     // ---------------------------------------------------------------------------    
-    ().fs.homeDirectoryPath().p    
-    ().random.uuidString().p // a1bffc1e-72aa-477e-ac84-e4133ffcafad
-    ().hardware.totalMemory().p // 1011351552
-    ().reflect.formatStackTrace().p
+    aptus.fs.homeDirectoryPath().p
+    aptus.random.uuidString().p // a1bffc1e-72aa-477e-ac84-e4133ffcafad
+    aptus.hardware.totalMemory().p // 1011351552
+    aptus.reflection.formatStackTrace().p
       //java.lang.Throwable
       //  at aptus.aptmisc.Reflect$.formatStackTrace(Misc.scala:62)
       //  at aptustest.AptusQuicktest$.init(AptusQuicktest.scala:147)

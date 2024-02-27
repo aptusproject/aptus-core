@@ -60,7 +60,7 @@ object Random {
 }
 
 // ===========================================================================
-object Reflect {
+object Reflection {
   def       stackTrace(): List[java.lang.StackTraceElement] = new Throwable().getStackTrace.toList
   def formatStackTrace(): String = aptutils.ThrowableUtils.stackTraceString(new Throwable())
 }

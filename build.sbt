@@ -10,7 +10,7 @@ lazy val root = (project in file("."))
     organizationName     := "Aptus Project",
     organization         := "io.github.aptusproject", // *must* match groupId for sonatype
     name                 := "aptus-core",
-    version              := "0.5.2",
+    version              := "0.5.3",
 	homepage             := Some(url("https://github.com/aptusproject/aptus-core")),
 	organizationHomepage := Some(url("https://github.com/aptusproject")),
     startYear            := Some(2021),
@@ -26,8 +26,8 @@ lazy val root = (project in file("."))
         connection =     "scm:git@github.com:aptusproject/aptus-core.git")),
 	licenses             := Seq("Apache 2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),	
     description          := "Basic utilities for Scala.",
-    scalaVersion         :=               "2.13.11",
-    crossScalaVersions   := List("3.3.1", "2.13.12", "2.12.18") )
+    scalaVersion         :=               "2.13.13",
+    crossScalaVersions   := List("3.3.1", "2.13.13", "2.12.19") )
 
 // ---------------------------------------------------------------------------    
 scalacOptions ++= Seq("-encoding", "UTF-8") ++ //"-Yimports:java.lang,scala,scala.Predef,scala.util.chaining" -- not possible for 2.12 it seems (TODO: t210308154253 confirm)
@@ -43,13 +43,13 @@ val compatVersion              = "2.11.0"
 val parallelCollectionsVersion = "1.0.4"
 
 // ---------------------------------------------------------------------------
+val commonsLangVersion         = "3.14.0"
 val commonsMathVersion         = "3.6.1"
-val commonsLangVersion         = "3.12.0"
-val commonsIoVersion           = "2.13.0"
+val commonsIoVersion           = "2.15.1"
 val commonsCsvVersion          = "1.10.0"
-val commonsCompressVersion     = "1.24.0"
-val guavaVersion               = "32.0.1-jre"
+val commonsCompressVersion     = "1.26.0"
 val gsonVersion                = "2.10.1"
+val guavaVersion               = "32.0.1-jre" // careful updating this (often causes issues with Apache Spark)
 
 val uTestVersion               = "0.8.1"
 

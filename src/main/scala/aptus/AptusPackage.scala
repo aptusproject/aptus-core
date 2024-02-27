@@ -49,21 +49,6 @@ package object aptus
   // TODO: t211006141756 - should most of them have @inline? is there a downside?
 
   // ===========================================================================
-  implicit class Unit_(val u: Unit) extends AnyVal { // TODO: t201213095810 anyway to add that to Predef? implicit class doesn't seem to work
-    def system      = aptmisc.AptusSystem
-    def fs          = aptmisc.Fs
-    def hardware    = aptmisc.Hardware
-    def random      = aptmisc.Random
-    def reflect     = aptmisc.Reflect
-    def time        = aptmisc.Time
-
-    // ---------------------------------------------------------------------------
-    // convenience
-
-    //@fordevonly def tid(): Long = concurrency.threadId
-  }
-
-  // ===========================================================================
   implicit class Anything_[A](private val a: A) extends AnyVal {
     def str: String = a.toString
 

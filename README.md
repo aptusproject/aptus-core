@@ -7,7 +7,7 @@ when performance isn't most important. It also helps code defensively when repre
 <!-- =========================================================================== -->
 ## SBT
 <a name="211006113932"></a>
-`libraryDependencies += "io.github.aptusproject" %% "aptus-core" % "0.5.2"`
+`libraryDependencies += "io.github.aptusproject" %% "aptus-core" % "0.5.3"`
 
 Then import the following:
 
@@ -16,9 +16,9 @@ import aptus._ // or more specific imports, eg import.aptus.String_
 ```
 
 The library is available for Scala
-[3.0](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_3/0.4.0/jar),
-[2.13](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.13/0.4.0/jar), and 
-[2.12](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.12/0.4.0/jar)
+[3.3.1](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_3/0.5.3/jar),
+[2.13](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.13/0.5.3/jar), and 
+[2.12](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.12/0.5.3/jar)
 
 
 <!-- =========================================================================== -->

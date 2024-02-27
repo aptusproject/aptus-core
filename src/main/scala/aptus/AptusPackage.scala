@@ -43,7 +43,8 @@ package aptus {
 // ===========================================================================
 package object aptus
     extends TopLevel
-    with AptusAnnotations
+    with    AptusAnnotations
+    with    AptusScalaVersionSpecific
     with    AptusAliases
     with    AptusCommonAliases {
   // TODO: t211006141756 - should most of them have @inline? is there a downside?

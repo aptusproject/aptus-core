@@ -22,7 +22,7 @@ object ItemsTest  extends TestSuite {
   // meta
 
   case class People(values: Seq[Person])
-    extends aptus.Items[People, Person] {
+    extends aptus.aptmisc.Items[People, Person] {
       val const = People.apply }
 
   // ---------------------------------------------------------------------------

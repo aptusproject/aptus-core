@@ -5,6 +5,7 @@ import scala.sys.process._
 import scala.language.postfixOps
 import scala.collection.{mutable,immutable}
 import scala.util.chaining._
+import scala.jdk.javaapi.CollectionConverters
 
 import java.time._
 import java.time.format.DateTimeFormatter
@@ -815,6 +816,18 @@ coll.foreach { x =>
   implicit class Future_[T](fut: concurrent.Future[T]) {
     def awaitIndefinitely() = concurrent.Await.result(fut, concurrent.duration.Duration.Inf)
   }
+
+  // ===========================================================================
+  implicit class JavaList_[T](list: java.util.List[T]) {
+      def javaToScala: Seq[T] = CollectionConverters.asScala(list).toList }
+
+    // ---------------------------------------------------------------------------
+    implicit class JavaSet_[T](set: java.util.Set[T]) {
+      def javaToScala: Set[T] = CollectionConverters.asScala(set).toSet }
+
+    // ---------------------------------------------------------------------------
+    implicit class JavaMap_[K, V](map: java.util.Map[K, V]) {
+      def javaToScala: Map[K, V] = CollectionConverters.asScala(map).toMap }
 
 }
 

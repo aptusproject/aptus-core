@@ -513,8 +513,7 @@ package object aptus
         flushModulo : Long                 = 100,
         logModulo   : Option[Long => Unit] = None /* eg Some(println) */)
         (implicit ev: A <:< String) =
-      FileUtils.writeGzipLines(out, flushModulo, logModulo)(itr.asInstanceOf[Iterator[String]])
-  }
+      FileUtils.writeGzipLines(out, flushModulo, logModulo)(itr.asInstanceOf[Iterator[String]]) }
 
   // ===========================================================================
   implicit class Map_[K, V](val mp: Map[K, V]) extends AnyVal {
@@ -524,8 +523,7 @@ package object aptus
     // ---------------------------------------------------------------------------
     def toMutableMap                        :   mutable.    Map[K, V] = MapUtils.toMutableMap(mp)
     def toListMap                           : immutable.ListMap[K, V] = MapUtils.toListMap   (mp)
-    def toTreeMap(implicit ord: Ordering[K]): immutable.TreeMap[K, V] = MapUtils.toTreeMap   (mp)
-  }
+    def toTreeMap(implicit ord: Ordering[K]): immutable.TreeMap[K, V] = MapUtils.toTreeMap   (mp) }
 
   // ===========================================================================
   implicit class Option_[A](val opt: Option[A]) extends AnyVal {
@@ -533,8 +531,7 @@ package object aptus
 
     def swap[B](f: => B): Option[B] = if (opt.isDefined) None else Some(f)
 
-    def isExclusiveWith[B](that: Option[B]): Boolean = (opt.isDefined && that.isEmpty) || (opt.isEmpty && that.isDefined) // convenient for assertions
-  }
+    def isExclusiveWith[B](that: Option[B]): Boolean = (opt.isDefined && that.isEmpty) || (opt.isEmpty && that.isDefined) } // convenient for assertions
 
   // ===========================================================================
   implicit class Tuple2_[A, B](val tup: Tuple2[A, B]) extends AnyVal {
@@ -557,8 +554,7 @@ package object aptus
 
     // ---------------------------------------------------------------------------
     def join              = Seq(tup._1, tup._2).mkString("")
-    def join(sep: String) = Seq(tup._1, tup._2).mkString(sep)
-  }
+    def join(sep: String) = Seq(tup._1, tup._2).mkString(sep) }
 
   // ---------------------------------------------------------------------------
   implicit class Tuple3_[A, B, C](val tup: Tuple3[A, B, C]) extends AnyVal {
@@ -566,23 +562,33 @@ package object aptus
 
     def mapFirst [A2](fa: A => A2) = (fa(tup._1),   tup._2,     tup._3 )
     def mapSecond[B2](fb: B => B2) = (   tup._1, fb(tup._2),    tup._3 )
-    def mapThird [C2](fc: C => C2) = (   tup._1,    tup._2 , fc(tup._3))
-  }
+    def mapThird [C2](fc: C => C2) = (   tup._1,    tup._2 , fc(tup._3)) }
 
   // ---------------------------------------------------------------------------
   implicit class Tuple4_[A, B, C, D](val tup: Tuple4[A, B, C, D]) extends AnyVal {
-    def toSeq[Z](implicit ev1: A <:< Z, ev2: B <:< Z, ev3: C <:< Z, ev4: D <:< Z) = Seq[Z](tup._1, tup._2, tup._3, tup._4)
-  }
+    def toSeq[Z](implicit ev1: A <:< Z, ev2: B <:< Z, ev3: C <:< Z, ev4: D <:< Z) = Seq[Z](tup._1, tup._2, tup._3, tup._4) }
 
   // ---------------------------------------------------------------------------
   implicit class Tuple5_[A, B, C, D, E](val tup: Tuple5[A, B, C, D, E]) extends AnyVal {
-    def toSeq[Z](implicit ev1: A <:< Z, ev2: B <:< Z, ev3: C <:< Z, ev4: D <:< Z, ev5: E <:< Z) = Seq[Z](tup._1, tup._2, tup._3, tup._4, tup._5)
-  }
+    def toSeq[Z](implicit ev1: A <:< Z, ev2: B <:< Z, ev3: C <:< Z, ev4: D <:< Z, ev5: E <:< Z) = Seq[Z](tup._1, tup._2, tup._3, tup._4, tup._5) }
 
   // ===========================================================================
   // ===========================================================================
   // ===========================================================================
   implicit class Int_(val nmbr: Int) extends AnyVal {
+      def tab    (s: String) = nmbr.str.tab    (s)
+      def colon  (s: String) = nmbr.str.colon  (s)
+      def newline(s: String) = nmbr.str.newline(s)
+
+      // ---------------------------------------------------------------------------
+      def prepend(prefix: String): String = s"$prefix$nmbr"
+      def append (suffix: String): String = s"$nmbr$suffix"
+
+      // ---------------------------------------------------------------------------
+      def padLeft(length: Int)            : String = nmbr.formatExplicit.padLeft(length, ' ')
+      def padLeft(length: Int, char: Char): String = nmbr.formatExplicit.padLeft(length, char)
+
+      // ===========================================================================
       def isInBetween         (fromInclusive: Int, toExclusive: Int): Boolean = nmbr >= fromInclusive && nmbr <  toExclusive
       def isInBetweenInclusive(fromInclusive: Int, toInclusive: Int): Boolean = nmbr >= fromInclusive && nmbr <= toInclusive
 

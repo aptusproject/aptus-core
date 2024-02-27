@@ -312,15 +312,15 @@ package object aptus
 
     // ===========================================================================
     def removeIfApplicable( potentialSubStr: String) = str.replace( potentialSubStr, "")
-    def removeGuaranteed  (guaranteedSubStr: String) = str.replace(guaranteedSubStr, "").assert(_ != str)
-    def remove            (guaranteedSubStr: String) = str.replace(guaranteedSubStr, "").assert(_ != str)
+    def removeGuaranteed  (guaranteedSubStr: String) = str.replace(guaranteedSubStr, "").ensuring(_ != str)
+    def remove            (guaranteedSubStr: String) = str.replace(guaranteedSubStr, "").ensuring(_ != str)
     
     def stripPrefixIfApplicable( potentialSubStr: String) = str.stripPrefix( potentialSubStr)
-    def stripPrefixGuaranteed  (guaranteedSubStr: String) = str.stripPrefix(guaranteedSubStr).assert(_ != str)
+    def stripPrefixGuaranteed  (guaranteedSubStr: String) = str.stripPrefix(guaranteedSubStr).ensuring(_ != str)
     //  stripPrefix: unfortuntately stdlib semantics are "IfApplicable"
     
     def stripSuffixIfApplicable( potentialSubStr: String) = str.stripSuffix( potentialSubStr)
-    def stripSuffixGuaranteed  (guaranteedSubStr: String) = str.stripSuffix(guaranteedSubStr).assert(_ != str)
+    def stripSuffixGuaranteed  (guaranteedSubStr: String) = str.stripSuffix(guaranteedSubStr).ensuring(_ != str)
     //  stripSuffix: unfortuntately stdlib semantics are "IfApplicable"    
 
     // ---------------------------------------------------------------------------
@@ -357,8 +357,8 @@ package object aptus
   // ===========================================================================
   // TODO: switch it all to List? see https://users.scala-lang.org/t/seq-vs-list-which-should-i-choose/5412/16
   implicit class Seq_[A](val coll: Seq[A]) extends AnyVal { // TODO: t210124092716 - codegen specializations (List, Vector, ...?)
-    def requireNonEmpty()              : Seq[A] = coll.require(_.nonEmpty)
-    def  assertNonEmpty()              : Seq[A] = coll.require(_.nonEmpty)
+    def requireNonEmpty()              : Seq[A] = coll.ensuring(_.nonEmpty)
+    def  assertNonEmpty()              : Seq[A] = coll.ensuring(_.nonEmpty)
 
     def requireDistinct()              : Seq[A] = SeqUtils.distinct(coll, Predef.require(_, _))
     def  assertDistinct()              : Seq[A] = SeqUtils.distinct(coll, Predef.require(_, _))

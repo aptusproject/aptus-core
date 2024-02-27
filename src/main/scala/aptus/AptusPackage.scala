@@ -606,8 +606,7 @@ package object aptus
 
       // ---------------------------------------------------------------------------
       def toLocalDateTime: LocalDateTime = java.time.LocalDateTime.ofEpochSecond(nmbr.assertRange(0, 2000000000), 0, TimeUtils.currentZoneOffset()) // in seconds; eg     1,647,447,105 -> 2022-03-16T12:11:45
-      def toLocalDate    : LocalDate     = java.time.LocalDate    .ofEpochDay   (nmbr.assertRange(0, 50000))                                        // in days   ; eg            19,067 -> 2022-03-16
-    }
+      def toLocalDate    : LocalDate     = java.time.LocalDate    .ofEpochDay   (nmbr.assertRange(0, 50000)) }                                      // in days   ; eg            19,067 -> 2022-03-16
 
     // ---------------------------------------------------------------------------
     implicit class Long_(val nmbr: Long) extends AnyVal {
@@ -625,8 +624,7 @@ package object aptus
       // ---------------------------------------------------------------------------
       def toInstant       : Instant       = java.time.Instant      .ofEpochMilli (nmbr.assertRange(0, 2000000000000L))                               // in milliseconds ; eg 1,647,447,105,888 -> 2022-03-16T16:11:45.888Z
       def toLocalDateTime : LocalDateTime = java.time.LocalDateTime.ofEpochSecond(nmbr.assertRange(0, 2000000000), 0, TimeUtils.currentZoneOffset()) // in seconds      ; eg     1,647,447,105 -> 2022-03-16T12:11:45
-      def toLocalDate     : LocalDate     = java.time.LocalDate    .ofEpochDay   (nmbr.assertRange(0, 50000))                                        // in days         ; eg            19,067 -> 2022-03-16
-    }
+      def toLocalDate     : LocalDate     = java.time.LocalDate    .ofEpochDay   (nmbr.assertRange(0, 50000)) }                                      // in days         ; eg            19,067 -> 2022-03-16
 
     // ===========================================================================
     implicit class Double_(val nmbr: Double) extends AnyVal {
@@ -661,8 +659,7 @@ package object aptus
       //FIXME: t210123101634 - significantFigures vs maxDecimal
         def significantFigures                   : Double = significantFigures(2)
         def significantFigures(setPrecision: Int): Double = NumberUtils.significantFigures(nmbr, setPrecision)
-        def maxDecimals(n: Int): Double = org.apache.commons.math3.util.Precision.round(nmbr, n.require(_ >= 0))
-    }
+        def maxDecimals(n: Int): Double = org.apache.commons.math3.util.Precision.round(nmbr, n.ensuring(_ >= 0)) }
 
   // ===========================================================================
   // ===========================================================================
@@ -679,8 +676,7 @@ package object aptus
       def truncateToSeconds: Instant = instant.truncatedTo(java.time.temporal.ChronoUnit.SECONDS)
 
       // ---------------------------------------------------------------------------
-      def offsetFor(zone: ZoneId): ZoneOffset = zone.getRules.getOffset(instant)
-    }
+      def offsetFor(zone: ZoneId): ZoneOffset = zone.getRules.getOffset(instant) }
 
     // ===========================================================================
     implicit class LocalDateTime_(date: LocalDateTime) { import TimeUtils._
@@ -692,8 +688,7 @@ package object aptus
       def atZoneDefault   :  ZonedDateTime = date.atZone   (DefaultZoneId)
 
       // ---------------------------------------------------------------------------
-      def truncateToSeconds: LocalDateTime = date.truncatedTo(java.time.temporal.ChronoUnit.SECONDS)
-    }
+      def truncateToSeconds: LocalDateTime = date.truncatedTo(java.time.temporal.ChronoUnit.SECONDS) }
 
     // ===========================================================================
     implicit class OffsetDateTime_(date: OffsetDateTime) {
@@ -705,8 +700,7 @@ package object aptus
       def atZoneDefault : ZonedDateTime = date.toLocalDateTime.atZoneDefault // also see atZoneSameInstant and atZoneSimilarLocal
 
       // ---------------------------------------------------------------------------
-      def truncateToSeconds: OffsetDateTime = date.truncatedTo(java.time.temporal.ChronoUnit.SECONDS)
-    }
+      def truncateToSeconds: OffsetDateTime = date.truncatedTo(java.time.temporal.ChronoUnit.SECONDS) }
 
     // ===========================================================================
     implicit class ZonedDateTime_(date: ZonedDateTime) {
@@ -718,21 +712,20 @@ package object aptus
       def atOffsetDefault: OffsetDateTime = date.toLocalDateTime.atOffsetDefault // no direct way?
 
       // ---------------------------------------------------------------------------
-      def truncateToSeconds: ZonedDateTime = date.truncatedTo(java.time.temporal.ChronoUnit.SECONDS)
-    }
+      def truncateToSeconds: ZonedDateTime = date.truncatedTo(java.time.temporal.ChronoUnit.SECONDS) }
 
   // ===========================================================================
   implicit class LocalDate_(date: LocalDate) {
-      def formatIso: String = DateTimeFormatter.ISO_DATE.format(date) // default behavior but more explicit
-    }
+      def formatIso: String = DateTimeFormatter.ISO_DATE.format(date) } // default behavior but more explicit
 
     // ---------------------------------------------------------------------------
-    implicit class LocalTime_(time: LocalTime) {
-      def formatIso                : String = DateTimeFormatter.ISO_TIME             .format(time) // default behavior but more explicit
+    private lazy val _HHmm   = DateTimeFormatter.ofPattern("HH:mm")
+    private lazy val _HHmmss = DateTimeFormatter.ofPattern("HH:mm:ss")
 
-      def formatHoursMinutes       : String = DateTimeFormatter.ofPattern("HH:mm")   .format(time) // TODO: cache
-      def formatHoursMinutesSeconds: String = DateTimeFormatter.ofPattern("HH:mm:ss").format(time) // TODO: cache
-    }
+    implicit class LocalTime_(time: LocalTime) {
+      def formatIso                : String = DateTimeFormatter.ISO_TIME.format(time) // default behavior but more explicit
+      def formatHoursMinutes       : String = _HHmm  .format(time)
+      def formatHoursMinutesSeconds: String = _HHmmss.format(time) }
 
   // ===========================================================================
   implicit class ArrayByte_[T](bytes: Array[Byte]) {

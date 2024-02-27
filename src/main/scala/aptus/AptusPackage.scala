@@ -416,9 +416,8 @@ package object aptus
     def filterBy        [B](p: B => Boolean)(f: A => B)= coll.filter   (x =>  p(f(x)))
     def filterByNot     [B](p: B => Boolean)(f: A => B)= coll.filterNot(x =>  p(f(x)))
 
-    def mapIf [   B <: A](test  :      Boolean)(f:      A => B): Seq[A] = coll.map { x => if (test)    f(x) else   x }
-    def mapIf [   B <: A](pred  : A => Boolean)(f:      A => B): Seq[A] = coll.map { x => if (pred(x)) f(x) else   x }
-    def mapOpt[C, B <: A](option: Option[C])   (f: C => A => B): Seq[A] = option.map { c => coll.map(f(c)) }.getOrElse(coll)
+    def mapIf[B <: A](test:      Boolean)(f: A => B): Seq[A] = coll.map { x => if (test)    f(x) else   x }
+    def mapIf[B <: A](pred: A => Boolean)(f: A => B): Seq[A] = coll.map { x => if (pred(x)) f(x) else   x }
 
     // ---------------------------------------------------------------------------
     def zipWithRank: Seq[(A, aptus.Rank)] = coll.zipWithIndex.map { case (value, index) => value -> (index + 1) }

@@ -5,32 +5,34 @@
 // ===========================================================================
 // settings
 
-lazy val root = (project in file("."))
-  .settings(  
-    organizationName     := "Aptus Project",
-    organization         := "io.github.aptusproject", // *must* match groupId for sonatype
-    name                 := "aptus-core",
-    version              := "0.5.3",
-	homepage             := Some(url("https://github.com/aptusproject/aptus-core")),
-	organizationHomepage := Some(url("https://github.com/aptusproject")),
-    startYear            := Some(2021),
-    developers           :=
-      List(Developer(
-		id    = "anthony-cros",
-		name  = "Anthony Cros",
-		email = "contact.galliaproject@gmail.com",
-		url   = url("https://github.com/anthony-cros") )),
-    scmInfo              :=
-      Some(ScmInfo(
-        browseUrl  = url("https://github.com/aptusproject/aptus-core"),
-        connection =     "scm:git@github.com:aptusproject/aptus-core.git")),
-	licenses             := Seq("Apache 2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),	
-    description          := "Basic utilities for Scala.",
-    scalaVersion         :=               "2.13.13",
-    crossScalaVersions   := List("3.3.1", "2.13.13", "2.12.19") )
+ThisBuild / organizationName     := "Aptus Project"
+ThisBuild / organization         := "io.github.aptusproject" // *must* match groupId for sonatype
+ThisBuild / version              := "0.5.3"
+ThisBuild / homepage             := Some(url("https://github.com/aptusproject/aptus-core"))
+ThisBuild / organizationHomepage := Some(url("https://github.com/aptusproject"))
+ThisBuild / startYear            := Some(2021)
+ThisBuild / developers           :=
+  List(Developer(
+	id    = "anthony-cros",
+	name  = "Anthony Cros",
+	email = "contact.galliaproject@gmail.com",
+	url   = url("https://github.com/anthony-cros")))
+ThisBuild / scmInfo              :=
+  Some(ScmInfo(
+    browseUrl  = url("https://github.com/aptusproject/aptus-core"),
+    connection =     "scm:git@github.com:aptusproject/aptus-core.git"))
+ThisBuild / licenses             := Seq("Apache 2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
+ThisBuild / description          := "Basic utilities for Scala."
+ThisBuild / scalaVersion         :=               "2.13.13"
+ThisBuild / crossScalaVersions   := List("3.3.1", "2.13.13", "2.12.19")
 
-// ---------------------------------------------------------------------------    
-scalacOptions ++= Seq("-encoding", "UTF-8") ++ //"-Yimports:java.lang,scala,scala.Predef,scala.util.chaining" -- not possible for 2.12 it seems (TODO: t210308154253 confirm)
+// ---------------------------------------------------------------------------
+lazy val root = (project in file(".")).settings(name := "aptus-core")
+
+// ===========================================================================
+// scalac options
+
+ThisBuild / scalacOptions ++= Seq("-encoding", "UTF-8") ++ //"-Yimports:java.lang,scala,scala.Predef,scala.util.chaining" -- not possible for 2.12 it seems (TODO: t210308154253 confirm)
   (scalaBinaryVersion.value match {
     case "3"    => Seq("-unchecked")
     case "2.13" => Seq("-Ywarn-value-discard", "-Ywarn-unused:imports,privates,locals")
@@ -54,7 +56,7 @@ val guavaVersion               = "32.0.1-jre" // careful updating this (often ca
 val uTestVersion               = "0.8.1"
 
 // ---------------------------------------------------------------------------
-libraryDependencies ++= // hard to do anything on the JVM without those nowadays
+ThisBuild / libraryDependencies ++= // hard to do anything on the JVM without those nowadays
   Seq(
     // misc utils
     "org.apache.commons"    %  "commons-lang3" % commonsLangVersion,
@@ -99,9 +101,8 @@ shadingRules  += ShadingRule.moveUnder("com.google.common", "guava28")
 // ===========================================================================
 // testing
 
-libraryDependencies += "com.lihaoyi" %% "utest" % uTestVersion % "test"
-
-testFrameworks += new TestFramework("utest.runner.Framework")
+ThisBuild / testFrameworks      += new TestFramework("utest.runner.Framework")
+ThisBuild / libraryDependencies += "com.lihaoyi" %% "utest" % uTestVersion % "test"
 
 // ===========================================================================
 // publishing
@@ -110,8 +111,6 @@ sonatypeRepository     := "https://s01.oss.sonatype.org/service/local"
 sonatypeCredentialHost :=         "s01.oss.sonatype.org"        
 publishMavenStyle      := true
 publishTo              := sonatypePublishToBundle.value
-//pomIncludeRepository := { _ => false }
-//credentials += Credentials(Path.userHome / ".sbt" / ".credentials")
 
 // ===========================================================================
 // assembly (uberjar); run: sbt +assembly

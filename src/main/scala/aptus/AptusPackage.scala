@@ -449,6 +449,10 @@ package object aptus
     // ---------------------------------------------------------------------------
     def distinctByAdjacency: Seq[A] = IterableUtils.distinctByAdjacency(coll).toList // TODO: test for 1
 
+    // ---------------------------------------------------------------------------
+    def mapAssociateLeft [K](f: A => K): Seq[(K, A)] = coll.map(_.associateLeft (f)) // eg pre-groupByKey
+    def mapAssociateRight[V](f: A => V): Seq[(A, V)] = coll.map(_.associateRight(f)) // eg pre-groupByKey
+
     // ===========================================================================
     def mean(implicit num: Numeric[A]): Double = (num.toDouble(coll.foldLeft(num.zero)(num.plus)) / coll.size)
 

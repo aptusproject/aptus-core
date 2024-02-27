@@ -470,18 +470,21 @@ package object aptus
 
     // ---------------------------------------------------------------------------
     def groupByKey           [K, V](implicit ev: A <:< (K, V)                  ):               Map[K, Seq[V]] = MapUtils.groupByKey           (coll.iterator.asInstanceOf[Iterator[(K, V)]])
-    def groupByKeyWithListMap[K, V](implicit ev: A <:< (K, V)                  ): immutable.ListMap[K, Seq[V]] = MapUtils.groupByKeyWithListMap(coll.iterator.asInstanceOf[Iterator[(K, V)]])
     def groupByKeyWithTreeMap[K, V](implicit ev: A <:< (K, V), ord: Ordering[K]): immutable.TreeMap[K, Seq[V]] = MapUtils.groupByKeyWithTreeMap(coll.iterator.asInstanceOf[Iterator[(K, V)]])
+    def groupByKeyWithListMap[K, V](implicit ev: A <:< (K, V)                  ): immutable.ListMap[K, Seq[V]] = MapUtils.groupByKeyWithListMap(coll.iterator.asInstanceOf[Iterator[(K, V)]])
 
     def groupByAdjacency[B](f: A => B): Seq[(B, Seq[A])] = MapUtils.groupByAdjacency(coll)(f)
 
-    // ---------------------------------------------------------------------------
+    // ===========================================================================
     def countBySelf: List[(A, Int)] = coll.groupBy(identity).view.map { x => x._1 -> x._2.size }.toList.sortBy(-_._2) // TODO: t211004120452 - more efficient version
+
+    /** maintains order (if presorted for instance) */
+    def countBySelfWithOrder: List[(A, Int)] = coll.map(x => x -> x).groupByKeyWithListMap.toList.map { x => x._1 -> x._2.size }.sortBy(-_._2) // TODO: t211004120452 - more efficient version
 
     // TODO: t220929165238 - more efficient version (see groupByKey)
     def countByKey[K, V](implicit ev: A <:< (K, V)): Seq[(Count, K)] = groupByKey.map { case (k, v) => v.size -> k }.toList.sortBy(-_._1)
 
-    // ---------------------------------------------------------------------------
+    // ===========================================================================
     def toOptionalSeq[B](implicit ev: A <:< Option[B]): Option[Seq[B]] = if (coll.contains(None)) None else Some(coll.map(_.get))
 
     // ---------------------------------------------------------------------------
@@ -493,13 +496,13 @@ package object aptus
 
   // ===========================================================================
   implicit class Iterator_[A](val itr: Iterator[A]) extends AnyVal {
-    def last(): A = itr.next().assert(_ => !itr.hasNext)
+    def last(): A = itr.next().ensuring(_ => !itr.hasNext)
 
     // ---------------------------------------------------------------------------
-    def groupByKey           [K, V](implicit ev: A <:< (K, V))                  :               Map[K, Seq[V]]  = MapUtils.groupByKey              (itr.asInstanceOf[Iterator[(K, V)]])
-    def groupByKeyWithListMap[K, V](implicit ev: A <:< (K, V))                  : immutable.ListMap[K, Seq[V]]  = MapUtils.groupByKeyWithListMap   (itr.asInstanceOf[Iterator[(K, V)]])
-    def groupByKeyWithTreeMap[K, V](implicit ev: A <:< (K, V), ord: Ordering[K]): immutable.TreeMap[K, Seq[V]]  = MapUtils.groupByKeyWithTreeMap   (itr.asInstanceOf[Iterator[(K, V)]])
-    def groupByPreSortedKey[K, V](implicit ev: A <:< (K, V))                    :         Iterator[(K, Seq[V])] = IteratorUtils.groupByPreSortedKey(itr.asInstanceOf[Iterator[(K, V)]])
+    def groupByKey           [K, V](implicit ev: A <:< (K, V))                  :               Map[K, Seq[V]]  =      MapUtils.groupByKey           (itr.asInstanceOf[Iterator[(K, V)]])
+    def groupByKeyWithListMap[K, V](implicit ev: A <:< (K, V))                  : immutable.ListMap[K, Seq[V]]  =      MapUtils.groupByKeyWithListMap(itr.asInstanceOf[Iterator[(K, V)]])
+    def groupByKeyWithTreeMap[K, V](implicit ev: A <:< (K, V), ord: Ordering[K]): immutable.TreeMap[K, Seq[V]]  =      MapUtils.groupByKeyWithTreeMap(itr.asInstanceOf[Iterator[(K, V)]])
+    def groupByPreSortedKey  [K, V](implicit ev: A <:< (K, V))                  :         Iterator[(K, Seq[V])] = IteratorUtils.groupByPreSortedKey  (itr.asInstanceOf[Iterator[(K, V)]])
 
     // ---------------------------------------------------------------------------
     def zipSameSize[B](that: Iterator[B]): Iterator[(A, B)] = aptutils.IteratorUtils.zipSameSize(itr, that)

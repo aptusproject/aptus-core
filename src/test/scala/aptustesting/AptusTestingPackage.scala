@@ -1,6 +1,5 @@
 // ===========================================================================
 package object aptustesting {
-  import aptus._
   import scala.reflect.{classTag, ClassTag}
   import scala.util.{Try, Failure, Success}
   
@@ -35,10 +34,6 @@ package object aptustesting {
             message = msgOpt.get -> f.getMessage)
 
       // ---------------------------------------------------------------------------
-      case Success(s) => assert(false)
-    }
-  }
-
-}
+      case Success(_) => assert(false) } } }
 
 // ===========================================================================

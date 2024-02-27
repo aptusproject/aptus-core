@@ -128,15 +128,8 @@ trait Items[$Items <: Items[_, _], $Item] extends HasConst[Seq[$Item], $Items] {
   def ifEmptyThenError (msg: String): $Items = if (isEmpty) aptus.illegalState(msg) else const(values)
 
   // ---------------------------------------------------------------------------
-  def matchingIndex(target: Index): $Item =
-    values
-      .zipWithIndex
-      .find( _._2 == target)
-      .map (_._1)
-      .get
-
-  // ---------------------------------------------------------------------------
-  def matchingIndices(targets: Set[Index]): $Items =
+  def matchingIndex  (target: Index)      : $Item = values.apply(target) // just for naming consistency
+  def matchingIndices(targets: Set[Index]): $Items = // TODO: move to Seq_ and delegate
     values
       .zipWithIndex
       .filter { x => targets.contains(x._2) }

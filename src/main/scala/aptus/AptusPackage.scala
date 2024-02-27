@@ -401,6 +401,8 @@ package object aptus
     def section2               : String = section2("")
     def section2(title: String): String = StringUtils.section(coll, 2, title)
 
+    def section(n: Int)(title: String): String = StringUtils.section(coll, n, title)
+
     // ---------------------------------------------------------------------------
     def isDistinct                               : Boolean = coll.size == coll.toSet.size
     def isDisjointWith[B >: A](that: Iterable[B]): Boolean = coll.intersect(that.toSeq).isEmpty

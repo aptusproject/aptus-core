@@ -478,10 +478,15 @@ package object aptus
     def toTreeMap   [K, V](implicit ev: A <:< (K, V), ord: Ordering[K]) = MapUtils.toTreeMap(coll)
 
     // ---------------------------------------------------------------------------
+    def groupByWithListMap[K, V](f: A => K)(implicit ev: A =:= V): ListMap[K, Seq[V]] = groupByWithListMap(f, v => v)
+    def groupByWithListMap[K, V](f: A => K, g: A => V)           : ListMap[K, Seq[V]] = aptutils.MapUtils.groupByWithListMap(f, g)(coll.iterator)
+
+    // ---------------------------------------------------------------------------
     def groupByKey           [K, V](implicit ev: A <:< (K, V)                  ):               Map[K, Seq[V]] = MapUtils.groupByKey           (coll.iterator.asInstanceOf[Iterator[(K, V)]])
-    def groupByKeyWithListMap[K, V](implicit ev: A <:< (K, V)                  ): immutable.ListMap[K, Seq[V]] = MapUtils.groupByKeyWithListMap(coll.iterator.asInstanceOf[Iterator[(K, V)]])
+    def groupByKeyWithListMap[K, V](implicit ev: A <:< (K, V)                  ):           ListMap[K, Seq[V]] = MapUtils.groupByKeyWithListMap(coll.iterator.asInstanceOf[Iterator[(K, V)]])
     def groupByKeyWithTreeMap[K, V](implicit ev: A <:< (K, V), ord: Ordering[K]): immutable.TreeMap[K, Seq[V]] = MapUtils.groupByKeyWithTreeMap(coll.iterator.asInstanceOf[Iterator[(K, V)]])
 
+    // ---------------------------------------------------------------------------
     def groupByAdjacency[B](f: A => B): Seq[(B, Seq[A])] = MapUtils.groupByAdjacency(coll)(f)
 
     // ===========================================================================

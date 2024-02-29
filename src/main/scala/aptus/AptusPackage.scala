@@ -263,25 +263,11 @@ package object aptus
     def splitUntil(char: Char, maxNumberOfElements: Int): Seq[String] = { require(maxNumberOfElements >= 1, maxNumberOfElements); str.split(char.toString, maxNumberOfElements).toList }
 
     // ===========================================================================
-    import TimeUtils._
-
-      def parseInstant        : Instant        = Instant.from(                               IsoFormatterInstant.parse(str))
-      def parseLocalDateTime  :  LocalDateTime =  LocalDateTime.parse(str.replace(" ", "T"), IsoFormatterLocalDateTime) // https://stackoverflow.com/questions/9531524/in-an-iso-8601-date-is-the-t-character-mandatory
-      def parseOffsetDateTime : OffsetDateTime = OffsetDateTime.parse(str,                   IsoFormatterOffsetDateTime)
-      def parseZonedDateTime  :  ZonedDateTime =  ZonedDateTime.parse(str,                   IsoFormatterZonedDateTime)
-
-      def parseLocalDate      :  LocalDate     =  LocalDate    .parse(str, IsoFormatterLocalDate)
-      def parseLocalTime      :  LocalTime     =  LocalTime    .parse(str, IsoFormatterLocalTime)
-
-      // ===========================================================================
-      def parseLocalDateTime(pattern: String): LocalDateTime = DateTimeFormatter.ofPattern(pattern).pipe(LocalDateTime.parse(str, _))
-      def parseLocalDate    (pattern: String): LocalDate     = DateTimeFormatter.ofPattern(pattern).pipe(LocalDate    .parse(str, _))
-      def parseLocalTime    (pattern: String): LocalTime     = DateTimeFormatter.ofPattern(pattern).pipe(LocalTime    .parse(str, _))
+    def time = new aptmisc.TimeParsing(str)
 
       // ---------------------------------------------------------------------------
-      def parseLocalDateTime(formatter: DateTimeFormatter): LocalDateTime = LocalDateTime.parse(str, formatter) // eg "2021-01-08T01:02:03".dateTime
-      def parseLocalDate    (formatter: DateTimeFormatter): LocalDate     = LocalDate    .parse(str, formatter) // eg "2021-01-08"         .date
-      def parseLocalTime    (formatter: DateTimeFormatter): LocalTime     = LocalTime    .parse(str, formatter) // eg            "01:02:03".time
+      def parseLocalDate      :  LocalDate     =  time.parseLocalDate
+      def parseLocalDateTime  :  LocalDateTime =  time.parseLocalDateTime
 
     // ===========================================================================
     def removeIfApplicable( potentialSubStr: String) = str.replace( potentialSubStr, "")
@@ -324,8 +310,7 @@ package object aptus
     def jsonArray : com.google.gson.JsonArray  = aptus.aptjson.GsonParser.stringToJsonArray (str)
 
     def prettyJson : String = aptus.aptjson.GsonFormatter.pretty (str).get
-    def compactJson: String = aptus.aptjson.GsonFormatter.compact(str).get
-  }
+    def compactJson: String = aptus.aptjson.GsonFormatter.compact(str).get }
 
   // ===========================================================================
   // TODO: switch it all to List? see https://users.scala-lang.org/t/seq-vs-list-which-should-i-choose/5412/16

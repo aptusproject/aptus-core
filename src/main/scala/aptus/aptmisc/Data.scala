@@ -7,7 +7,7 @@ import aptutils.MapUtils
 import aptutils.joining.FluencyDomain._
 
 // ===========================================================================
-class Data[A](coll: Seq[A]) {
+final class Data[A] private[aptus] (coll: Seq[A]) {
 
   def groupByWithListMap[K, V](f: A => K)(implicit ev: A =:= V): ListMap[K, Seq[V]] = groupByWithListMap(f, v => v)
   def groupByWithListMap[K, V](f: A => K, g: A => V)           : ListMap[K, Seq[V]] = aptutils.MapUtils.groupByWithListMap(f, g)(coll.iterator)

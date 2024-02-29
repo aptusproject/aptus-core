@@ -2,7 +2,6 @@ package aptus
 package aptutils
 
 import util.chaining._
-import collection.MapView
 
 // ===========================================================================
 package object joining {
@@ -27,7 +26,7 @@ package object joining {
       .toList
 
   // ===========================================================================
-  private[joining] def sideOnly[K, V](side: ListMap[K, Seq[V]])(otherKeySet: Set[K]): MapView[K, Seq[V]] =
+  private[joining] def sideOnly[K, V](side: ListMap[K, Seq[V]])(otherKeySet: Set[K]) /* : collection.MapView[K, Seq[V]] - causes issues with 2.12 */ =
     side.keySet
       .diff { otherKeySet }
       .pipe { leftOnlyKeys =>

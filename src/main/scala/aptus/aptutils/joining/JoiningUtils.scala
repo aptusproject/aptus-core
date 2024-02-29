@@ -11,8 +11,8 @@ object JoiningUtils {
         (leftData: Seq[L], riteData: Seq[R])
         (leftKey : L => K, riteKey : R => K)
       : Seq[(K, (L, R))] = {
-    val _left: ListMap[K, Seq[L]] = leftData.groupByWithListMap(leftKey)
-    val _rite: ListMap[K, Seq[R]] = riteData.groupByWithListMap(riteKey)
+    val _left: ListMap[K, Seq[L]] = leftData.data.groupByWithListMap(leftKey)
+    val _rite: ListMap[K, Seq[R]] = riteData.data.groupByWithListMap(riteKey)
 
     // ---------------------------------------------------------------------------
     intersection(_left, _rite) }
@@ -22,8 +22,8 @@ object JoiningUtils {
         (leftData: Seq[L], riteData: Seq[R])
         (leftKey : L => K, riteKey : R => K)
       : Seq[(K, (Option[L], Option[R]))] = {
-    val leftMap: ListMap[K, Seq[L]] = leftData.groupByWithListMap(leftKey)
-    val riteMap: ListMap[K, Seq[R]] = riteData.groupByWithListMap(riteKey)
+    val leftMap: ListMap[K, Seq[L]] = leftData.data.groupByWithListMap(leftKey)
+    val riteMap: ListMap[K, Seq[R]] = riteData.data.groupByWithListMap(riteKey)
 
     // ---------------------------------------------------------------------------
     val intersect: Seq[(K, (Option[L], Option[R]))] =
@@ -52,8 +52,8 @@ object JoiningUtils {
         (leftData: Seq[L], riteData: Seq[R])
         (leftKey : L => K, riteKey : R => K)
       : Seq[(K, (L, Option[R]))] = {
-    val leftMap: ListMap[K, Seq[L]] = leftData.groupByWithListMap(leftKey)
-    val riteMap: ListMap[K, Seq[R]] = riteData.groupByWithListMap(riteKey)
+    val leftMap: ListMap[K, Seq[L]] = leftData.data.groupByWithListMap(leftKey)
+    val riteMap: ListMap[K, Seq[R]] = riteData.data.groupByWithListMap(riteKey)
 
     // ---------------------------------------------------------------------------
     val leftOnly: Seq[(K, (L, Option[R]))] =
@@ -75,8 +75,8 @@ object JoiningUtils {
         (leftData: Seq[L], riteData: Seq[R])
         (leftKey : L => K, riteKey : R => K)
       : Seq[(K, (Option[L], R))] = {
-    val leftMap: ListMap[K, Seq[L]] = leftData.groupByWithListMap(leftKey)
-    val riteMap: ListMap[K, Seq[R]] = riteData.groupByWithListMap(riteKey)
+    val leftMap: ListMap[K, Seq[L]] = leftData.data.groupByWithListMap(leftKey)
+    val riteMap: ListMap[K, Seq[R]] = riteData.data.groupByWithListMap(riteKey)
 
     // ---------------------------------------------------------------------------
     val intersect: Seq[(K, (Option[L], R))] =

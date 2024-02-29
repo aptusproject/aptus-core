@@ -13,21 +13,21 @@ object JoiningTest extends TestSuite {
     test("join") {
 
       test(compare(
-          LeftSeqTestData.innerJoin(RightSeqTestData).on(_.head, _.head),
+          LeftSeqTestData.data.innerJoin(RightSeqTestData).on(_.head, _.head),
           List(
             k1 -> (k1ab, k1zy),
             k1 -> (k1cd, k1zy))))
 
         // ---------------------------------------------------------------------------
         test(compare(
-          leftCcTestData.innerJoin(RightCcTestData).on(_.fooK, _.barK),
+          leftCcTestData.data.innerJoin(RightCcTestData).on(_.fooK, _.barK),
           List(
             k1 -> (k1_9, k1_t),
             k1 -> (k1_8, k1_t))))
 
       // ===========================================================================
       test(compare(
-          LeftSeqTestData.leftJoin(RightSeqTestData).on(_.head, _.head),
+          LeftSeqTestData.data.leftJoin(RightSeqTestData).on(_.head, _.head),
           List(
             k2 -> (k2ef, None),
             k1 -> (k1ab, Some(k1zy)),
@@ -35,7 +35,7 @@ object JoiningTest extends TestSuite {
 
         // ---------------------------------------------------------------------------
         test(compare(
-          leftCcTestData.leftJoin(RightCcTestData).on(_.fooK, _.barK),
+          leftCcTestData.data.leftJoin(RightCcTestData).on(_.fooK, _.barK),
           List(
             k2 -> (k2_7, None),
             k1 -> (k1_9, Some(k1_t)),
@@ -43,7 +43,7 @@ object JoiningTest extends TestSuite {
 
       // ===========================================================================
       test(compare(
-          LeftSeqTestData.rightJoin(RightSeqTestData).on(_.head, _.head),
+          LeftSeqTestData.data.rightJoin(RightSeqTestData).on(_.head, _.head),
           List(
             k1 -> (Some(k1ab), k1zy),
             k1 -> (Some(k1cd), k1zy),
@@ -51,7 +51,7 @@ object JoiningTest extends TestSuite {
 
         // ---------------------------------------------------------------------------
         test(compare(
-          leftCcTestData.rightJoin(RightCcTestData).on(_.fooK, _.barK),
+          leftCcTestData.data.rightJoin(RightCcTestData).on(_.fooK, _.barK),
           List(
             k1 -> (Some(k1_9), k1_t),
             k1 -> (Some(k1_8), k1_t),
@@ -59,7 +59,7 @@ object JoiningTest extends TestSuite {
 
       // ===========================================================================
       test(compare(
-          LeftSeqTestData.outerJoin(RightSeqTestData).on(_.head, _.head),
+          LeftSeqTestData.data.outerJoin(RightSeqTestData).on(_.head, _.head),
           List(
             k2 -> (Some(k2ef), None),
             k1 -> (Some(k1ab), Some(k1zy)),
@@ -68,7 +68,7 @@ object JoiningTest extends TestSuite {
 
         // ---------------------------------------------------------------------------
         test(compare(
-          leftCcTestData.outerJoin(RightCcTestData).on(_.fooK, _.barK),
+          leftCcTestData.data.outerJoin(RightCcTestData).on(_.fooK, _.barK),
           List(
             k2 -> (Some(k2_7), None),
             k1 -> (Some(k1_9), Some(k1_t)),
@@ -79,45 +79,45 @@ object JoiningTest extends TestSuite {
     test("coGroup") {
 
       test(compare(
-          LeftSeqTestData.innerCoGroup(RightSeqTestData).on(_.head, _.head),
+          LeftSeqTestData.data.innerCoGroup(RightSeqTestData).on(_.head, _.head),
           List(k1 -> (Seq(k1ab, k1cd), Seq(k1zy)) )))
 
         // ---------------------------------------------------------------------------
         test(compare(
-          leftCcTestData.innerCoGroup(RightCcTestData).on(_.fooK, _.barK),
+          leftCcTestData.data.innerCoGroup(RightCcTestData).on(_.fooK, _.barK),
           List(k1 -> (Seq(k1_9, k1_8), Seq(k1_t)) )))
 
       // ===========================================================================
       test(compare(
-          LeftSeqTestData.leftCoGroup(RightSeqTestData).on(_.head, _.head),
+          LeftSeqTestData.data.leftCoGroup(RightSeqTestData).on(_.head, _.head),
           List(
             k2 -> (Seq(k2ef)      , None),
             k1 -> (Seq(k1ab, k1cd), Some(Seq(k1zy))) )))
 
         // ---------------------------------------------------------------------------
         test(compare(
-          leftCcTestData.leftCoGroup(RightCcTestData).on(_.fooK, _.barK),
+          leftCcTestData.data.leftCoGroup(RightCcTestData).on(_.fooK, _.barK),
           List(
             k2 -> (Seq(k2_7)      , None),
             k1 -> (Seq(k1_9, k1_8), Some(Seq(k1_t))) )))
 
       // ===========================================================================
       test(compare(
-          LeftSeqTestData.rightCoGroup(RightSeqTestData).on(_.head, _.head),
+          LeftSeqTestData.data.rightCoGroup(RightSeqTestData).on(_.head, _.head),
           List(
             k1 -> (some(k1ab, k1cd), Seq(k1zy)),
             k3 -> (None            , Seq(k3xw)) )))
 
         // ---------------------------------------------------------------------------
         test(compare(
-          leftCcTestData.rightCoGroup(RightCcTestData).on(_.fooK, _.barK),
+          leftCcTestData.data.rightCoGroup(RightCcTestData).on(_.fooK, _.barK),
           List(
             k1 -> (some(k1_9, k1_8), Seq(k1_t)),
             k3 -> (None            , Seq(k3_f)) )))
 
       // ===========================================================================
       test(compare(
-          LeftSeqTestData.outerCoGroup(RightSeqTestData).on(_.head, _.head),
+          LeftSeqTestData.data.outerCoGroup(RightSeqTestData).on(_.head, _.head),
           List(
             k2 -> (some(k2ef)      , None),
             k1 -> (some(k1ab, k1cd), some(k1zy)),
@@ -125,7 +125,7 @@ object JoiningTest extends TestSuite {
 
         // ---------------------------------------------------------------------------
         test(compare(
-          leftCcTestData.outerCoGroup(RightCcTestData).on(_.fooK, _.barK),
+          leftCcTestData.data.outerCoGroup(RightCcTestData).on(_.fooK, _.barK),
           List(
             k2 -> (some(k2_7)      , None),
             k1 -> (some(k1_9, k1_8), some(k1_t)),

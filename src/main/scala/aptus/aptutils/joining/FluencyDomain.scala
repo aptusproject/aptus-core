@@ -2,8 +2,6 @@ package aptus
 package aptutils
 package joining
 
-import aptus.Nes
-
 // ===========================================================================
 object FluencyDomain {
 

@@ -9,11 +9,11 @@ object PivotingTest extends TestSuite {
 
   // ---------------------------------------------------------------------------
   val tests = Tests {
-    test(compare(flattened            .pivot                    , expected))
-    test(compare(flattened            .pivotAndFlatten          , expectedFlattened))
-    test(compare(preProupedWithSeq    .pivotPreGrouped          , expected))
-    test(compare(preProupedWithListMap.pivotPreGrouped          , expected))
-    test(compare(preProupedWithMap    .pivotPreGrouped.toTreeMap, expected.toTreeMap)) }
+    test(compare(flattened            .data.pivot                    , expected))
+    test(compare(flattened            .data.pivotAndFlatten          , expectedFlattened))
+    test(compare(preProupedWithSeq    .data.pivotPreGrouped          , expected))
+    test(compare(preProupedWithListMap     .pivotPreGrouped          , expected))
+    test(compare(preProupedWithMap         .pivotPreGrouped.toTreeMap, expected.toTreeMap)) }
 
   // ===========================================================================
   private object PivotingTestData {

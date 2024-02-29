@@ -13,35 +13,8 @@ import java.time.format.DateTimeFormatter
 import aptus.aptutils._
 
 // ===========================================================================
-package aptus {
- trait TopLevel {
-  /* for extends AnyVals, see https://stackoverflow.com/questions/14929422/should-implicit-classes-always-extend-anyval */
-
-  def illegalState        (x: Any*): Nothing = { throw new IllegalStateException        (x.mkString(", ")) }
-  def illegalArgument     (x: Any*): Nothing = { throw new IllegalArgumentException     (x.mkString(", ")) }
-  def unsupportedOperation(x: Any*): Nothing = { throw new UnsupportedOperationException(x.mkString(", ")) }
-
-  // ---------------------------------------------------------------------------
-  def iterableOrdering[T : Ordering]: Ordering[Iterable[T]] = SeqUtils.iterableOrdering[T] // note: Ordering is invariant
-  def   optionOrdering[T : Ordering]: Ordering[Option  [T]] = SeqUtils.  optionOrdering[T]
-
-  //def tuple2Ordering[T1 : Ordering, T2: Ordering]: Ordering[Tuple2  [T1, T2]] = ???
-
-  def   seqOrdering[T : Ordering]: Ordering[Seq  [T]] = SeqUtils.  seqOrdering[T]
-  def  listOrdering[T : Ordering]: Ordering[List [T]] = SeqUtils. listOrdering[T]
-  def arrayOrdering[T : Ordering]: Ordering[Array[T]] = SeqUtils.arrayOrdering[T]
-
-  def listListOrdering[T : Ordering]: Ordering[List[List[T]]] = SeqUtils.listListOrdering[T]
-
-  // ---------------------------------------------------------------------------
-  def zip[T1, T2, T3]        (a: Iterable[T1], b: Iterable[T2], c: Iterable[T3])                                  : Iterable[(T1, T2, T3)]         = a.zip(b).zip(c)              .map { case   ((a, b), c)         => (a, b, c) }
-  def zip[T1, T2, T3, T4]    (a: Iterable[T1], b: Iterable[T2], c: Iterable[T3], d: Iterable[T4])                 : Iterable[(T1, T2, T3, T4)]     = a.zip(b).zip(c).zip(d)       .map { case  (((a, b), c), d)     => (a, b, c, d) }
-  def zip[T1, T2, T3, T4, T5](a: Iterable[T1], b: Iterable[T2], c: Iterable[T3], d: Iterable[T4], e: Iterable[T5]): Iterable[(T1, T2, T3, T4, T5)] = a.zip(b).zip(c).zip(d).zip(e).map { case ((((a, b), c), d), e) => (a, b, c, d, e) }
-  def zip[T1, T2](a: Iterable[T1], b: Iterable[T2]): Iterable[(T1, T2)] = a.zip(b) /* for good measure, should favor: a.zip(b) */ } }
-
-// ===========================================================================
 package object aptus
-    extends TopLevel
+    extends AptusTopLevel
     with    AptusAnnotations
     with    AptusScalaVersionSpecific
     with    AptusAliases
@@ -290,7 +263,7 @@ package object aptus
     def splitUntil(char: Char, maxNumberOfElements: Int): Seq[String] = { require(maxNumberOfElements >= 1, maxNumberOfElements); str.split(char.toString, maxNumberOfElements).toList }
 
     // ===========================================================================
-    import aptutils.TimeUtils._
+    import TimeUtils._
 
       def parseInstant        : Instant        = Instant.from(                               IsoFormatterInstant.parse(str))
       def parseLocalDateTime  :  LocalDateTime =  LocalDateTime.parse(str.replace(" ", "T"), IsoFormatterLocalDateTime) // https://stackoverflow.com/questions/9531524/in-an-iso-8601-date-is-the-t-character-mandatory
@@ -454,7 +427,7 @@ package object aptus
     def mapAssociateRight[V](f: A => V): Seq[(A, V)] = coll.map(_.associateRight(f)) // eg pre-groupByKey
 
     // ===========================================================================
-    def statsOpt(implicit num: Numeric[A]): Option[aptmisc.DoubleStats] = coll.in.noneIf(_.isEmpty).map(_.map(num.toDouble).toArray.pipe(aptutils.NumberUtils.doubleStatsNonEmpty))
+    def statsOpt(implicit num: Numeric[A]): Option[aptmisc.DoubleStats] = coll.in.noneIf(_.isEmpty).map(_.map(num.toDouble).toArray.pipe(NumberUtils.doubleStatsNonEmpty))
 
     // ---------------------------------------------------------------------------
     def mean(implicit num: Numeric[A]): Double = (num.toDouble(coll.foldLeft(num.zero)(num.plus)) / coll.size)
@@ -468,7 +441,7 @@ package object aptus
     def percentile(n: Double)(implicit num: Numeric[A]): Double = MathUtils.percentile(coll,  n)
 
     // ---------------------------------------------------------------------------
-    def minMax       (implicit num: Numeric[A])                   : (A, A) = aptutils.NumberUtils.minMax[A](coll)
+    def minMax       (implicit num: Numeric[A])                   : (A, A) = NumberUtils.minMax[A](coll)
     def range[B >: A](implicit cmp: Ordering[B],  num: Numeric[B]): B      = num.minus(coll.max(cmp), coll.min(cmp)) // TODO: optimize; TODO: max if double?
     def IQR          (implicit                    num: Numeric[A]): Double = (coll.percentile(75) - coll.percentile(25)) // TODO: optimize
 
@@ -512,7 +485,7 @@ package object aptus
     def groupByPreSortedKey  [K, V](implicit ev: A <:< (K, V))                  :         Iterator[(K, Seq[V])] = IteratorUtils.groupByPreSortedKey  (itr.asInstanceOf[Iterator[(K, V)]])
 
     // ---------------------------------------------------------------------------
-    def zipSameSize[B](that: Iterator[B]): Iterator[(A, B)] = aptutils.IteratorUtils.zipSameSize(itr, that)
+    def zipSameSize[B](that: Iterator[B]): Iterator[(A, B)] = IteratorUtils.zipSameSize(itr, that)
 
     def writeLines(path: String)(implicit ev: A <:< String) = writeGzipLines(path, 100)
 
@@ -540,13 +513,13 @@ package object aptus
       def toTreeMap(implicit ord: Ordering[K]): immutable.TreeMap[K, V] = MapUtils.toTreeMap   (mp)
 
       // ---------------------------------------------------------------------------
-      def pivotPreGrouped[W](implicit ev: V <:< Seq[W]): ListMap[W, Seq[K]] = aptutils.PivotingUtils.pivotPreGrouped(mp.asInstanceOf[Map[K, Seq[W]]]) }
+      def pivotPreGrouped[W](implicit ev: V <:< Seq[W]): ListMap[W, Seq[K]] = PivotingUtils.pivotPreGrouped(mp.asInstanceOf[Map[K, Seq[W]]]) }
 
     // ---------------------------------------------------------------------------
     implicit class ListMap_[K, V](mp: ListMap[K, V]) {
       def mapListMapValues[U](f: V => U): ListMap[K, U] = mp.map { x => x._1 -> f(x._2) }
 
-      def pivotPreGrouped[W](implicit ev: V <:< Seq[W]): ListMap[W, Seq[K]] = aptutils.PivotingUtils.pivotPreGrouped(mp.asInstanceOf[ListMap[K, Seq[W]]]) }
+      def pivotPreGrouped[W](implicit ev: V <:< Seq[W]): ListMap[W, Seq[K]] = PivotingUtils.pivotPreGrouped(mp.asInstanceOf[ListMap[K, Seq[W]]]) }
 
   // ===========================================================================
   implicit class Option_[A](val opt: Option[A]) extends AnyVal {

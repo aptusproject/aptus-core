@@ -34,21 +34,41 @@ object MapUtils {
   // ===========================================================================
   // all these below are inspired by TraversableLike's (2.12)
 
+  // ---------------------------------------------------------------------------
+  def groupByWithListMap[T, K, V](f: T => K, g: T => V)(values: Iterator[T]): immutable.ListMap[K, Seq[V]] = {
+      var m = immutable.ListMap.empty[K, cross.MutList[V]]
+
+      for (elem <- values) {
+        val key = f(elem)
+        val bldr =
+          m.get(key) match {
+            case Some(x) => x
+            case None =>
+              val x = cross.MutList[V]()
+              m = m + (key -> x) // -------------> seems like '+=' doesn't append? TODO: t210115142355 - investigate
+              x }
+        bldr += g(elem) }
+
+      val b = immutable.ListMap.newBuilder[K, Seq[V]]
+      for ((k, v) <- m)
+        b += ((k, cross.mutList(v)))
+
+      b.result }
+
+  // ---------------------------------------------------------------------------
   def groupByKey[K, V](entries: Iterator[(K, V)]): immutable.Map[K, Seq[V]] = {
       val m = mutable.Map.empty[K, cross.MutList[V]]
 
       for (elem <- entries) {
         val key = elem._1
         val bldr = m.getOrElseUpdate(key, cross.MutList[V]())
-        bldr += elem._2
-      }
+        bldr += elem._2 }
 
       val b = immutable.Map.newBuilder[K, Seq[V]]
       for ((k, v) <- m)
         b += ((k, cross.mutList(v)))
 
-      b.result
-    }
+      b.result }
 
     // ---------------------------------------------------------------------------
     def groupByKeyWithListMap[K, V](entries: Iterator[(K, V)]): immutable.ListMap[K, Seq[V]] = {
@@ -63,15 +83,13 @@ object MapUtils {
               val x = cross.MutList[V]()
               m = m + (key -> x) // -------------> seems like '+=' doesn't append? TODO: t210115142355 - investigate
               x }
-        bldr += elem._2
-      }
+        bldr += elem._2 }
 
       val b = immutable.ListMap.newBuilder[K, Seq[V]]
       for ((k, v) <- m)
         b += ((k, cross.mutList(v)))
 
-      b.result
-    }
+      b.result }
 
     // ---------------------------------------------------------------------------
     def groupByKeyWithTreeMap[K, V](entries: Iterator[(K, V)])(implicit ord: Ordering[K]): immutable.TreeMap[K, Seq[V]] = {
@@ -80,15 +98,13 @@ object MapUtils {
       for (elem <- entries) {
         val key = elem._1
         val bldr = m.getOrElseUpdate(key, cross.MutList[V]())
-        bldr += elem._2
-      }
+        bldr += elem._2 }
 
       val b = immutable.TreeMap.newBuilder[K, Seq[V]]
       for ((k, v) <- m)
         b += ((k, cross.mutList(v)))
 
-      b.result
-    }
+      b.result }
 
     // ===========================================================================
     def groupByAdjacency[A, B](coll: Seq[A])(f: A => B): Seq[(B, Seq[A])] = {
@@ -103,11 +119,10 @@ object MapUtils {
               previous != f(value)) {
             val pair = (previous,  mut1.toList)
             mut2 += pair
-            mut1.clear()
-          }
+            mut1.clear() }
+
           mut1 += value
-          previous = f(value)
-        }
+          previous = f(value) }
 
       val pair = (previous, mut1.toList)
       mut2 += pair
@@ -116,9 +131,6 @@ object MapUtils {
       val res = mut2.toList
       mut2.clear()
 
-      res
-    }
-
-}
+      res } }
 
 // ===========================================================================

@@ -72,9 +72,12 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   type One[T] =               T
   type Opt[T] =        Option[T]
 
-  // TODO: t210125111144 - maybe an actual NonEmptyList such as cats'?
+  @deprecated
   type Pes[T] = Option[Seq   [T]]
-  type Nes[T] =        Seq   [T]
+
+  // TODO: t210125111144 - maybe an actual NonEmptyList such as cats'?
+  /** just to convey intention, nothing enforced */
+  type Nes[T] = Seq[T]
 
   // ===========================================================================
   type CharsetSelector = aptmisc.StandardCharsets.type => Charset

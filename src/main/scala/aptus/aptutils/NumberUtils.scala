@@ -64,6 +64,24 @@ object NumberUtils {
     (min, max)
   }
 
-}
+  // ===========================================================================
+  def doubleStatsNonEmpty(array: Array[Double]): aptmisc.DoubleStats = {
+    val ds = new org.apache.commons.math3.stat.descriptive.DescriptiveStatistics(array)
+
+    // ---------------------------------------------------------------------------
+    // by default, they use the sample stdev instead of the population one
+    val stdev: Double = {
+        val size = ds.getN
+        if (size == 0) Double.NaN
+        else
+          if (size > 1) org.apache.commons.math3.util.FastMath.sqrt(ds.getPopulationVariance)
+          else 0.0 }
+
+    // ---------------------------------------------------------------------------
+    aptmisc.DoubleStats(
+      min      = ds.getMin,
+        mean   = ds.getMean /* arithmetic's */, stdev,
+        median = ds.getPercentile(50), IQR   = ds.getPercentile(75) - ds.getPercentile(25),
+      max      = ds.getMax) } }
 
 // ===========================================================================

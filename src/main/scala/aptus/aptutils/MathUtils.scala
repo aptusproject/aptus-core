@@ -27,7 +27,7 @@ object MathUtils {
       .map(num.toDouble)
       .toArray
       .pipe(new org.apache.commons.math3.stat.descriptive.DescriptiveStatistics(_))
-      .getPercentile(n.require(_ >= 0).require(_ <= 100))
+      .getPercentile(n.ensuring(_ >= 0).ensuring(_ <= 100))
 
   // ===========================================================================
   def trimmedMean      [T : Numeric](diffs: Seq[T]): Double = _trimmed(diffs).mean

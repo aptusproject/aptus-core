@@ -553,13 +553,26 @@ package object aptus
 
   // ===========================================================================
   implicit class Map_[K, V](val mp: Map[K, V]) extends AnyVal {
-    def force(key: K):        V  = mp.get(key).get // stdlib polyseme (see Option's)
-    def opt  (key: K): Option[V] = mp.get(key)     // stdlib polyseme (see Option's)
+      def force(key: K):        V  = mp.get(key).get // stdlib polyseme (see Option's)
+      def opt  (key: K): Option[V] = mp.get(key)     // stdlib polyseme (see Option's)
+
+      // ---------------------------------------------------------------------------
+      /** formerly mapValues in the stdlib */
+      def mapMapValues[U](f: V => U): Map[K, U] = mp.map { x => x._1 -> f(x._2) }
+
+      // ---------------------------------------------------------------------------
+      def toMutableMap                        :   mutable.    Map[K, V] = MapUtils.toMutableMap(mp)
+      def toListMap                           :           ListMap[K, V] = MapUtils.toListMap   (mp)
+      def toTreeMap(implicit ord: Ordering[K]): immutable.TreeMap[K, V] = MapUtils.toTreeMap   (mp)
+
+      // ---------------------------------------------------------------------------
+      def pivotPreGrouped[W](implicit ev: V <:< Seq[W]): ListMap[W, Seq[K]] = aptutils.PivotingUtils.pivotPreGrouped(mp.asInstanceOf[Map[K, Seq[W]]]) }
 
     // ---------------------------------------------------------------------------
-    def toMutableMap                        :   mutable.    Map[K, V] = MapUtils.toMutableMap(mp)
-    def toListMap                           : immutable.ListMap[K, V] = MapUtils.toListMap   (mp)
-    def toTreeMap(implicit ord: Ordering[K]): immutable.TreeMap[K, V] = MapUtils.toTreeMap   (mp) }
+    implicit class ListMap_[K, V](mp: ListMap[K, V]) {
+      def mapListMapValues[U](f: V => U): ListMap[K, U] = mp.map { x => x._1 -> f(x._2) }
+
+      def pivotPreGrouped[W](implicit ev: V <:< Seq[W]): ListMap[W, Seq[K]] = aptutils.PivotingUtils.pivotPreGrouped(mp.asInstanceOf[ListMap[K, Seq[W]]]) }
 
   // ===========================================================================
   implicit class Option_[A](val opt: Option[A]) extends AnyVal {

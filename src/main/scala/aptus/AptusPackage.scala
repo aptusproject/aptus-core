@@ -4,6 +4,7 @@ import com.google.common.base.CaseFormat
 import scala.sys.process._
 import scala.language.postfixOps
 import scala.collection.{mutable,immutable}
+import scala.collection.immutable.ListMap
 import scala.util.chaining._
 import scala.jdk.javaapi.CollectionConverters
 
@@ -144,12 +145,12 @@ package object aptus
     def toBase64   : String = str.getBytes.toBase64
     def toHexString: String = str.getBytes.toHexString
     // TODO: crc32
-    
+
     // ---------------------------------------------------------------------------
     def unBase64: Array[Byte] = BinaryUtils.base64ToBytes(str)
     def unHex   : Array[Byte] = ???
     // TODO: crc32
-    
+
     // ===========================================================================
     def path = new aptmisc.AptusPath(if (str.startsWith("~/")) aptus.fs.homeDirectoryPath() / str.drop(2) else str)
 
@@ -205,7 +206,7 @@ package object aptus
 
     def surroundWith(boundary: String)              : String = s"$boundary$str$boundary"
     def surroundWith(prefix: String, suffix: String): String = s"$prefix$str$suffix"
-    
+
     @fordevonly def swp : String = surroundWith("|")   // convenient for debugging (shows leading/trailing whitespaces)
     @fordevonly def swpp: String = surroundWith("|").p // convenient for debugging (shows leading/trailing whitespaces)
 
@@ -313,14 +314,14 @@ package object aptus
     def removeIfApplicable( potentialSubStr: String) = str.replace( potentialSubStr, "")
     def removeGuaranteed  (guaranteedSubStr: String) = str.replace(guaranteedSubStr, "").ensuring(_ != str)
     def remove            (guaranteedSubStr: String) = str.replace(guaranteedSubStr, "").ensuring(_ != str)
-    
+
     def stripPrefixIfApplicable( potentialSubStr: String) = str.stripPrefix( potentialSubStr)
     def stripPrefixGuaranteed  (guaranteedSubStr: String) = str.stripPrefix(guaranteedSubStr).ensuring(_ != str)
     //  stripPrefix: unfortuntately stdlib semantics are "IfApplicable"
-    
+
     def stripSuffixIfApplicable( potentialSubStr: String) = str.stripSuffix( potentialSubStr)
     def stripSuffixGuaranteed  (guaranteedSubStr: String) = str.stripSuffix(guaranteedSubStr).ensuring(_ != str)
-    //  stripSuffix: unfortuntately stdlib semantics are "IfApplicable"    
+    //  stripSuffix: unfortuntately stdlib semantics are "IfApplicable"
 
     // ---------------------------------------------------------------------------
     def attemptStripTrailingZeros: String = if (org.apache.commons.lang3.math.NumberUtils.isCreatable(str)) stripTrailingZeros else str
@@ -392,7 +393,7 @@ package object aptus
     def #@@ = s"#${coll.size}:${@@}"
 
     @fordevonly def debug: Seq[A] = { println(coll.map(_.toString.swp).section(coll.size.str)); coll } // convenient for debugging (shows leading/trailing whitespaces)
-    
+
     // ---------------------------------------------------------------------------
     def section                : String = section("")
     def section (title: String): String = StringUtils.section(coll, 1, title)
@@ -453,6 +454,9 @@ package object aptus
     def mapAssociateRight[V](f: A => V): Seq[(A, V)] = coll.map(_.associateRight(f)) // eg pre-groupByKey
 
     // ===========================================================================
+    def statsOpt(implicit num: Numeric[A]): Option[aptmisc.DoubleStats] = coll.in.noneIf(_.isEmpty).map(_.map(num.toDouble).toArray.pipe(aptutils.NumberUtils.doubleStatsNonEmpty))
+
+    // ---------------------------------------------------------------------------
     def mean(implicit num: Numeric[A]): Double = (num.toDouble(coll.foldLeft(num.zero)(num.plus)) / coll.size)
 
     // ---------------------------------------------------------------------------

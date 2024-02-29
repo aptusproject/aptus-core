@@ -16,6 +16,7 @@ object SeqTests extends TestSuite {
 
   // ---------------------------------------------------------------------------
   val tests = Tests {
+
     test(compare(
       Seq(
           Seq("d", "e", "f"),
@@ -41,8 +42,6 @@ object SeqTests extends TestSuite {
       // ---------------------------------------------------------------------------
       test(compare(
         Seq(a -> x, b -> y, a -> z, c -> x).groupByKeyWithListMap, // so we maintain order
-        aptus.listMap(a -> List(x, z), b -> List(y), c -> List(x)) ))
-  }
-}
+        aptus.listMap(a -> List(x, z), b -> List(y), c -> List(x)) )) } }
 
 // ===========================================================================

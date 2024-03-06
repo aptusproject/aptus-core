@@ -7,7 +7,7 @@
 
 ThisBuild / organizationName     := "Aptus Project"
 ThisBuild / organization         := "io.github.aptusproject" // *must* match groupId for sonatype
-ThisBuild / version              := "0.5.3"
+ThisBuild / version              := "0.6.0"
 ThisBuild / homepage             := Some(url("https://github.com/aptusproject/aptus-core"))
 ThisBuild / organizationHomepage := Some(url("https://github.com/aptusproject"))
 ThisBuild / startYear            := Some(2021)
@@ -24,7 +24,7 @@ ThisBuild / scmInfo              :=
 ThisBuild / licenses             := Seq("Apache 2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 ThisBuild / description          := "Basic utilities for Scala."
 ThisBuild / scalaVersion         :=               "2.13.13"
-ThisBuild / crossScalaVersions   := List("3.3.1", "2.13.13", "2.12.19")
+ThisBuild / crossScalaVersions   := List("3.3.3", "2.13.13", "2.12.19")
 
 // ---------------------------------------------------------------------------
 lazy val root = (project in file(".")).settings(name := "aptus-core")
@@ -115,7 +115,7 @@ publishTo              := sonatypePublishToBundle.value
 // ===========================================================================
 // assembly (uberjar); run: sbt +assembly
 
-ThisBuild / assemblyMergeStrategy := {
+ThisBuild / assembly / assemblyMergeStrategy := {
   case PathList("META-INF", xs @ _*) => MergeStrategy.discard
   case _                             => MergeStrategy.first }
 

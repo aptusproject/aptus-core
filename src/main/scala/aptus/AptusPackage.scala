@@ -210,20 +210,20 @@ package object aptus
 
     // ===========================================================================
     // TODO: quite inefficient
-      def indent                          : String = StringUtils.indent(1, indenter = "\t")(str)
-      def indent(n: Int                  ): String = StringUtils.indent(n, indenter = "\t")(str)
-      def indent(n: Int, indenter: String): String = StringUtils.indent(n, indenter       )(str)
+    def indentLine                          : String = StringUtils.indent(1, indenter = "\t")(str)
+    def indentLine(n: Int                  ): String = StringUtils.indent(n, indenter = "\t")(str)
+    def indentLine(n: Int, indenter: String): String = StringUtils.indent(n, indenter       )(str)
 
-      // ---------------------------------------------------------------------------
-      def indentAll                          : String = StringUtils.indentAll(n = 1, indenter = "\t")(str)
-      def indentAll(n: Int                  ): String = StringUtils.indentAll(n    , indenter = "\t")(str)
-      def indentAll(n: Int, indenter: String): String = StringUtils.indentAll(n    , indenter       )(str)
+    // ---------------------------------------------------------------------------
+    def indentAll                          : String = StringUtils.indentAll(n = 1, indenter = "\t")(str)
+    def indentAll(n: Int                  ): String = StringUtils.indentAll(n    , indenter = "\t")(str)
+    def indentAll(n: Int, indenter: String): String = StringUtils.indentAll(n    , indenter       )(str)
 
-      // ---------------------------------------------------------------------------
-      def sectionAllOff                : String =                StringUtils.sectionAllOff(n = 1, indenter = "\t")(str)
-      def sectionAllOff(n: Int)        : String =                StringUtils.sectionAllOff(n    , indenter = "\t")(str)
+    // ---------------------------------------------------------------------------
+    def sectionAllOff                : String =                StringUtils.sectionAllOff(n = 1, indenter = "\t")(str)
+    def sectionAllOff(n: Int)        : String =                StringUtils.sectionAllOff(n    , indenter = "\t")(str)
 
-      def sectionAllOff(prefix: String): String = s"${prefix}" + StringUtils.sectionAllOff(n = 1, indenter = "\t")(str)
+    def sectionAllOff(prefix: String): String = s"${prefix}" + StringUtils.sectionAllOff(n = 1, indenter = "\t")(str)
 
     // ===========================================================================
     def isTrimmed     : Boolean = str == str.trim

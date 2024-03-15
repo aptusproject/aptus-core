@@ -462,7 +462,15 @@ package object aptus
     def initOption: Option[Seq[A]] = if (coll.size > 0) Some(coll.init) else None
 
     // ---------------------------------------------------------------------------
-    def containsAllOf(that: Seq[A]): Boolean = that.diff(coll).isEmpty }
+    def containsAllOf(that: Seq[A]): Boolean = that.diff(coll).isEmpty
+
+    // ===========================================================================
+    def ifEmptyThenError(msg: String): Seq[A] = if (coll.isEmpty) aptus.illegalState(msg) else coll /* convenient for chaining */
+
+    // ---------------------------------------------------------------------------
+    def ifOneElementOpt                                             : Option[A] = if (coll.size == 1) Some (coll.head) else None
+    def ifOneElement      [B](ifOne: A => B, otherwise: Seq[A] => B):        B  = if (coll.size == 1) ifOne(coll.head) else otherwise(coll)
+    def ifOneElementOrElse   (errorMessage: Seq[A] => Any)          :        A  = if (coll.size == 1)       coll.head  else illegalState(coll.size, errorMessage(coll)) }
 
   // ===========================================================================
   implicit class Iterator_[A](val itr: Iterator[A]) extends AnyVal {

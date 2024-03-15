@@ -63,11 +63,11 @@ package object aptus
     @deprecated("use .ensuring instead") def require(p: A => Boolean):              A = require(p, identity)
                                          def require(p: A => Boolean, f: A => Any): A = { Predef.require(p(a), f(a)); a }
 
-    def assertEquals [B]           (value: B): A = { Predef.assert(  a  == value,   a  -> value); a }
-    def assertEquals2[B](f: A => B)(value: B): A = { Predef.assert(f(a) == value, f(a) -> value); a }
+    def assertEquals[B]                (expected: => B): A = assertEquals(identity, expected)
+    def assertEquals[B](actual: A => B, expected: => B): A = { val _actual = actual(a); val _expected = expected; Predef.assert(_actual == _expected, s"\n\texpected: |${_expected}|\n\tactual:   |${_actual}|" ); a }
 
     // ---------------------------------------------------------------------------
-    def in: aptus.aptmisc.As[A] = new aptus.aptmisc.As[A](a)
+    def in: aptmisc.In[A] = new aptus.aptmisc.In[A](a)
 
       // most common ones
       @inline def inNoneIf(p: A => Boolean): Option[A] = in.noneIf(p)

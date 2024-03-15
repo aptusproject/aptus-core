@@ -24,7 +24,7 @@ ThisBuild / scmInfo              :=
 ThisBuild / licenses             := Seq("Apache 2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 ThisBuild / description          := "Basic utilities for Scala."
 ThisBuild / scalaVersion         :=               "2.13.13"
-ThisBuild / crossScalaVersions   := List("3.3.3", "2.13.13", "2.12.19")
+ThisBuild / crossScalaVersions   := List("3.3.4", "2.13.13", "2.12.19")
 
 // ---------------------------------------------------------------------------
 lazy val root = (project in file(".")).settings(name := "aptus-core")

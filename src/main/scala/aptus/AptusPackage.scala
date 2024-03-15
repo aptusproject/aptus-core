@@ -202,9 +202,9 @@ package object aptus
     def padLeft (length: Int, char: Char): String = lang3.StringUtils. leftPad(str, length, char.toString)
     def padRight(length: Int, char: Char): String = lang3.StringUtils.rightPad(str, length, char.toString)
 
-    def padLeftSpaces (length: Int): String = padRight(length, ' ')
+    def padLeftZeros  (length: Int): String = padLeft (length, '0')
+    def padLeftSpaces (length: Int): String = padLeft (length, ' ')
     def padRightSpaces(length: Int): String = padRight(length, ' ')
-    def padLeftZeros  (length: Int): String = padRight(length, '0')
 
     def trimLines: String = str.replaceAll("\\s*\n\\s*", "\n")
 

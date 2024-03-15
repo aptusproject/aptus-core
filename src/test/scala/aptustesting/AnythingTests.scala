@@ -9,34 +9,65 @@ object AnythingTests extends TestSuite {
   val tests = Tests {
     
     // ---------------------------------------------------------------------------
-    // piping
-    test(noop   ("bonjour".pipeIf(_.startsWith("h"))(_.toUpperCase)))
-    test(compare("hello"  .pipeIf(_.startsWith("h"))(_.toUpperCase), "HELLO"))
+    test("piping") {
+      test(noop   ("bonjour".pipeIf(_.startsWith("h"))(_.toUpperCase)))
+      test(compare("hello"  .pipeIf(_.startsWith("h"))(_.toUpperCase), "HELLO"))
 
-    test(noop   (3.pipeIf(_ % 2 == 0)(_ + 1)))
-    test(compare(4.pipeIf(_ % 2 == 0)(_ + 1), 5))
+      test(noop   (3.pipeIf(_ % 2 == 0)(_ + 1)))
+      test(compare(4.pipeIf(_ % 2 == 0)(_ + 1), 5))
 
-    val suffixOpt = Some("?")
-    test(compare("hello".pipeOpt(suffixOpt)(suffix => _ + suffix), "hello?"))
-    test(noop   ("hello".pipeOpt(None)     (suffix => _ + suffix)))
-    
+      val suffixOpt: Option[String] = Some("?")
+      val none     : Option[String] = None
+      test(compare("hello".pipeOpt(suffixOpt)(suffix => _ + suffix), "hello?"))
+      test(noop   ("hello".pipeOpt(none)     (suffix => _ + suffix))) }
+
     // ---------------------------------------------------------------------------
-    // asserts/requires
+    test("asserts/requires") {
+      test(noop         ("hello".assert (_.nonEmpty, identity)))
+      test(failAssertion("hello".assert (_. isEmpty, identity)))
+      test(failAssertion("hello".assert (_. isEmpty, x => s"input: ${x}"), msg = "assertion failed: input: hello"))
 
-    test(noop                                    ("hello".assert (_.nonEmpty)))
-    test(fail[java.lang.AssertionError]          ("hello".assert (_. isEmpty)))
-    test(fail[java.lang.AssertionError]          ("hello".assert (_. isEmpty, x => s"input: ${x}"), msg = "assertion failed: input: hello"))
+      test(noop         ("hello".assertEquals("hello")))
+      test(noop         ("hello".assertEquals(_.size, 5)))
+      test(failAssertion("hello".assertEquals("HELLO")  , msg = "assertion failed: \n\texpected: |HELLO|\n\tactual:   |hello|"))
+      test(failAssertion("hello".assertEquals(_.size, 6), msg = "assertion failed: \n\texpected: |6|\n\tactual:   |5|"))
 
-    test(noop                                    ("hello".require(_.nonEmpty)))
-    test(fail[java.lang.IllegalArgumentException]("hello".require(_. isEmpty)))
-    test(fail[java.lang.IllegalArgumentException]("hello".require(_. isEmpty, x => s"input: ${x}"), msg = "requirement failed: input: hello"))
-    
+      test(noop         ("hello".require(_.nonEmpty, identity)))
+      test(failArgument ("hello".require(_. isEmpty, identity)))
+      test(failArgument ("hello".require(_. isEmpty, x => s"input: ${x}"))) }
+
     // ---------------------------------------------------------------------------
-    // in.{none,some}If
+    test("in.{none,some}If") {
+      test(isSome("foo".in.someIf(_.size < 5), "foo"))
+      test(isNone("foo".in.noneIf(_.size < 5))) }
 
-    test("foo".in.someIf(_.size < 3), Some("foo"))
-    test("foo".in.noneIf(_.size < 3), None)    
-  }
-}
+    // ---------------------------------------------------------------------------
+    test("contained in") {
+      test(isTrue(2.containedIn(    1, 2, 3) ))
+      test(isTrue(2.containedIn(Seq(1, 2, 3))))
+      test(isTrue(2.containedIn(Set(1, 2, 3))))
+
+      test(isFlse(5.containedIn(    1, 2, 3) ))
+      test(isFlse(5.containedIn(Seq(1, 2, 3))))
+      test(isFlse(5.containedIn(Set(1, 2, 3))))
+
+      // ---------------------------------------------------------------------------
+      test(isFlse(2.notContainedIn(    1, 2, 3) ))
+      test(isFlse(2.notContainedIn(Seq(1, 2, 3))))
+      test(isFlse(2.notContainedIn(Set(1, 2, 3))))
+
+      test(isTrue(5.notContainedIn(    1, 2, 3) ))
+      test(isTrue(5.notContainedIn(Seq(1, 2, 3))))
+      test(isTrue(5.notContainedIn(Set(1, 2, 3)))) }
+
+    // ---------------------------------------------------------------------------
+    test("associate left/right") {
+      test(compare(3.associateLeft (_ + 1), (4, 3)))
+      test(compare(3.associateRight(_ + 1),    (3, 4))) }
+
+    // ---------------------------------------------------------------------------
+    test("pad left ints") {
+      test(compare(5.padLeftInt(3, ' '), "  5"))
+      test(compare(5.padLeftInt(3)     , "  5")) } } }
 
 // ===========================================================================

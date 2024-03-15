@@ -76,21 +76,17 @@ package object aptus
       @inline def inNoneIfEmpty(implicit ev: A <:< Iterable[_]): Option[A] = if (a.isEmpty) None else Some(a) // TODO: any way to make it work for String as well?
 
     // ---------------------------------------------------------------------------
-    @inline def    containedIn(values: Set[A])     : Boolean =  values.contains(a)
-    @inline def    containedIn(values: Seq[A])     : Boolean =  values.contains(a)
-    @inline def    containedIn(value1: A, more: A*): Boolean = (value1 +: more).contains(a) // causes issues with usage in scala 3 (conflicts with Set)?
+    @inline def    containedIn(values: Set[A])                : Boolean =  values.contains(a)
+    @inline def    containedIn(values: Seq[A])                : Boolean =  values.contains(a)
+    @inline def    containedIn(value1: A, value2: A, more: A*): Boolean = (Seq(value1, value2) ++ more).contains(a)
 
-    @inline def notContainedIn(values: Seq[A])     : Boolean = !values.contains(a)
-    @inline def notContainedIn(values: Set[A])     : Boolean = !values.contains(a)
-    @inline def notContainedIn(value1: A, more: A*): Boolean = !(value1 +: more).contains(a) // causes issues with usage in scala 3 (conflicts with Set)?
-
-    // ---------------------------------------------------------------------------
-    def associateLeft [K](f: A => K): (K, A) = (f(a), a)
-    def associateRight[V](f: A => V): (A, V) = (a, f(a))
+    @inline def notContainedIn(values: Set[A])                : Boolean = ! values.contains(a)
+    @inline def notContainedIn(values: Seq[A])                : Boolean = ! values.contains(a)
+    @inline def notContainedIn(value1: A, value2: A, more: A*): Boolean = !(Seq(value1, value2) ++ more).contains(a)
 
     // ---------------------------------------------------------------------------
-    def mkString [C, D]   (sep: String)(implicit ev: A <:< (C, D))   : String = s"${a._1}${sep}${a._2}"
-    def mkString3[C, D, E](sep: String)(implicit ev: A <:< (C, D, E)): String = s"${a._1}${sep}${a._2}${sep}${a._3}"
+    @inline def associateLeft [K](f: A => K): (K, A) = (f(a), a)
+    @inline def associateRight[V](f: A => V): (A, V) = (a, f(a))
 
     // ---------------------------------------------------------------------------
     def padLeftInt(length: Int, char: Char)(implicit ev: A =:= Int): String = a.toString.padLeft(length, char)

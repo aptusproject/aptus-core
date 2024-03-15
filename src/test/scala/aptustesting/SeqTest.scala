@@ -42,6 +42,26 @@ object SeqTests extends TestSuite {
       // ---------------------------------------------------------------------------
       test(compare(
         Seq(a -> x, b -> y, a -> z, c -> x).groupByKeyWithListMap, // so we maintain order
-        aptus.listMap(a -> List(x, z), b -> List(y), c -> List(x)) )) } }
+        aptus.listMap(a -> List(x, z), b -> List(y), c -> List(x)) ))
+
+    // ===========================================================================
+    test("if empty/if one") {
+      test(failState(Seq.empty[Int].ifEmptyThenError("is empty"), "is empty"))
+      test(noop     (Seq(3)        .ifEmptyThenError("is empty")))
+
+      // ---------------------------------------------------------------------------
+      test(compare  (Seq.empty[Int].ifOneElement(_ + 1, _.size), 0))
+      test(compare  (Seq(3)        .ifOneElement(_ + 1, _.size), 4))
+      test(compare  (Seq(3, 4)     .ifOneElement(_ + 1, _.size), 2))
+
+      // ---------------------------------------------------------------------------
+      test(isNone  (Seq.empty[Int].ifOneElementOpt))
+      test(isSome  (Seq(3)        .ifOneElementOpt, 3))
+      test(isNone  (Seq(3, 4)     .ifOneElementOpt))
+
+      // ---------------------------------------------------------------------------
+      test(failState(Seq.empty[Int].ifOneElementOrElse(x => s"not one element: ${x.@@}"), "0, not one element: []"))
+      test(noop     (Seq(3)        .ifOneElementOrElse(x => s"not one element: ${x.@@}")))
+      test(failState(Seq(3, 4)     .ifOneElementOrElse(x => s"not one element: ${x.@@}"), "2, not one element: [3, 4]")) } } }
 
 // ===========================================================================

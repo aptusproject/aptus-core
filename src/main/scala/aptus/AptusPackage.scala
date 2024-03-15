@@ -206,7 +206,7 @@ package object aptus
     def padLeftSpaces (length: Int): String = padLeft (length, ' ')
     def padRightSpaces(length: Int): String = padRight(length, ' ')
 
-    def trimLines: String = str.replaceAll("\\s*\n\\s*", "\n")
+    def trimLines: String = str.replaceAll("\\s*\n\\s*", "\n").trim /* doesn't trim start/end other wise (not sure why) */
 
     // ===========================================================================
     // TODO: quite inefficient

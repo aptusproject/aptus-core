@@ -485,6 +485,17 @@ package object aptus
     // ---------------------------------------------------------------------------
     def zipSameSize[B](that: Iterator[B]): Iterator[(A, B)] = IteratorUtils.zipSameSize(itr, that)
 
+    // ===========================================================================
+    def logProgress(n: Int                    ): Iterator[A] = IteratorUtils.logIteratorProgress(n, (_: A) => ""   )(itr)
+    def logProgress(n: Int, debug:      String): Iterator[A] = IteratorUtils.logIteratorProgress(n, (_: A) => debug)(itr)
+    def logProgress(n: Int, debug: A => String): Iterator[A] = IteratorUtils.logIteratorProgress(n,           debug)(itr)
+
+    def logProgress(nOpt: Option[Int], debug: String = ""): Iterator[A] =
+      nOpt
+      .map      (itr.logProgress(_, debug))
+      .getOrElse(itr)
+
+    // ---------------------------------------------------------------------------
     def writeLines(path: String)(implicit ev: A <:< String) = writeGzipLines(path, 100)
 
     // ===========================================================================

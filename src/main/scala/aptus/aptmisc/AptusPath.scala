@@ -98,12 +98,16 @@ private[aptus] final class AptusDirPath(override val path: String) extends _Aptu
 // ===========================================================================
 // make private again
 /*private[aptus]*/ final class AptusFilePath(override val path: String) extends _AptusPath {
-  //def renameTo
-
   def fileName: String = name
 
+  // ---------------------------------------------------------------------------
   def  isEmpty: Boolean = ioFile.isFile && java.nio.file.Files.size(nioPath) == 0L
-  def nonEmpty: Boolean = ioFile.isFile && java.nio.file.Files.size(nioPath) >  0L }
+  def nonEmpty: Boolean = ioFile.isFile && java.nio.file.Files.size(nioPath) >  0L
+
+  // ---------------------------------------------------------------------------
+  def renameTo     (to: FilePath): FilePath = aptutils.FsUtils.moveFile     (path, to)
+  def moveFile     (to: FilePath): FilePath = aptutils.FsUtils.moveFile     (path, to)
+  def moveFileToDir(to: DirPath) : FilePath = aptutils.FsUtils.moveFileToDir(path, to) }
 
 // ===========================================================================
 // make private again

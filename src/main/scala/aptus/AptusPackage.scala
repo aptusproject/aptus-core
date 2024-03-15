@@ -274,6 +274,10 @@ package object aptus
     def removeGuaranteed  (guaranteedSubStr: String) = str.replace(guaranteedSubStr, "").ensuring(_ != str)
     def remove            (guaranteedSubStr: String) = str.replace(guaranteedSubStr, "").ensuring(_ != str)
 
+    //TODO: All versions as well
+    def replaceGuaranted   (from: String, to: String): String = str.replace(from, to).ensuring(_ != str)
+    def replaceIfApplicable(from: String, to: String): String = str.replace(from, to)
+
     def stripPrefixIfApplicable( potentialSubStr: String) = str.stripPrefix( potentialSubStr)
     def stripPrefixGuaranteed  (guaranteedSubStr: String) = str.stripPrefix(guaranteedSubStr).ensuring(_ != str)
     //  stripPrefix: unfortuntately stdlib semantics are "IfApplicable"

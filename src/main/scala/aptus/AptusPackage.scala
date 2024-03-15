@@ -416,7 +416,8 @@ package object aptus
     def mapAssociateRight[V](f: A => V): Seq[(A, V)] = coll.map(_.associateRight(f)) // eg pre-groupByKey
 
     // ===========================================================================
-    def statsOpt(implicit num: Numeric[A]): Option[aptmisc.DoubleStats] = coll.in.noneIf(_.isEmpty).map(_.map(num.toDouble).toArray.pipe(NumberUtils.doubleStatsNonEmpty))
+    def statsOpt  (implicit num: Numeric[A]): Option[aptmisc.DoubleStats] = coll.in.noneIf(_.isEmpty).map(_.map(num.toDouble).toArray.pipe(NumberUtils.doubleStatsNonEmpty))
+    def forceStats(implicit num: Numeric[A]):        aptmisc.DoubleStats  = statsOpt.get
 
     // ---------------------------------------------------------------------------
     def mean(implicit num: Numeric[A]): Double = (num.toDouble(coll.foldLeft(num.zero)(num.plus)) / coll.size)

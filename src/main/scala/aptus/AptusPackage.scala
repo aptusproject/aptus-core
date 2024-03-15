@@ -3,7 +3,7 @@ import com.google.common.base.CaseFormat
 
 import scala.sys.process._
 import scala.language.postfixOps
-import scala.collection.{mutable,immutable}
+import scala.collection.{immutable, mutable}
 import scala.collection.immutable.ListMap
 import scala.util.chaining._
 import scala.jdk.javaapi.CollectionConverters
@@ -23,20 +23,20 @@ package object aptus
 
   // ===========================================================================
   implicit class Anything_[A](private val a: A) extends AnyVal {
-    def str: String = a.toString
+    @inline def str: String = a.toString
 
     def prt    ()           : A = { System.out.println(  a )                   ; a }
     def prt2   (s: String)  : A = { System.out.println(  a.toString.prepend(s)); a}
     def inspect(f: A => Any): A = { System.out.println(f(a))                   ; a }
 
     // ---------------------------------------------------------------------------
-    def pipeIf    [B <: A](test: Boolean)     (f: A => B)           : A = if (test)    f(a) else   a
-    def pipeIf    [B <: A](pred: A => Boolean)(f: A => B)           : A = if (pred(a)) f(a) else   a
-    def pipeOpt   [B     ](opt : Option[B]   )(f: B => A => A)      : A = opt.map(f(_)(a)).getOrElse(a)
+    @inline def pipeIf    [B <: A](test: Boolean)     (f: A => B)           : A = if (test)    f(a) else   a
+    @inline def pipeIf    [B <: A](pred: A => Boolean)(f: A => B)           : A = if (pred(a)) f(a) else   a
+    @inline def pipeOpt   [B     ](opt : Option[B]   )(f: B => A => A)      : A = opt.map(f(_)(a)).getOrElse(a)
 
-    def tapIf    (test: Boolean)     (f: A => Unit)  : A = { if (test)    { f(a) }; a }
-    def tapIf    (pred: A => Boolean)(f: A => Unit)  : A = { if (pred(a)) { f(a) }; a }
-    def tapOpt[B](opt : Option[B]   )(f: B => A => A): A = { opt.map(f(_)(a)).getOrElse(a); a }
+    @inline def tapIf    (test: Boolean)     (f: A => Unit)  : A = { if (test)    { f(a) }; a }
+    @inline def tapIf    (pred: A => Boolean)(f: A => Unit)  : A = { if (pred(a)) { f(a) }; a }
+    @inline def tapOpt[B](opt : Option[B]   )(f: B => A => A): A = { opt.map(f(_)(a)).getOrElse(a); a }
 
     // ---------------------------------------------------------------------------
     @fordevonly def __exit: Nothing = { ReflectionUtils.formatExitTrace(aptus.reflection.stackTrace(), "intentionally stopping").p; System.exit(0); illegalState("can't happen") }
@@ -70,10 +70,10 @@ package object aptus
     def in: aptus.aptmisc.As[A] = new aptus.aptmisc.As[A](a)
 
       // most common ones
-      def inNoneIf(p: A => Boolean): Option[A] = in.noneIf(p)
-      def inSomeIf(p: A => Boolean): Option[A] = in.someIf(p)
+      @inline def inNoneIf(p: A => Boolean): Option[A] = in.noneIf(p)
+      @inline def inSomeIf(p: A => Boolean): Option[A] = in.someIf(p)
 
-      def inNoneIfEmpty(implicit ev: A <:< Iterable[_]): Option[A] = if (a.isEmpty) None else Some(a) // TODO: any way to make it work for String as well?
+      @inline def inNoneIfEmpty(implicit ev: A <:< Iterable[_]): Option[A] = if (a.isEmpty) None else Some(a) // TODO: any way to make it work for String as well?
 
     // ---------------------------------------------------------------------------
     @inline def    containedIn(values: Set[A])     : Boolean =  values.contains(a)
@@ -125,6 +125,7 @@ package object aptus
     // TODO: crc32
 
     // ===========================================================================
+    // TODO: t240306154636 - consider calling this .fs rather?
     def path = new aptmisc.AptusPath(if (str.startsWith("~/")) aptus.fs.homeDirectoryPath() / str.drop(2) else str)
 
       // ===========================================================================
@@ -255,6 +256,7 @@ package object aptus
     def splitBy(regex: Regex)             : Seq[String] = regex.split(str).toList // TODO: keep?
 
     // ---------------------------------------------------------------------------
+    /** handles quoting/escaping via common-csv */
     def splitXsv(sep: Char): List[Cell] = StringUtils.splitXsv(str, sep)
     def splitTabs          : List[Cell] = splitXsv('\t')
     def splitCommas        : List[Cell] = splitXsv(',')
@@ -609,9 +611,9 @@ package object aptus
       def formatExplicit: String = formatUsLocale.replace(",", "")
 
       // ---------------------------------------------------------------------------
-      def toInstant       : Instant       = java.time.Instant      .ofEpochMilli (nmbr.assertRange(0, 2000000000000L))                               // in milliseconds ; eg 1,647,447,105,888 -> 2022-03-16T16:11:45.888Z
-      def toLocalDateTime : LocalDateTime = java.time.LocalDateTime.ofEpochSecond(nmbr.assertRange(0, 2000000000), 0, TimeUtils.currentZoneOffset()) // in seconds      ; eg     1,647,447,105 -> 2022-03-16T12:11:45
-      def toLocalDate     : LocalDate     = java.time.LocalDate    .ofEpochDay   (nmbr.assertRange(0, 50000)) }                                      // in days         ; eg            19,067 -> 2022-03-16
+      def toInstant       : Instant       = java.time.Instant      .ofEpochMilli (nmbr.assertRange(0L, 2000000000000L))                               // in milliseconds ; eg 1,647,447,105,888 -> 2022-03-16T16:11:45.888Z
+      def toLocalDateTime : LocalDateTime = java.time.LocalDateTime.ofEpochSecond(nmbr.assertRange(0L, 2000000000), 0, TimeUtils.currentZoneOffset()) // in seconds      ; eg     1,647,447,105 -> 2022-03-16T12:11:45
+      def toLocalDate     : LocalDate     = java.time.LocalDate    .ofEpochDay   (nmbr.assertRange(0L, 50000L)) }                                     // in days         ; eg            19,067 -> 2022-03-16
 
     // ===========================================================================
     implicit class Double_(val nmbr: Double) extends AnyVal {

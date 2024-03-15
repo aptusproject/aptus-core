@@ -7,7 +7,7 @@ when performance isn't most important. It also helps code defensively when repre
 <!-- =========================================================================== -->
 ## SBT
 <a name="211006113932"></a>
-`libraryDependencies += "io.github.aptusproject" %% "aptus-core" % "0.5.3"`
+`libraryDependencies += "io.github.aptusproject" %% "aptus-core" % "0.6.0"`
 
 Then import the following:
 
@@ -16,9 +16,9 @@ import aptus._ // or more specific imports, eg import.aptus.String_
 ```
 
 The library is available for Scala
-[3.3.1](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_3/0.5.3/jar),
-[2.13](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.13/0.5.3/jar), and 
-[2.12](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.12/0.5.3/jar)
+[3.3.1](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_3/0.6.0/jar),
+[2.13](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.13/0.6.0/jar), and 
+[2.12](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.12/0.6.0/jar)
 
 
 <!-- =========================================================================== -->
@@ -27,20 +27,41 @@ The library is available for Scala
 
 <div style="text-align:center"><img src="./dependencies.png" alt="core dependency graph"></div>
 
-
 <!-- =========================================================================== -->
 ## Motivation
 <a name="210531095628"></a>
 
-I created Aptus in bits over the years, as I struggled to get seemingly simple tasks done in Scala. It is not intended to be comprehensive, or particularly optimized.
+I created Aptus in bits over the past 10 years, as I struggled to get seemingly simple tasks done in Scala. It is not intended to be comprehensive, or particularly optimized.
 It should be seen more as a starting point for a project, where performance isn't most critical and compute resources aren't too limited.
 It can also serve as a reference, from which the basic use of underlying abstractions can be expanded as needed.
+<a name="240306115815"></a>
+It's also for people who enjoy Scala's type system and think types shouldn't be thrown out the window (_hissing snake sound_), yet don't feel the need to capture every possible error as types.
+Consider for instance Li Haoyi's [Scala at Scale at Databricks](https://www.databricks.com/blog/2021/12/03/scala-at-scale-at-databricks.html), notably this passage:
 
-I included all the dependencies shown above because I found that they are required for most non-trivial projects.
-For instance, what programs nowadays do not need to handle JSON at some point?
+> Zero usage of "archetypical" Scala frameworks: Play, Akka, Scalaz, Cats, ZIO, etc.
+
+This resonates well with aptus' goals. I like using some of the tools he mentions, but I also want to make sure I have a simpler solution at hand.
+
+<a name="240306115820"></a>
+I included all the dependencies shown in the diagram above because I found that they were required for most non-trivial projects.
+For instance, what application nowadays do not need to handle JSON at some point?
 Or parse a CSV file? Or handle a bz2 file?
 
+<a name="240306115826"></a>
 Note that Aptus is heavily used in my data transformation library: [Gallia](https://github.com/galliaproject/gallia-core), as well as most of my other projects (public and private).
+
+### Defensive coding
+
+Let's consider stdlib's Seq's `.zip` and `.toMap` method for instance. Both will silently discard elements in some situations, and this behavior will almost never be the desired one
+(if nothing because it may not be obvious to another maintainer).
+`.zip` for instance will truncate the longer sequence if they are not the same size.
+`.toMap` will discard entries with duplicate keys, keeping only the last one.
+In almost all real life situations I encountered personnally and where either situation happened, it was the result of an upstream problem: I either meant for the two collections to be the same size for `.zip`,
+and I thought I wouldn't have duplicate keys when using `.toMap`.
+As a result I create two corresponding methods in aptus, `.zipSameSize` and `.force.map`, which throw a requirement runtime error when either situation occurs.
+I have been using them exclusively for years now, and it has more than paid off in catching errors early.
+
+We'll see another example of defensive coding in the next section about succinctness: Java's `.split` and `StringOps.split` can also discard elements silently.
 
 ### Succinctness
 A good example of succinctness is a method like `splitByWholeSeparatorPreserveAllTokens` from Apache Commons's `StringUtils`,

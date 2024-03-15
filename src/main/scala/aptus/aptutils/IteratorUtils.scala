@@ -28,8 +28,7 @@ object IteratorUtils {
         previousKeyOpt = Some(currentKey)
         
         tmp } ++
-      previousKeyOpt.map(_ -> cross.mutList(currentGroup)).iterator
-  }
+      previousKeyOpt.map(_ -> cross.mutList(currentGroup)).iterator }
 
   // ===========================================================================
   def zipSameSize[A, B](itr: Iterator[A], that: Iterator[B]): Iterator[(A, B)] =
@@ -40,6 +39,13 @@ object IteratorUtils {
         case (true , true ) => true
         case (x, y)         => illegalState("not the same size (hasNext/hasNext): ", x, y) } }
 
-}
+  // ===========================================================================
+  def logIteratorProgress[A](n: Int, debug: A => String)(iter: Iterator[A]): Iterator[A] = {
+    var count = 0
+    iter.map { line =>
+      count += 1
+      if ((count % n) == 0) println(s"\t${count.formatUsLocale}\t${debug(line)}")
+
+      line } } }
 
 // ===========================================================================

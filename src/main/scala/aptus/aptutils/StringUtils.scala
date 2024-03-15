@@ -7,7 +7,6 @@ import scala.collection.JavaConverters._
 
 // ===========================================================================
 object StringUtils {
-
   lazy val Default = CSVFormat.DEFAULT
 
   // ---------------------------------------------------------------------------
@@ -27,17 +26,10 @@ object StringUtils {
         .mkString("\n")
 
     // ---------------------------------------------------------------------------
-    def sectionAllOff(n: Int, indenter: String)(str: String): String =
-      str
-        .indentAll(n)
-        .prepend("\n")
+    def sectionAllOff(n: Int, indenter: String)(str: String): String = str.indentAll(n).prependNewline
 
     // ---------------------------------------------------------------------------
-    def indent(n: Int, indenter: String)(str: String): String = {
-      require(n >= 0, (n, str))
-
-      (indenter * n) + str
-    }
+    def indent(n: Int, indenter: String)(str: String): String = { require(n >= 0, (n, str)); (indenter * n) + str }
 
     // ---------------------------------------------------------------------------
     def section[A](coll: Seq[A], n: Int, title: String): String =
@@ -75,9 +67,6 @@ object StringUtils {
 
      parser.close()
 
-    cells
-  }
-
-}
+    cells } }
 
 // ===========================================================================

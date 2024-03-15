@@ -19,8 +19,8 @@ def toCloseabledIterator0[U](implicit ev: T <:< Iterator[U]): CloseabledIterator
       def consume[U](f: T =>            U ):            U  = { val result = f(underlying); close(); result }
       def     map[U](f: T =>            U ): Closeabled[U] = Closeabled.fromPair(f(underlying), cls)
       def flatMap[U](f: T => Closeabled[U]): Closeabled[U] = f(underlying).pipe { x => Closeabled.from(x.underlying, Seq(x.cls, this.cls)) }
-    }
-  
+      def foreach[U](f: T =>            U ): Unit          = { f(underlying); () } }
+
     // ===========================================================================
     private[aptus] object Closeabled {
   

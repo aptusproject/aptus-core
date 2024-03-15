@@ -243,7 +243,9 @@ package object aptus
     def extractGroups(regex: Regex): Option[Seq[String]] = regex.findFirstMatchIn(str).map { matsh => Range(1, matsh.groupCount + 1).map(matsh.group) }
 
     // ---------------------------------------------------------------------------
-    // TODO: replaceGroup (see 211004151531)
+    /** replaces FIRST group only */ // note: replaceAll/replaceAllIn don't operate on groups
+    def replaceGroup(regex: Regex      , replacement: String): String = str.extractGroup(regex).map { matsh => str.replaceFirst(matsh, replacement) }.getOrElse(str)
+    def replaceGroup(regex: JavaPattern, replacement: String): String = str.extractGroup(regex).map { matsh => str.replaceFirst(matsh, replacement) }.getOrElse(str)
 
     // ===========================================================================
     def splitBy(separator: String        ): Seq[String] = if (str.isEmpty()) List(str) else lang3.StringUtils.splitByWholeSeparatorPreserveAllTokens(str, separator   ).toList

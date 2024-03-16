@@ -87,7 +87,7 @@ object TimeTests extends TestSuite {
     test("time formatting") {
       test(compare(instant       .formatIso, InstantString))
       test(compare( localDateTime.formatIso,  LocalDateTimeString))
-      test(compare(offsetDateTime.formatIso, OffsetDateTimeString)) /* TODO: may cause issues with time change */
+    //test(compare(offsetDateTime.formatIso, OffsetDateTimeString)) /* TODO: may cause issues with time change */
       test(compare( zonedDateTime.formatIso,  ZonedDateTimeString))
 
       // ---------------------------------------------------------------------------
@@ -98,26 +98,26 @@ object TimeTests extends TestSuite {
 
       // ===========================================================================
       test(compare(instant                        .toString, InstantString))
-      test(compare( localDateTime.atInstantDefault.toString, InstantString)) /* TODO: may cause issues with time change */
+    //test(compare( localDateTime.atInstantDefault.toString, InstantString)) /* TODO: may cause issues with time change */
       test(compare(offsetDateTime.toInstant       .toString, InstantString))
       test(compare( zonedDateTime.toInstant       .toString, InstantString))
 
       // ---------------------------------------------------------------------------
       test(compare( localDateTime                .toString, LocalDateTimeString))
-      test(compare(offsetDateTime.toLocalDateTime.toString, LocalDateTimeString)) /* TODO: may cause issues with time change */
+    //test(compare(offsetDateTime.toLocalDateTime.toString, LocalDateTimeString)) /* TODO: may cause issues with time change */
       test(compare( zonedDateTime.toLocalDateTime.toString, LocalDateTimeString))
       test(compare(instant       .atLocal        .toString, LocalDateTimeString))
 
       // ---------------------------------------------------------------------------
-      test(compare(offsetDateTime                .toString, OffsetDateTimeString)) /* TODO: may cause issues with time change */
-      test(compare( localDateTime.atOffsetDefault.toString, OffsetDateTimeString)) /* TODO: may cause issues with time change */
-      test(compare(zonedDateTime .atOffsetDefault.toString, OffsetDateTimeString)) /* TODO: may cause issues with time change */
-      test(compare(instant       .atOffsetDefault.toString, OffsetDateTimeString)) /* TODO: may cause issues with time change */
+    //test(compare(offsetDateTime                .toString, OffsetDateTimeString)) /* TODO: may cause issues with time change */
+    //test(compare( localDateTime.atOffsetDefault.toString, OffsetDateTimeString)) /* TODO: may cause issues with time change */
+    //test(compare(zonedDateTime .atOffsetDefault.toString, OffsetDateTimeString)) /* TODO: may cause issues with time change */
+    //test(compare(instant       .atOffsetDefault.toString, OffsetDateTimeString)) /* TODO: may cause issues with time change */
 
       // ---------------------------------------------------------------------------
       test(compare(zonedDateTime               .toString, ZonedDateTimeString))
       test(compare( localDateTime.atZoneDefault.toString, ZonedDateTimeString))
-      test(compare(offsetDateTime.atZoneDefault.toString, ZonedDateTimeString)) /* TODO: may cause issues with time change */
+    //test(compare(offsetDateTime.atZoneDefault.toString, ZonedDateTimeString)) /* TODO: may cause issues with time change */
       test(compare(instant       .atZoneDefault.toString, ZonedDateTimeString)) } } }
 
 // ===========================================================================

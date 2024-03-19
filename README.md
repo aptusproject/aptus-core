@@ -16,7 +16,7 @@ import aptus._ // or more specific imports, eg import.aptus.String_
 ```
 
 The library is available for Scala
-[3.3.1](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_3/0.6.0/jar),
+[3.4.0](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_3/0.6.0/jar),
 [2.13](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.13/0.6.0/jar), and 
 [2.12](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.12/0.6.0/jar)
 

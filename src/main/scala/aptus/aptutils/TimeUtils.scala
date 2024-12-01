@@ -24,12 +24,11 @@ object TimeUtils {
 
   // ===========================================================================
   def elapsed[A](block: => A): (A, Long) = {
-    val start = System.currentTimeMillis()
+    val start  = System.currentTimeMillis()
     val result = block
-    val end = System.currentTimeMillis()
+    val end    = System.currentTimeMillis()
 
-    (result, end - start)
-  }
+    (result, end - start) }
 
 }
 

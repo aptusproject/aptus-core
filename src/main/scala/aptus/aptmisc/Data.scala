@@ -2,7 +2,7 @@ package aptus
 package aptmisc
 
 import util.chaining._
-import scala.collection.immutable.{ListMap, TreeMap}
+import scala.collection.immutable.TreeMap
 import aptutils.MapUtils
 import aptutils.joining.FluencyDomain._
 

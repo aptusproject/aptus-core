@@ -2,7 +2,6 @@ package aptus
 package aptutils
 
 import util.chaining._
-import collection.immutable.ListMap
 import aptus.aptutils.MapUtils.groupByKeyWithListMap
 
 // ===========================================================================
@@ -41,7 +40,6 @@ object PivotingUtils {
             vs.map(_ -> k) }
           .iterator
           .pipe(groupByKeyWithListMap)
-
 
       // ---------------------------------------------------------------------------
       def pivotPreGrouped[K, V](input: Map[K, Seq[V]]): ListMap[V, Seq[K]] =

@@ -1,20 +1,28 @@
 package aptustesting
 
 import scala.util.chaining._
-import aptus._
 import utest._
 
 // ===========================================================================
 object CloseabledTests extends TestSuite {
-  
-  val tests = Tests {       
-    test(compare(
-        // or eg "/tmp/myfile".streamFileLines3().pipe(transform)
-        CloseabledIterator.fromValues("hello", "world").pipe(transform), 
-        Seq("HE", "LLO", "WO", "RLD")))
-  }
+  import aptus.{CloseabledIterator, Iterator_}
 
   // ---------------------------------------------------------------------------
+  val tests = Tests {
+
+    test { compare(
+        // or eg "/tmp/myfile".streamFileLines3().pipe(transform)
+        CloseabledIterator.fromValues("hello", "world").pipe(transform), 
+        Seq("HE", "LLO", "WO", "RLD")) }
+
+    test {
+      val cls = List(1, 2, 3).iterator.toCloseabledIterator.toCloseabled
+
+      compare(
+        cls.consume(_.toList).tap { _ => cls.close() },
+        List(1, 2, 3)) } }
+
+  // ===========================================================================
   private def transform(citr: CloseabledIterator[String]) =
     citr
       .map(_.toUpperCase)

@@ -5,8 +5,12 @@ import scala.util.chaining._
 import scala.collection.GenTraversableOnce
 
 // ===========================================================================
-private[aptus] final class Closeabled[T](val underlying: T, val cls: Closeable) extends Closeable {
-      override def close() = { cls.close() }
+private[aptus] final class Closeabled[T](
+          val underlying: T,
+          val cls       : Closeable)
+        extends Closeable {
+
+      override final def close() = { cls.close() }
 
       // ---------------------------------------------------------------------------
       def pair: (T, Closeable) = underlying -> cls
@@ -14,7 +18,10 @@ private[aptus] final class Closeabled[T](val underlying: T, val cls: Closeable) 
       // ---------------------------------------------------------------------------
       def consumeToList       [U](implicit ev: T =:= Iterator[U]): List[U]               = consume(_.toList) // fairly common
       def toCloseabledIterator[U](implicit ev: T =:= Iterator[U]): CloseabledIterator[U] = new CloseabledIterator[U](underlying, cls)
-def toCloseabledIterator0[U](implicit ev: T <:< Iterator[U]): CloseabledIterator[U] = new CloseabledIterator[U](underlying, cls) // version with =:= seems to cause problems for 2.12
+
+      /** version with =:= seems to cause problems for 2.12 */
+      def toCloseabledIterator0[U](implicit ev: T <:< Iterator[U]): CloseabledIterator[U] = new CloseabledIterator[U](underlying, cls)
+
       // ---------------------------------------------------------------------------
       def consume[U](f: T =>            U ):            U  = { val result = f(underlying); close(); result }
       def     map[U](f: T =>            U ): Closeabled[U] = Closeabled.fromPair(f(underlying), cls)
@@ -23,7 +30,6 @@ def toCloseabledIterator0[U](implicit ev: T <:< Iterator[U]): CloseabledIterator
 
     // ===========================================================================
     private[aptus] object Closeabled {
-  
       def from    [T <: Closeable](underlying: T)                        : Closeabled[T] = new Closeabled(underlying, underlying)
       def from    [T]             (underlying: T, values: Seq[Closeable]): Closeabled[T] = new Closeabled(underlying, closeable(values))
       def fromPair[T]             (pair: (T, Closeable))                 : Closeabled[T] = new Closeabled(pair._1, pair._2)
@@ -31,13 +37,17 @@ def toCloseabledIterator0[U](implicit ev: T <:< Iterator[U]): CloseabledIterator
   
       // ---------------------------------------------------------------------------
       @ordermatters def closeable(values: Seq[Closeable]           ): Closeable = () => values.foreach(_.close())
-      @ordermatters def closeable(cls1: Closeable, more: Closeable*): Closeable = closeable(cls1 +: more)
-    }
+      @ordermatters def closeable(cls1: Closeable, more: Closeable*): Closeable = closeable(cls1 +: more) }
   
   // ===========================================================================
   // TODO: t210204105730 - look into https://github.com/com-lihaoyi/geny?
-  private[aptus] final class CloseabledIterator[T](val underlying: Iterator[T], val cls: Closeable) extends Closeable {
-      override def close() = { cls.close() }
+  private[aptus] final class CloseabledIterator[T](
+          val underlying: Iterator[T],
+          val cls       : Closeable)
+        extends Closeable
+           with IterableOnce[T] {
+      override final def close() : Unit        = { cls.close() }
+      override final def iterator: Iterator[T] = toSelfClosing
 
       // ---------------------------------------------------------------------------
       def hasNext: Boolean = underlying.hasNext
@@ -61,7 +71,7 @@ def toCloseabledIterator0[U](implicit ev: T <:< Iterator[U]): CloseabledIterator
 
       // ===========================================================================
       def toCloseabled : Closeabled[Iterator[T]] = new Closeabled(underlying, cls)
-      def toSelfClosing:            Iterator[T]  = new aptmisc.SelfClosingIterator(underlying, cls)
+      def toSelfClosing:            Iterator[T]  = new SelfClosingIterator(underlying, cls)
 
       // ---------------------------------------------------------------------------
       def consume[U](f: Iterator[T] => U):      U  = { val result = f(underlying); close(); result }
@@ -72,6 +82,8 @@ def toCloseabledIterator0[U](implicit ev: T <:< Iterator[U]): CloseabledIterator
       def alter[U](f: Iterator[T] => Iterator[U]): CloseabledIterator[U] = new CloseabledIterator(f(underlying), cls)
 
       // ---------------------------------------------------------------------------
+      def    foreach(f: T =>                    Unit): Closeabled[Unit] = new Closeabled(underlying.foreach(f), cls)
+
       def     map[U](f: T =>                    U ): CloseabledIterator[U] = new CloseabledIterator(underlying    .map(f), cls)
       def flatMap[U](f: T => GenTraversableOnce[U]): CloseabledIterator[U] = new CloseabledIterator(underlying.flatMap(f), cls)
 
@@ -88,13 +100,21 @@ def toCloseabledIterator0[U](implicit ev: T <:< Iterator[U]): CloseabledIterator
         _.asInstanceOf[Iterator[(K, V)]].pipe(aptutils.IteratorUtils.groupByPreSortedKey) }
 
       // ---------------------------------------------------------------------------
+      def groupByKeyWithListMap[K, V](implicit ev: T <:< (K, V)): ListMap[K, Seq[V]] =
+        aptutils.MapUtils.groupByKeyWithListMap(this.asInstanceOf[CloseabledIterator[(K, V)]])
+
+      // ---------------------------------------------------------------------------
       def zipSameSize[U](that: CloseabledIterator[U]): CloseabledIterator[(T, U)] =
         new CloseabledIterator(
                                this.underlying.zipSameSize(that.underlying),
           Closeabled.closeable(this.cls,                   that.cls))
 
       // ===========================================================================
-      def writeLines(path: String)(implicit ev: T <:< String) = writeGzipLines(path, 100, None)
+      def writeLines(out: String)(implicit ev: T <:< String) = writeGzipLines(out)
+
+      // ---------------------------------------------------------------------------
+      def writeGzipLines(out: FilePath)(implicit ev: T <:< String): OutputFilePath =
+        writeGzipLines(out, flushModulo = 100, logModulo = None)
 
       // ---------------------------------------------------------------------------
       def writeGzipLines(
@@ -104,8 +124,7 @@ def toCloseabledIterator0[U](implicit ev: T <:< Iterator[U]): CloseabledIterator
             (implicit ev: T <:< String)
           : OutputFilePath =
         map(_.asInstanceOf[String])
-          .consume(aptutils.FileUtils.writeGzipLines(out, flushModulo, logModulo))
-    }
+          .consume(aptutils.FileUtils.writeGzipLines(out, flushModulo, logModulo)) }
   
     // ===========================================================================
     object CloseabledIterator {
@@ -114,7 +133,6 @@ def toCloseabledIterator0[U](implicit ev: T <:< Iterator[U]): CloseabledIterator
 
       def fromSeq   [T](values: Seq[T]): CloseabledIterator[T] = new CloseabledIterator[T](values.iterator, () => ()) // convenient for tests
       def fromValues[T](values: T*)    : CloseabledIterator[T] = fromSeq(values)
-      def fromSole  [T](value : T )    : CloseabledIterator[T] = fromSeq(Seq(value))
-    }
+      def fromSole  [T](value : T )    : CloseabledIterator[T] = fromSeq(Seq(value)) }
 
 // ===========================================================================

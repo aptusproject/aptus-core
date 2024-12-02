@@ -7,18 +7,32 @@ when performance isn't most important. It also helps code defensively when repre
 <!-- =========================================================================== -->
 ## SBT
 <a name="211006113932"></a>
-`libraryDependencies += "io.github.aptusproject" %% "aptus-core" % "0.6.0"`
+`libraryDependencies += "io.github.aptusproject" %% "aptus-core" % "0.7.0"`
 
-Then import the following:
+Then import the following to test it out:
 
 ```scala
-import aptus._ // or more specific imports, eg import.aptus.String_
+import aptus.all._
+```
+
+Though in general a more piecemeal approach is recommended:
+```scala
+import aptus.min._
+  OR
+package object someprojectpackage extends aptus.Minimal
+```
+
+Alongside some ad hoc imports where needed:
+```
+import aptus.Map_
+import aptus.OutputFilePath
+...
 ```
 
 The library is available for Scala
-[3.4.0](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_3/0.6.0/jar),
-[2.13](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.13/0.6.0/jar), and 
-[2.12](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.12/0.6.0/jar)
+[3.4.0](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_3/0.7.0/jar),
+[2.13](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.13/0.7.0/jar), and 
+[2.12](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.12/0.7.0/jar)
 
 
 <!-- =========================================================================== -->

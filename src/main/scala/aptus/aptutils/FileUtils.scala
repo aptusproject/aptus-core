@@ -1,7 +1,7 @@
 package aptus
 package aptutils
 
-import java.io._
+import java.io.{Closeable => _, _}
 import java.util.zip.GZIPOutputStream
 
 // ===========================================================================
@@ -24,6 +24,10 @@ sys.addShutdownHook { // TODO: only if in auto mode
 
     // ===========================================================================
     private def inputStream(path: FilePath): InputStream =
+     /* TODO: t241202085542 - investigate:
+          Exception in thread "main" java.lang.NoClassDefFoundError:
+            org/apache/commons/compress/compressors/CompressorInputStream
+            You use commons-compress-1.9.0 .... InputStreamStatistics is since 1.17 this maybe fix this issue. */
       InputStreamUtils.smartInputStream(
         new BufferedInputStream(
           new FileInputStream(path)))

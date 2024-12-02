@@ -7,7 +7,7 @@
 
 ThisBuild / organizationName     := "Aptus Project"
 ThisBuild / organization         := "io.github.aptusproject" // *must* match groupId for sonatype
-ThisBuild / version              := "0.6.0"
+ThisBuild / version              := "0.7.0"
 ThisBuild / homepage             := Some(url("https://github.com/aptusproject/aptus-core"))
 ThisBuild / organizationHomepage := Some(url("https://github.com/aptusproject"))
 ThisBuild / startYear            := Some(2021)
@@ -23,8 +23,8 @@ ThisBuild / scmInfo              :=
     connection =     "scm:git@github.com:aptusproject/aptus-core.git"))
 ThisBuild / licenses             := Seq("Apache 2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 ThisBuild / description          := "Basic utilities for Scala."
-ThisBuild / scalaVersion         :=               "2.13.13"
-ThisBuild / crossScalaVersions   := List("3.4.0", "2.13.13", "2.12.19")
+ThisBuild / scalaVersion         :=                         "2.13.15"
+ThisBuild / crossScalaVersions   := List("3.3.4" /* LTS */, "2.13.15")
 
 // ---------------------------------------------------------------------------
 lazy val root = (project in file(".")).settings(name := "aptus-core")
@@ -34,7 +34,9 @@ lazy val root = (project in file(".")).settings(name := "aptus-core")
 
 ThisBuild / scalacOptions ++= Seq("-encoding", "UTF-8") ++ //"-Yimports:java.lang,scala,scala.Predef,scala.util.chaining" -- not possible for 2.12 it seems (TODO: t210308154253 confirm)
   (scalaBinaryVersion.value match {
-    case "3"    => Seq("-unchecked")
+    case "3"    => Seq(
+      "-unchecked",
+      "-no-indent" /* see https://youtu.be/DzjvFx5YYik?si=9WpwITuTKbfH6NYy&t=568 from ScalaIO for rationale */)
     case "2.13" => Seq("-Ywarn-value-discard", "-Ywarn-unused:imports,privates,locals")
     case "2.12" => Seq("-Ywarn-value-discard", "-Ywarn-unused-import" ) })
 

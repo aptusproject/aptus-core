@@ -227,7 +227,8 @@ package object aptus
     def sectionAllOff                : String =                StringUtils.sectionAllOff(n = 1, indenter = "\t")(str)
     def sectionAllOff(n: Int)        : String =                StringUtils.sectionAllOff(n    , indenter = "\t")(str)
 
-    def sectionAllOff(prefix: String): String = s"${prefix}" + StringUtils.sectionAllOff(n = 1, indenter = "\t")(str)
+    def sectionAllOff(prefix: String)        : String = sectionAllOff(prefix, n = 1)
+    def sectionAllOff(prefix: String, n: Int): String = s"${prefix}" + StringUtils.sectionAllOff(n, indenter = "\t")(str)
 
     // ===========================================================================
     def isTrimmed     : Boolean = str == str.trim
@@ -240,6 +241,7 @@ package object aptus
     def notContains(s: CharSequence): Boolean = !str.contains(s) // TODO: or "containsNot"?
 
     // ===========================================================================
+    // TODO: favor matching whenever possible: "foo1bar2" match { case s"foo${a}bar${b}" => ...
     def extractGroup (pattern: JavaPattern): Option[    String ] = extractGroup (pattern.pattern.r)
     def extractGroups(pattern: JavaPattern): Option[Seq[String]] = extractGroups(pattern.pattern.r)
 
@@ -440,6 +442,11 @@ package object aptus
     def IQR          (implicit                    num: Numeric[A]): Double = (coll.percentile(75) - coll.percentile(25)) // TODO: optimize
 
     // ===========================================================================
+    // entries
+
+    def mapEntryKey  [K, V, K2](f: K => K2)(implicit ev: A <:< (K, V)): Seq[(K2, V )] = coll.map { x => f(x._1) ->   x._2  }
+    def mapEntryValue[K, V, V2](f: V => V2)(implicit ev: A <:< (K, V)): Seq[(K , V2)] = coll.map { x =>   x._1  -> f(x._2) }
+
     def toMutableMap[K, V](implicit ev: A <:< (K, V))                   = MapUtils.toMutableMap(coll)
     def toListMap   [K, V](implicit ev: A <:< (K, V))                   = MapUtils.toListMap(coll)
     def toTreeMap   [K, V](implicit ev: A <:< (K, V), ord: Ordering[K]) = MapUtils.toTreeMap(coll)

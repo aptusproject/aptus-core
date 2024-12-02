@@ -71,7 +71,9 @@ object Time { import aptutils.TimeUtils.elapsed
 
   def stamp(): String = TimestampFormat.format(new java.util.Date())
 
-  def seconds[A](block: => A): A = { val (result, time) = elapsed(block); (time / 1000.0).formatDecimals(2).pipe(elapsed => println(s"done: ${elapsed} seconds")); result }
-}
+  def milliseconds[A](block: => A): A = { val (result, time) = elapsed(block);  time                               .pipe(elapsed => println(s"done: ${elapsed} ms"     )); result }
+  def seconds[A]     (block: => A): A = { val (result, time) = elapsed(block); (time /    1000.0).formatDecimals(2).pipe(elapsed => println(s"done: ${elapsed} seconds")); result }
+  def minutes[A]     (block: => A): A = { val (result, time) = elapsed(block); (time /   60000.0).formatDecimals(2).pipe(elapsed => println(s"done: ${elapsed} minutes")); result }
+  def hours  [A]     (block: => A): A = { val (result, time) = elapsed(block); (time / 3600000.0).formatDecimals(2).pipe(elapsed => println(s"done: ${elapsed} hours"  )); result } }
 
 // ===========================================================================

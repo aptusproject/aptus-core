@@ -502,13 +502,11 @@ package object aptus
 
   // ===========================================================================
   implicit class Iterator_[A](val itr: Iterator[A]) extends AnyVal {
-def take(n: Option[Int]): Iterator[A] = n.map(itr.take).getOrElse(itr)
-def drop(n: Option[Int]): Iterator[A] = n.map(itr.drop).getOrElse(itr)
+    def take(n: Option[Int]): Iterator[A] = n.map(itr.take).getOrElse(itr)
+    def drop(n: Option[Int]): Iterator[A] = n.map(itr.drop).getOrElse(itr)
 
-/** same as .toList but more explicit and matched CloseabledIterator's counterpart */
-def consumeAll() = itr.toList
-
-def toCloseabledIterator: CloseabledIterator[A] = CloseabledIterator.fromUncloseable(itr)
+    /** same as .toList but more explicit and matched CloseabledIterator's counterpart */
+    def consumeAll() = itr.toList
 
     def last(): A = itr.next().ensuring(_ => !itr.hasNext)
 

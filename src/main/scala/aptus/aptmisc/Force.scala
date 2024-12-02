@@ -1,7 +1,7 @@
 package aptus
 package aptmisc
 
-import scala.collection.immutable.{ListMap, TreeMap}
+import scala.collection.immutable.TreeMap
 import aptus.aptutils.MapUtils
 
 // ===========================================================================
@@ -30,6 +30,9 @@ private[aptus] final class Force[A] private[aptus] (private val coll: Seq[A]) {
   // how often are we actually ok just silently discarding duplicates?
   def map[K, V]                             (implicit ev: A <:< (K, V)): Map[K, V] = { val map = MapUtils.toHashMap(coll); assert(coll.size == map.size, (coll.size, map.size))  ; map }
   def map[K, V](debug: A => Any, anys: Any*)(implicit ev: A <:< (K, V)): Map[K, V] = { val map = MapUtils.toHashMap(coll); assert(coll.size == map.size, (coll.map(debug), anys)); map }
+
+  def mapLeft [K](f: A => K): Map[K, A]    = coll.map { x => f(x) ->   x  }.force.map//???//{ val map = MapUtils.toHashMap(coll); assert(coll.size == map.size, (coll.size, map.size))  ; map }
+  def mapRight[V](f: A => V): Map[   A, V] = coll.map { x =>   x  -> f(x) }.force.map
 
   def listMap[K, V]                             (implicit ev: A <:< (K, V)): ListMap[K, V] = { val map = MapUtils.toListMap(coll); assert(coll.size == map.size, (coll.size, map.size))  ; map }
   def listMap[K, V](debug: A => Any, anys: Any*)(implicit ev: A <:< (K, V)): ListMap[K, V] = { val map = MapUtils.toListMap(coll); assert(coll.size == map.size, (coll.map(debug), anys)); map }

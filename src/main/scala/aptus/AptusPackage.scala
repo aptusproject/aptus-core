@@ -17,14 +17,31 @@ import aptus.apttraits._
      keeping all (or most) the extension methods in the same file intentionally (for better or worse)
      It should also be noted that because they extend AnyVal, they can't be nested (eg in traits). also see t241202114104 */
 package object aptus
-    extends AptusTopLevel
-    with    AptusAnnotations
-    with    AptusScalaVersionSpecific
-    with    AptusAliases
-    with    AptusCommonAliases {
+    extends
+            AptusExceptionUtils /* eg aptus.illegalState(...) */
+       with AptusOrderings      /* eg aptus.seqOrdering */
+       with AptusZippers        /* eg aptus.zip(...) */
+       with AptusBinaryUtils    /* eg aptus.byteBuffer(), ... */
+
+       /* for aptus.listMap(...), see scala-version specific files */
+
+       with AptusAnnotations    /* eg @aptus.nonovrd, @aptus.ordermatters, ... */
+
+       with AptusScalaVersionSpecific /*    aptus.Items, aptus.listMap */
+       with AptusAliases              /* eg aptus.FilePath, aptus.Size, ... */
+       with AptusCommonAliases        /* eg aptus.Regex, aptus.Charset, ... */
+       with AptusFormattingTraits     /* eg aptus.HasFormatDefault, ... */
+
+       with AptusDummyImplicitShorthand /* type DI = DummyImplicit */
+       with AptusBooleanShorthands      /* _t and _f booleans */
+       with AptusNullShorthands         /* eg aptus.NullInt */ {
   // TODO: t211006141756 - should most of them have @inline? is there a downside?
 
+  /** favor aptus.all._ over aptus._ now (but generally avoid anyway) */
+  val all = this
+
   // ===========================================================================
+  /* for extends AnyVals, see https://stackoverflow.com/questions/14929422/should-implicit-classes-always-extend-anyval */
   implicit class Anything_[A](private val a: A) extends AnyVal {
     @inline def str: String = a.toString
 

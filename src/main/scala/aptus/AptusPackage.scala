@@ -550,7 +550,14 @@ def toCloseabledIterator: CloseabledIterator[A] = CloseabledIterator.fromUnclose
 
     // ---------------------------------------------------------------------------
     implicit class ListMap_[K, V](mp: ListMap[K, V]) {
+      def sortListMap(implicit ord: Ordering[K]) = // TODO: more efficient version (use scala stdlib code as template)
+        mp.keys.toList.sorted
+          .map { k => k -> mp.apply(k) }
+          .pipe(aptus.listMap[K, V])
+
+      // ---------------------------------------------------------------------------
       def mapListMapValues[U](f: V => U): ListMap[K, U] = mp.map { x => x._1 -> f(x._2) }
+      def reverse                       : ListMap[K, V] = mp.toList.reverse.pipe(MapUtils.toListMap[(K, V), K, V])
 
       def pivotPreGrouped[W](implicit ev: V <:< Seq[W]): ListMap[W, Seq[K]] = PivotingUtils.pivotPreGrouped(mp.asInstanceOf[ListMap[K, Seq[W]]]) }
 

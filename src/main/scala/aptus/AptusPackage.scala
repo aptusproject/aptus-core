@@ -537,6 +537,9 @@ def toCloseabledIterator: CloseabledIterator[A] = CloseabledIterator.fromUnclose
       /** formerly mapValues in the stdlib */
       def mapMapValues[U](f: V => U): Map[K, U] = mp.map { x => x._1 -> f(x._2) }
 
+      /** who is ever comfortable potentially losing keys that way? */
+      def forceKeys[K2](f: K => K2): Map[K2, V] = mp.map { x => f(x._1) -> x._2 }.tap { x => val originalSize = mp.size; val newSize = x.size; assert(newSize == originalSize, originalSize -> newSize) }
+
       // ---------------------------------------------------------------------------
       def toMutableMap                        :   mutable.    Map[K, V] = MapUtils.toMutableMap(mp)
       def toListMap                           :           ListMap[K, V] = MapUtils.toListMap   (mp)

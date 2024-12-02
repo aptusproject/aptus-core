@@ -9,7 +9,8 @@ import util.chaining._
       and can't change return type on override (and don't want to call it something else
       overridign the few important ones isn't that big a deal
 */
-trait Items[$Items <: Items[_, _], $Item] extends HasConst[Seq[$Item], $Items] {
+trait Items[$Items <: Items[_, _], $Item] // TODO: t241202115349 - splitup + own package
+    extends HasConst[Seq[$Item], $Items] {
   type Self = $Items
   type Item = $Item // nicer, if used by client
 
@@ -49,7 +50,10 @@ trait Items[$Items <: Items[_, _], $Item] extends HasConst[Seq[$Item], $Items] {
   def mapUnderlyingValues(f: Seq[$Item] => Seq[$Item]): $Items = const(f(values))
 
   // ===========================================================================
-  def find(p: $Item => Boolean): Option[$Item] = values.find(p)
+  @deprecated("favor new name 'findValue'")
+  def find      (p: $Item => Boolean): Option[$Item] = values.find(p)
+  def findValue (p: $Item => Boolean): Option[$Item] = values.find(p)
+  def forceValue(p: $Item => Boolean):        $Item  = values.find(p).get
 
   // ---------------------------------------------------------------------------
   def filter   (p: $Item => Boolean): $Items = values.filter   (p).pipe(const)
@@ -91,6 +95,8 @@ trait Items[$Items <: Items[_, _], $Item] extends HasConst[Seq[$Item], $Items] {
   def distinct                             : $Items = values.distinct .pipe(const)
 
   // ---------------------------------------------------------------------------
+  // TODO: t241129122610 - rename + deprecate to mergeItems, appendItem, etc to avoid name conflicts with client code
+
   def merge(that: $Items): $Items = const(  (this.values ++ that.values).asInstanceOf[Seq[$Item]] )
       def prepend(datum: $Item): $Items = const(          datum +: values)
       def  append(datum: $Item): $Items = const(values :+ datum)
@@ -125,6 +131,17 @@ trait Items[$Items <: Items[_, _], $Item] extends HasConst[Seq[$Item], $Items] {
   def initOption: Option[$Items] = values.initOption.map(const) // from aptus
 
   // ===========================================================================
+  /** MUST replace exactly one        */ def replaceExactlyOneItem   (p: $Item => Boolean)(f: $Item => $Item): Self = _replace(_ == 1)(p: $Item => Boolean)(f: $Item => $Item)
+  /** MAY  replace none or one        */ def replaceOneItemIfMatching(p: $Item => Boolean)(f: $Item => $Item): Self = _replace(_ <= 1)(p: $Item => Boolean)(f: $Item => $Item)
+  /** MAY  replace none, one, or more */ def replaceAllMatchingItems (p: $Item => Boolean)(f: $Item => $Item): Self = endoMap { x => if (p(x)) f(x) else x }
+
+    // ---------------------------------------------------------------------------
+    private def _replace(n: Int => Boolean)(p: $Item => Boolean)(f: $Item => $Item): Self = {
+      var changes = 0
+      endoMap { x => if (p(x)) { changes += 1; f(x) };  else x }
+        .assert(_ => n(changes), x => (changes, this, x)) }
+
+  // ===========================================================================
   def ifEmptyThenError (msg: String): $Items = if (isEmpty) aptus.illegalState(msg) else const(values)
 
   // ---------------------------------------------------------------------------
@@ -134,9 +151,18 @@ trait Items[$Items <: Items[_, _], $Item] extends HasConst[Seq[$Item], $Items] {
       .zipWithIndex
       .filter { x => targets.contains(x._2) }
       .map(_._1)
-      .pipe(const) }
+      .pipe(const)
+
+  // ---------------------------------------------------------------------------
+  // formatting
+  def formatDefaults(implicit ev: Item <:< HasFormatDefault): Seq[String] = values.map(_.formatDefault)
+
+  def formatCompact             (implicit ev: Item <:< HasFormatDefault): String = formatDefaults.#@@
+  def formatCompact(sep: String)(implicit ev: Item <:< HasFormatDefault): String = formatDefaults.mkString("[", sep, "]")
+  def formatLines               (implicit ev: Item <:< HasFormatDefault): String = formatDefaults.joinln
+  def formatWithSectionAndSize  (implicit ev: Item <:< HasFormatDefault): String = formatDefaults.section(values.size.str.colon) }
 
 // ===========================================================================
-trait HasConst[Data, Me] { protected def const: Data => Me }
+trait HasConst[Data, Me] { protected def const: Data => Me } // TODO: move and rename
 
 // ===========================================================================

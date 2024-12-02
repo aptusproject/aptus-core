@@ -66,7 +66,7 @@ object ItemsTest  extends TestSuite {
 
   // ---------------------------------------------------------------------------
   case class People(values: Seq[Person])
-    extends aptus.Items[People, Person] {
+    extends aptus.aptitems.Items[People, Person] {
       val const = People.apply }
 
   // ---------------------------------------------------------------------------

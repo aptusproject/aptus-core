@@ -2,14 +2,22 @@ package aptus
 
 // ===========================================================================
 /** typically these are meant to convey intent, not enforce invariants; often sufficient to replace a comment. */
-trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
-//TODO: t241201103337 - split up
+trait AptusMinimalAliases { // most useful ones
+  type Name     = String
+  type FilePath = String
 
-  type Size              = Int
+  type Size     = Int
+  type Count    = Int
+  type Index    = Int
+
+  type Nes[T]   = Seq[T] }
+
+// ===========================================================================
+trait AptusAliases extends AptusMinimalAliases {
+  //TODO: t241201103337 - further split up
+
   type Sum               = Int
   type MirrorIndex       = Int
-  type Count             = Int
-  type Index             = Int
   type Rank              = Int // = index + 1
   type Depth             = Int
 
@@ -21,15 +29,15 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   // ---------------------------------------------------------------------------
   type Separator         = String
 
-  type Name              = String
   type Label             = String
 
   type Line              = String
   type Content           = String
 
+  // ---------------------------------------------------------------------------
   type FsPath            = String
   type DirPath           = String
-  type FilePath          = String
+
   type FileName          = String
   type DirName           = String
 
@@ -45,6 +53,7 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
     type OutputFileName  = String
     type OutputDirName   = String
 
+  // ---------------------------------------------------------------------------
   type JsonString        = String
   type JsonPretty        = String
   type JsonCompact       = String
@@ -70,13 +79,11 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   type FormattedNumber   = String
 
   // ---------------------------------------------------------------------------
+  /** just to convey intention, nothing enforced */
   type One[T] =               T
   type Opt[T] =        Option[T]
   type Pes[T] = Option[Seq   [T]]
-
-  // TODO: t210125111144 - maybe an actual NonEmptyList such as cats'?
-  /** just to convey intention, nothing enforced */
-  type Nes[T] = Seq[T]
+//type Nes[T] =        Seq   [T] -- in Minimal
 
   // ===========================================================================
   type CharsetSelector = aptmisc.StandardCharsets.type => Charset
@@ -85,7 +92,7 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   type RawRdbmsEntries = Map   [String /* field name */, Option[Any /* value */]]
   type RawRdbmsValues  = Vector[                         Option[Any /* value */]]
   
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   type Closeabled[T] = aptmisc.Closeabled[T]
   val  Closeabled    = aptmisc.Closeabled
 
@@ -99,6 +106,14 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   type JavaPattern = java.util.regex.Pattern
 
   // ===========================================================================
+  @deprecated("use aptus.Minimal now")
+  type AptusPrototypingImplicits = min.AptusMinimal
+  type Minimal                   = min.AptusMinimal
+
+  // ---------------------------------------------------------------------------
+  type AptusFormattingTraits = aptus.apttraits.AptusFormattingTraits /* eg HasFormatDefault, HasFormatCompatJson, ... */
+
+  // ---------------------------------------------------------------------------
   lazy val system     = aptmisc.AptusSystem
   lazy val fs         = aptmisc.Fs
   lazy val hardware   = aptmisc.Hardware

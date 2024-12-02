@@ -11,5 +11,6 @@ trait AptusMinimal
        with AptusNullShorthands
        with AptusChaining
        with AptusMinExtensions
+       with AptusMinimalAliases
 
 // ===========================================================================

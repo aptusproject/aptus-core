@@ -598,15 +598,19 @@ def toCloseabledIterator: CloseabledIterator[A] = CloseabledIterator.fromUnclose
 
     def mapFirst [A2](fa: A => A2) = (fa(tup._1),   tup._2,     tup._3 )
     def mapSecond[B2](fb: B => B2) = (   tup._1, fb(tup._2),    tup._3 )
-    def mapThird [C2](fc: C => C2) = (   tup._1,    tup._2 , fc(tup._3)) }
+    def mapThird [C2](fc: C => C2) = (   tup._1,    tup._2 , fc(tup._3))
+
+    def join(sep: String) = Seq(tup._1, tup._2, tup._3).mkString(sep) }
 
   // ---------------------------------------------------------------------------
   implicit class Tuple4_[A, B, C, D](val tup: Tuple4[A, B, C, D]) extends AnyVal {
-    def toSeq[Z](implicit ev1: A <:< Z, ev2: B <:< Z, ev3: C <:< Z, ev4: D <:< Z) = Seq[Z](tup._1, tup._2, tup._3, tup._4) }
+    def toSeq[Z](implicit ev1: A <:< Z, ev2: B <:< Z, ev3: C <:< Z, ev4: D <:< Z) = Seq[Z](tup._1, tup._2, tup._3, tup._4)
+    def join(sep: String) = Seq(tup._1, tup._2, tup._3, tup._4).mkString(sep) }
 
   // ---------------------------------------------------------------------------
   implicit class Tuple5_[A, B, C, D, E](val tup: Tuple5[A, B, C, D, E]) extends AnyVal {
-    def toSeq[Z](implicit ev1: A <:< Z, ev2: B <:< Z, ev3: C <:< Z, ev4: D <:< Z, ev5: E <:< Z) = Seq[Z](tup._1, tup._2, tup._3, tup._4, tup._5) }
+    def toSeq[Z](implicit ev1: A <:< Z, ev2: B <:< Z, ev3: C <:< Z, ev4: D <:< Z, ev5: E <:< Z) = Seq[Z](tup._1, tup._2, tup._3, tup._4, tup._5)
+    def join(sep: String) = Seq(tup._1, tup._2, tup._3, tup._4, tup._5).mkString(sep)  }
 
   // ===========================================================================
   // ===========================================================================

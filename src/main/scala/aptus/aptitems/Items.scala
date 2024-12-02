@@ -1,6 +1,7 @@
 package aptus
-package aptmisc
+package aptitems
 
+import aptmisc.Force
 import util.chaining._
 
 // ===========================================================================

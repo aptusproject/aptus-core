@@ -2,7 +2,7 @@ package aptus
 
 // ===========================================================================
 trait AptusScalaVersionSpecific { // 3.x
-  // FIXME: can't get this to work with scala 3: type Items[$Items <: Items[_, _], $Item] = aptmisc.Items[$Items, $Item]
+  // type Items[$Items <: Items[_, _], $Item] = aptitems.Items[$Items, $Item]
 
   // ---------------------------------------------------------------------------
   def listMap[K, V](values: Seq[(K, V)])          : ListMap[K, V] = collection.immutable.ListMap.from(values)

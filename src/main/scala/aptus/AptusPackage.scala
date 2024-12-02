@@ -4,15 +4,18 @@ import com.google.common.base.CaseFormat
 import scala.sys.process._
 import scala.language.postfixOps
 import scala.collection.{immutable, mutable}
-import scala.collection.immutable.ListMap
 import scala.util.chaining._
 import scala.jdk.javaapi.CollectionConverters
 
 import java.time._
 import java.time.format.DateTimeFormatter
 import aptus.aptutils._
+import aptus.apttraits._
 
 // ===========================================================================
+/* NOTE:
+     keeping all (or most) the extension methods in the same file intentionally (for better or worse)
+     It should also be noted that because they extend AnyVal, they can't be nested (eg in traits). also see t241202114104 */
 package object aptus
     extends AptusTopLevel
     with    AptusAnnotations
@@ -67,7 +70,8 @@ package object aptus
     def assertEquals[B](actual: A => B, expected: => B): A = { val _actual = actual(a); val _expected = expected; Predef.assert(_actual == _expected, s"\n\texpected: |${_expected}|\n\tactual:   |${_actual}|" ); a }
 
     // ---------------------------------------------------------------------------
-    def in: aptmisc.In[A] = new aptus.aptmisc.In[A](a)
+    def in  : aptmisc.In[A] = new aptus.aptmisc.In[A](a)
+    def in_ : aptmisc.In[A] = new aptus.aptmisc.In[A](a) // for when `.in` conflicts with another library (eg scalatags' DataConverters)
 
       // most common ones
       @inline def inNoneIf(p: A => Boolean): Option[A] = in.noneIf(p)

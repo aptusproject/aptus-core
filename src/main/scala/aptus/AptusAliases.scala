@@ -3,6 +3,7 @@ package aptus
 // ===========================================================================
 /** typically these are meant to convey intent, not enforce invariants; often sufficient to replace a comment. */
 trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
+//TODO: t241201103337 - split up
 
   type Size              = Int
   type Sum               = Int
@@ -26,7 +27,7 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   type Line              = String
   type Content           = String
 
-  type Path              = String
+  type FsPath            = String
   type DirPath           = String
   type FilePath          = String
   type FileName          = String
@@ -71,8 +72,6 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   // ---------------------------------------------------------------------------
   type One[T] =               T
   type Opt[T] =        Option[T]
-
-  @deprecated
   type Pes[T] = Option[Seq   [T]]
 
   // TODO: t210125111144 - maybe an actual NonEmptyList such as cats'?
@@ -100,12 +99,11 @@ trait AptusAliases { // TODO: t210125110827 - consider AnyVals rather? overkill?
   type JavaPattern = java.util.regex.Pattern
 
   // ===========================================================================
-  val system     = aptmisc.AptusSystem
-  val fs         = aptmisc.Fs
-  val hardware   = aptmisc.Hardware
-  val random     = aptmisc.Random
-  val reflection = aptmisc.Reflection
-  val time       = aptmisc.Time
-}
+  lazy val system     = aptmisc.AptusSystem
+  lazy val fs         = aptmisc.Fs
+  lazy val hardware   = aptmisc.Hardware
+  lazy val random     = aptmisc.Random
+  lazy val reflection = aptmisc.Reflection
+  lazy val time       = aptmisc.Time }
 
 // ===========================================================================

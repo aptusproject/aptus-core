@@ -64,18 +64,18 @@ trait _AptusPath {
     path }
 
   // ===========================================================================
-  def listContent(): List[Path] = Option(ioFile.list()).map(_.toList).getOrElse(illegalArgument("220926133236 - not a dir"))
+  def listContent(): List[FsPath] = Option(ioFile.list()).map(_.toList).getOrElse(illegalArgument("220926133236 - not a dir"))
 
     // ---------------------------------------------------------------------------
     def listNames    (): List[Name]     = ioFile.assert(_.isDirectory, x => s"\n\t\tnot a dir:\n\t\t\t${x}").list().toList // see org.apache.commons.io.FileUtils for more involved
     def listFileNames(): List[FileName] = listNames().filter(x => new File(path / x).isFile())
     def listDirNames (): List[DirName]  = listNames().filter(x => new File(path / x).isDirectory())
 
-    def listPaths    (): List[Path]     = listNames().map(path / _)
+    def listPaths    (): List[FsPath]   = listNames().map(path / _)
     def listFilePaths(): List[FilePath] = listPaths().filter(new File(_).isFile())
     def listDirPaths (): List[DirPath]  = listPaths().filter(new File(_).isDirectory())
 
-    def listPathsRecursively    (): List[Path]     = listPaths().flatMap { p => (if (new File(p).isDirectory()) p.path.listFilePathsRecursively() else Nil) ++ Seq(p) }
+    def listPathsRecursively    (): List[FsPath]   = listPaths().flatMap { p => (if (new File(p).isDirectory()) p.path.listFilePathsRecursively() else Nil) ++ Seq(p) }
     def listFilePathsRecursively(): List[FilePath] = listPathsRecursively().filter(new File(_).isFile())
     def listDirPathsRecursively (): List[DirPath]  = listPathsRecursively().filter(new File(_).isDirectory())
 
@@ -99,6 +99,10 @@ private[aptus] final class AptusDirPath(override val path: String) extends _Aptu
 // make private again
 /*private[aptus]*/ final class AptusFilePath(override val path: String) extends _AptusPath {
   def fileName: String = name
+  def basename: String = name.splitBy(".").head
+
+  // ---------------------------------------------------------------------------
+  def readBytes: Array[Byte] = java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(path)) // TODO: buffered version for streaming
 
   // ---------------------------------------------------------------------------
   def  isEmpty: Boolean = ioFile.isFile && java.nio.file.Files.size(nioPath) == 0L
@@ -112,13 +116,14 @@ private[aptus] final class AptusDirPath(override val path: String) extends _Aptu
 // ===========================================================================
 // make private again
 /*private[aptus]*/ final class AptusPath(override val path: String) extends _AptusPath { // TODO: as AnyVal?
+  def dir  = new aptmisc.AptusDirPath (path)
+  def file = new aptmisc.AptusFilePath(path)
 
-    def dir  = new aptmisc.AptusDirPath (path)
-    def file = new aptmisc.AptusFilePath(path)
+  def mkdir () = dir.mkdir ()
+  def mkdirs() = dir.mkdirs()
 
   def isFile   (): Boolean = _isFile()
   def isDir    (): Boolean = _isDir()
-  def isSymlink(): Boolean = _isSymlink()
-}
+  def isSymlink(): Boolean = _isSymlink() }
 
 // ===========================================================================

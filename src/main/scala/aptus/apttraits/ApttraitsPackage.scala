@@ -5,7 +5,11 @@ package object apttraits
 
 // ---------------------------------------------------------------------------
 package apttraits { // not sure why not letting me put those in the package object
+  object AptusTraits
+    extends AptusFormattingTraits
+       with AptusWritingTraits
 
+  // ---------------------------------------------------------------------------
   /** by and large the most useful ones */
   trait AptusMinExtensions { // TODO: t241202114104 - we lost the AnyVal advantage here :-/
     implicit def anything_[T](value:     T) : Anything_[T] = new Anything_(value)

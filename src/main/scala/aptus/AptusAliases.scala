@@ -113,6 +113,9 @@ trait AptusAliases extends AptusMinimalAliases {
   // ---------------------------------------------------------------------------
   type AptusFormattingTraits = aptus.apttraits.AptusFormattingTraits /* eg HasFormatDefault, HasFormatCompatJson, ... */
 
+  type AptusWritingTraits    = aptus.apttraits.AptusWritingTraits    /* eg HasWriteOutputFile, ... */
+  val  AptusWritingTraits    = aptus.apttraits.AptusWritingTraits    /* eg HasWriteOutputFile, ... */
+
   // ---------------------------------------------------------------------------
   lazy val system     = aptmisc.AptusSystem
   lazy val fs         = aptmisc.Fs

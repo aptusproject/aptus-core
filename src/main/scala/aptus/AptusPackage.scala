@@ -161,11 +161,6 @@ package object aptus
       def readFileCsv  (): List[Vector[Cell]] = readFileLines().map(_.splitXsv(',') .toVector)
 
       // ---------------------------------------------------------------------------
-      @deprecated @inline def streamFileLines(): (Iterator[Line],         Closeable) = streamFileLines1()
-      @deprecated @inline def streamFileTsv  (): (Iterator[Vector[Cell]], Closeable) = streamFileTsv1  ()
-      @deprecated @inline def streamFileCsv  (): (Iterator[Vector[Cell]], Closeable) = streamFileCsv1  ()
-
-        // ---------------------------------------------------------------------------
         // TODO: rename
         def streamFileLines1(): (Iterator[Line],         Closeable) = FileUtils.streamFileLines(path = str)
         def streamFileTsv1  (): (Iterator[Vector[Cell]], Closeable) = str.streamFileLines1().mapFirst(_.map(_.splitXsv('\t').toVector))
@@ -176,10 +171,12 @@ package object aptus
         def streamFileTsv2  (): CloseabledIterator[Vector[Cell]] = streamFileTsv1  ().pipe(CloseabledIterator.fromPair)
         def streamFileCsv2  (): CloseabledIterator[Vector[Cell]] = streamFileCsv1  ().pipe(CloseabledIterator.fromPair)
 
-        // TODO: rename
-        def streamFileLines3(): SelfClosingIterator[Line]         = streamFileLines1().pipe(SelfClosingIterator.fromPair)
-        def streamFileTsv3  (): SelfClosingIterator[Vector[Cell]] = streamFileTsv1()  .pipe(SelfClosingIterator.fromPair)
-        def streamFileCsv3  (): SelfClosingIterator[Vector[Cell]] = streamFileCsv1()  .pipe(SelfClosingIterator.fromPair)
+        @deprecated def streamFileLines3(): SelfClosingIterator[Line]         = streamFileLines1().pipe(SelfClosingIterator.fromPair)
+                    def streamFileLines (): SelfClosingIterator[Line]         = streamFileLines1().pipe(SelfClosingIterator.fromPair)
+        @deprecated def streamFileTsv3  (): SelfClosingIterator[Vector[Cell]] = streamFileTsv1()  .pipe(SelfClosingIterator.fromPair)
+                    def streamFileTsv   (): SelfClosingIterator[Vector[Cell]] = streamFileTsv1()  .pipe(SelfClosingIterator.fromPair)
+        @deprecated def streamFileCsv3  (): SelfClosingIterator[Vector[Cell]] = streamFileCsv1()  .pipe(SelfClosingIterator.fromPair)
+                    def streamFileCsv   (): SelfClosingIterator[Vector[Cell]] = streamFileCsv1()  .pipe(SelfClosingIterator.fromPair)
 
     // ===========================================================================
     def readUrlContent(): Content   = UrlUtils.content(str)
@@ -289,6 +286,7 @@ package object aptus
     def time = new aptmisc.TimeParsing(str)
 
       // ---------------------------------------------------------------------------
+      // TODO: move to .parse.localDate, ...
       def parseLocalDate      :  LocalDate     =  time.parseLocalDate
       def parseLocalDateTime  :  LocalDateTime =  time.parseLocalDateTime
 
@@ -475,8 +473,6 @@ package object aptus
       // shorthands for most commonly used
       def groupByKey           [K, V](implicit ev: A <:< (K, V)):     Map[K, Seq[V]] = data.groupByKey
       def groupByKeyWithListMap[K, V](implicit ev: A <:< (K, V)): ListMap[K, Seq[V]] = data.groupByKeyWithListMap
-
-      def countBySelf: List[(A, Int)] = data.countBySelf
 
       def innerJoin[B](that: Seq[B]): joining.FluencyDomain.InnerJoin[A, B] = data.innerJoin(that)
 

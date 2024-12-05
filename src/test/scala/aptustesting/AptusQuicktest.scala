@@ -3,15 +3,15 @@ package aptustesting
 import aptus._
 
 // ===========================================================================
-@deprecated object AptusQuicktest { // TODO: t230623142128 - to be ported to actual tests
+@deprecated object AptusQuicktest { // TODO: t230623142128 - to be ported to actual tests - currently excercised as part of AptusQuicktestWrapper
 
   // ===========================================================================
-  def main(args: Array[String]): Unit = { // run with: sbt "Test / runMain aptustesting.AptusQuicktest"
-    init ()
-    init2()
+  def main(args: Array[String]): Unit = { apply(); println("ok") }
 
-    println("ok")
-  }
+  // ---------------------------------------------------------------------------
+  def apply() { // run with: sbt "Test / runMain aptustesting.AptusQuicktest"
+    init ()
+    init2() }
   
   // ===========================================================================
   def init2() = {    

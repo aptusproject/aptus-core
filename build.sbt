@@ -7,7 +7,7 @@
 
 ThisBuild / organizationName     := "Aptus Project"
 ThisBuild / organization         := "io.github.aptusproject" // *must* match groupId for sonatype
-ThisBuild / version              := "0.7.0"
+ThisBuild / version              := "0.8.0-SNAPSHOT"
 ThisBuild / homepage             := Some(url("https://github.com/aptusproject/aptus-core"))
 ThisBuild / organizationHomepage := Some(url("https://github.com/aptusproject"))
 ThisBuild / startYear            := Some(2021)

@@ -40,6 +40,8 @@ package object aptus
   /** favor aptus.all._ over aptus._ now (but generally avoid anyway) */
   val all = this
 
+  val traits = AptusTraits
+
   // ===========================================================================
   /* for extends AnyVals, see https://stackoverflow.com/questions/14929422/should-implicit-classes-always-extend-anyval */
   implicit class Anything_[A](private val a: A) extends AnyVal {

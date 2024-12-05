@@ -16,6 +16,8 @@ final class TimeParsing private[aptus] (str: String) {
   def parseLocalTime      :  LocalTime     = java.time. LocalTime    .parse(str, IsoFormatterLocalTime)
 
   // ===========================================================================
+  // TODO: t241204163603 - versions such as: parseLocalDate(_.ISO_LOCAL_DATE_TIME)
+
   def parseLocalDateTime(pattern: String): LocalDateTime = ofPattern(pattern).pipe(java.time.LocalDateTime.parse(str, _))
   def parseLocalDate    (pattern: String): LocalDate     = ofPattern(pattern).pipe(java.time.LocalDate    .parse(str, _))
   def parseLocalTime    (pattern: String): LocalTime     = ofPattern(pattern).pipe(java.time.LocalTime    .parse(str, _))

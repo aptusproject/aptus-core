@@ -2,6 +2,9 @@ package aptus
 
 // ===========================================================================
 trait AptusScalaVersionSpecific { // 3.x
+  trait WTT[T] {}; object WTT { implicit def to[T]: WTT[T] = new WTT[T]{} } // TODO
+
+  // ---------------------------------------------------------------------------
   // type Items[$Items <: Items[_, _], $Item] = aptitems.Items[$Items, $Item]
   //                      ^ Cyclic reference involving type Items (TODO: t241202151014)
 

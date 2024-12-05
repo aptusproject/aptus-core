@@ -18,12 +18,19 @@ object AptusFormattingTraits
         override final def formatDefault                : String = formatDefault(prefix = "") }
 
     // ===========================================================================
-    trait HasFormatCompactJson {
-        @abstrct def formatCompactJson: String }
+    trait HasFormatJson
+        extends HasFormatCompactJson
+           with HasFormatPrettyJson
+
+      // ---------------------------------------------------------------------------
+      trait HasFormatCompactJson {
+        @abstrct       def formatCompactJson: String
+        @nonovrd final def  printCompactJson: Unit = { println(formatCompactJson) } }
 
       // ---------------------------------------------------------------------------
       trait HasFormatPrettyJson {
-        @abstrct def formatPrettyJson: String }
+        @abstrct       def formatPrettyJson: String
+        @nonovrd final def  printPrettyJson: Unit = { println(formatPrettyJson) } }
 
     // ---------------------------------------------------------------------------
     /** with header */

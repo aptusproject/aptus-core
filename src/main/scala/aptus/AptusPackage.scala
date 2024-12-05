@@ -478,6 +478,9 @@ package object aptus
 
       /** no prior grouping of key/values */ def pivot[K, V](implicit ev: A <:< (K, V)): ListMap[V, Seq[K]] = data.pivot
 
+      @deprecated def countBySelf0: List[(A, Count)] = data.countBySelf0
+                  def countBySelf : List[(Count, A)] = data.countBySelf
+
     // ===========================================================================
     def toOptionalSeq[B](implicit ev: A <:< Option[B]): Option[Seq[B]] = if (coll.contains(None)) None else Some(coll.map(_.get))
 

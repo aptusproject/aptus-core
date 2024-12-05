@@ -32,7 +32,7 @@ object SeqTests extends TestSuite {
     test(compare(
       Seq(a, b, a, c).countBySelf,
       // note: result is also sorted by descending count
-      Seq((a, 2), (b, 1), (c, 1))))
+      Seq((2, a), (1, b), (1, c))))
 
     // ===========================================================================
     test(compare(

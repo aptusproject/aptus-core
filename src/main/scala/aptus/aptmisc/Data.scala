@@ -21,15 +21,18 @@ final class Data[A] private[aptus] (coll: Seq[A]) {
   def groupByAdjacency[B](f: A => B): Seq[(B, Seq[A])] = MapUtils.groupByAdjacency(coll)(f)
 
   // ===========================================================================
-  def countBySelf: List[(A, Int)] = coll.groupBy(identity).view.map { x => x._1 -> x._2.size }.toList.sortBy(-_._2) // TODO: t211004120452 - more efficient version
+              def countBySelf : List[(Count, A)] = coll.groupBy(identity).view.map { x => x._2.size -> x._1 }.toList.sortBy(-_._1) // TODO: t211004120452 - more efficient version
+  @deprecated def countBySelf0: List[(A, Count)] = coll.groupBy(identity).view.map { x => x._1 -> x._2.size }.toList.sortBy(-_._2) // TODO: t211004120452 - more efficient version
 
   /** maintains order (if presorted for instance) */
-  def countBySelfWithOrder: List[(A, Int)] = coll.map(x => x -> x).iterator.pipe(MapUtils.groupByKeyWithListMap).toList.map { x => x._1 -> x._2.size }.sortBy(-_._2) // TODO: t211004120452 - more efficient version
+              def countBySelfWithOrder : List[(Count, A)] = coll.map(x => x -> x).iterator.pipe(MapUtils.groupByKeyWithListMap).toList.map { x => x._2.size -> x._1 }.sortBy(-_._1) // TODO: t211004120452 - more efficient version
+  @deprecated def countBySelfWithOrder0: List[(A, Count)] = coll.map(x => x -> x).iterator.pipe(MapUtils.groupByKeyWithListMap).toList.map { x => x._1 -> x._2.size }.sortBy(-_._2) // TODO: t211004120452 - more efficient version
 
   // TODO: t220929165238 - more efficient version (see groupByKey)
   def countByKey[K, V](implicit ev: A <:< (K, V)): Seq[(Count, K)] = groupByKey.map { case (k, v) => v.size -> k }.toList.sortBy(-_._1)
 
   // ===========================================================================
+  // TODO: t241204105908 - offer Iterator/List alteratives
   def innerJoin[B](that: Seq[B]): InnerJoin[A, B] = new InnerJoin[A, B](coll, that)
   def  leftJoin[B](that: Seq[B]):  LeftJoin[A, B] = new  LeftJoin[A, B](coll, that)
   def rightJoin[B](that: Seq[B]): RightJoin[A, B] = new RightJoin[A, B](coll, that)

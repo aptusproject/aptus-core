@@ -1,0 +1,65 @@
+package gallia
+package io
+
+import adaptor.GalliaAdaptor._
+import aptus.dyn.meta._
+
+import _root_.gallia.basic.UnparameterizedBasicType
+
+// ===========================================================================
+                        class CellConf() { import aptus._; import inferring.table.TypeGuessing
+
+  def transformBasicValue(tipe: BasicType)(value: String): AnyValue =
+    tipe match {
+//case _: BasicType._Enm           => BasicType._Enm.parseString(value)
+      case    BasicType._Boolean       => inferring.table.BooleanDetector.forceBoolean(value)
+      case x: UnparameterizedBasicType => x.parseString(value) }
+
+                          val nullValues     : Seq[String] = Seq("")
+                          val arraySeparators: Seq[String] = Seq(",")
+
+                          // ---------------------------------------------------------------------------
+                          def inferContainerOnly(value: String): Container =
+                              /**/ if (isNull (value)) Container._Opt
+                              else if (isArray(value)) Container._Nes
+                              else                     Container._One
+
+                          // ---------------------------------------------------------------------------
+                          def inferInfo(value: String): Info =
+                              /**/ if (isNull (value)) Info.nonUnion(_Optional, SubInfo(_Single,   BasicType._String))
+                              else if (isArray(value)) Info.nonUnion(_Required, SubInfo(_Multiple, arrayType(splitArray(value))))
+                              else                     Info.nonUnion(_Required, SubInfo(_Single,   TypeGuessing(value)))
+
+                              // ---------------------------------------------------------------------------
+                              private def arrayType(values: Seq[String]): BasicType =
+                                values
+                                  .map(TypeGuessing.apply)
+                                  .distinct
+                                  .pipe(BasicTypeUtils.combine)
+
+                            def valueSet(value: String): Set[String] =
+                              if (!isArray(value)) value.in.noneIf(isNull).toSet
+                              else                 value.in.noneIf(isNull).toSet.flatMap(splitArray)
+
+                            // ===========================================================================
+                            private val noNulls : Boolean = nullValues     .isEmpty
+                            private val noArrays: Boolean = arraySeparators.isEmpty
+
+                            // ---------------------------------------------------------------------------
+                            private val nullValueSet      : Set[String]    = nullValues.toSet
+                            private val soleArraySeparator: Option[String] = if (arraySeparators.size == 1) Some(arraySeparators.head) else None
+
+                            // ---------------------------------------------------------------------------
+                            /*   */ def isNull (value: String): Boolean = !noNulls  && nullValueSet.contains(value) /* no trimming intentionally */
+                            private def isArray(value: String): Boolean = !noArrays && arraySeparators.exists(value.contains)
+
+                            // ---------------------------------------------------------------------------
+                            def splitArray(value: String): Seq[String] =
+                              soleArraySeparator match {
+                                case Some(sep) => value.splitBy(sep)
+                                case None =>
+                                  arraySeparators.foldLeft(Seq(value)) { (curr, sep) =>
+                                    curr.flatMap(_.splitBy(sep)) } /* hopefully only one sep per value */ }
+  }
+
+// ===========================================================================

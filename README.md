@@ -25,16 +25,15 @@ package object someprojectpackage extends aptus.Minimal
 ```
 
 Alongside some ad hoc imports where needed:
-```
+```scala
 import aptus.Map_
 import aptus.OutputFilePath
 ...
 ```
 
 The library is available for Scala
-[3.4.0](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_3/0.7.0/jar),
-[2.13](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.13/0.7.0/jar), and 
-[2.12](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.12/0.7.0/jar)
+[3.4.0](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_3/0.7.0/jar) and
+[2.13](https://search.maven.org/artifact/io.github.aptusproject/aptus-core_2.13/0.7.0/jar)
 
 
 <!-- =========================================================================== -->
@@ -132,7 +131,11 @@ Which I argue is harder to read/write and less obvious to understand (albeit not
 #### In-line assertions
 <a name="211006113934"></a>
 
+Note: .ensuring from the stdlib does not offer a way to manipulate the value in the error message
+
 ```scala
+"hello".ensuring(_.size <= 5)                   .toUpperCase.p // prints "HELLO" - stdlib
+
 "hello".assert (_.size <= 5)                    .toUpperCase.p // prints "HELLO"
 "hello".assert (_.size <= 5, x => s"value=${x}").toUpperCase.p // prints "HELLO"    
 "hello".require(_.size <= 5)                    .toUpperCase.p // prints "HELLO"
@@ -149,9 +152,12 @@ Convenient for chaining, consider the pure stdlib alternative:
 
 ```scala
 {
-  val str = "hello"
-  assert(str.startsWith("h"))
-  println(str.toUpperCase)
+  import util.chaining._
+  
+  "hello"
+    .ensuring(_.startsWith("h"))
+    .toUpperCase
+    .pipe(println)
 }
 ```
 
@@ -183,6 +189,9 @@ E.g. for quick debugging:
 ```scala
 "hello". append(" you!")  .p // prints "hello you!"
 "hello".prepend("well, ") .p // prints "well, hello"
+
+"hello". appendedAll(" you!")  .p // prints "hello you!"  - stdlib
+"hello".prependedAll("well, ") .p // prints "well, hello" - stdlib
 
 "hello".colon             .p // prints "hello:"
 "hello".tab               .p // prints "hello<TAB>"
@@ -599,11 +608,9 @@ consider the pure stdlib alternative:
 Seq(1, 2, 3, 4, 5)
   .sliding(2)
   .map { x =>
-    assert(x.size == 2)
     (x(0), x(1)) }
   .toSeq
 ```
-
 
 <!-- =========================================================================== -->
 ### Closing resources

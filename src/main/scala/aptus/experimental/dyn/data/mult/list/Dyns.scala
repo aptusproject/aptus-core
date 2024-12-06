@@ -64,8 +64,10 @@ def doubles          : Seq[Double] = ???//  TODO: t241203151505 exoMap(_.double(
     override final def formatCompactJson: String = _root_.gallia.gson.BorrowedGsonTo.formatCompact(this)
     override final def  formatPrettyJson: String = _root_.gallia.gson.BorrowedGsonTo.formatPretty(this)
 
-    def formatTable: String = io.out.DynOut2.formatTable(this)(sep = "\t")
-      .joinln.newline /* TODO: stream */ }
+    //TODO: csv
+    def formatTsv  : String = io.out.DynOut2.formatTable(this)(sep = "\t")
+      .joinln.newline /* TODO: stream */
+    def formatTable: String = formatTsv }
 
   // ===========================================================================
   object Dyns

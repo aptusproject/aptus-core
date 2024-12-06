@@ -4,7 +4,7 @@
 # Aptus
 
 "Aptus" is latin for suitable, appropriate, fitting. It is a utility library meant to improve the Scala experience for simple tasks,
-when performance isn't most important. It also helps code defensively when representing errors in types isn't important (think `assert`).
+when performance isn't most important. It also helps you code defensively when representing errors in types isn't important (think `assert`).
 
 <!-- =========================================================================== -->
 ## SBT
@@ -42,24 +42,26 @@ The library is available for Scala
 
 <div style="text-align:center"><img src="./dependencies.png" alt="core dependency graph"></div>
 
+Note: _gson_ will soon be replaced with _ujson_
+
 <!-- =========================================================================== -->
 ## Motivation
 <a name="210531095628"></a>
 
 I created Aptus in bits over the past 10 years, as I struggled to get seemingly simple tasks done in Scala. It is not intended to be comprehensive, or particularly optimized.
 It should be seen more as a starting point for a project, where performance isn't most critical and compute resources aren't too limited.
-It can also serve as a reference, from which the basic use of underlying abstractions can be expanded as needed.
+It can also serve as a reference, from which the basic use of underlying abstractions can be expanded upon as needed.
 <a name="240306115815"></a>
 It's also for people who enjoy Scala's type system and think types shouldn't be thrown out the window (_hissing snake sound_), yet don't feel the need to capture every possible error as types.
-Consider for instance Li Haoyi's [Scala at Scale at Databricks](https://www.databricks.com/blog/2021/12/03/scala-at-scale-at-databricks.html), notably this passage:
+Consider for instance Li Haoyi's post ["Scala at Scale at Databricks"](https://www.databricks.com/blog/2021/12/03/scala-at-scale-at-databricks.html), notably this passage:
 
 > Zero usage of "archetypical" Scala frameworks: Play, Akka, Scalaz, Cats, ZIO, etc.
 
-This resonates well with aptus' goals. I like using some of the tools he mentions, but I also want to make sure I have a simpler solution at hand.
+This resonates well with aptus' goals. I like using some of the tools he mentions, but I also want to make sure I have simpler solutions at hand too.
 
 <a name="240306115820"></a>
-I included all the dependencies shown in the diagram above because I found that they were required for most non-trivial projects.
-For instance, what application nowadays do not need to handle JSON at some point?
+I included all the dependencies shown in the diagram above because I find that they are required for most non-trivial projects.
+For instance, what application nowadays does not need to handle JSON at some point?
 Or parse a CSV file? Or handle a bz2 file?
 
 <a name="240306115826"></a>
@@ -67,7 +69,7 @@ Note that Aptus is heavily used in my data transformation library: [Gallia](http
 
 ### Defensive coding
 
-Let's consider stdlib's Seq's `.zip` and `.toMap` method for instance. Both will silently discard elements in some situations, and this behavior will almost never be the desired one
+Let's consider stdlib's Seq's `.zip` and `.toMap` method for instance. Both will silently discard elements in some situations, and this behavior __will almost never be the desired/expected one__
 (if nothing because it may not be obvious to another maintainer).
 `.zip` for instance will truncate the longer sequence if they are not the same size.
 `.toMap` will discard entries with duplicate keys, keeping only the last one.
@@ -137,7 +139,7 @@ Note: .ensuring from the stdlib does not offer a way to manipulate the value in 
 "hello".ensuring(_.size <= 5)                   .toUpperCase.p // prints "HELLO" - stdlib
 
 "hello".assert (_.size <= 5)                    .toUpperCase.p // prints "HELLO"
-"hello".assert (_.size <= 5, x => s"value=${x}").toUpperCase.p // prints "HELLO"    
+"hello".assert (_.size <= 5, x => s"value=${x}").toUpperCase.p // prints "HELLO" - can't do that with `ensuring()`
 "hello".require(_.size <= 5)                    .toUpperCase.p // prints "HELLO"
 "hello".require(_.size <= 5, x => s"value=${x}").toUpperCase.p // prints "HELLO"
 
@@ -239,6 +241,8 @@ Note: see corresponding [tests](https://github.com/aptusproject/aptus-core/blob/
 
 For `Double`:
 ```
+3.1416     .maxDecimals   (2).p // 3.14 - still a Double (unlike formats below)
+
 3.1416     .formatDecimals(2).p // 3.14
 3.1416.exp .formatDecimals(4).p // 23.1409
 3.1416.log2.formatDecimals(4).p // 1.6515
@@ -362,11 +366,11 @@ But:
 <a name="211006113936"></a>
 
 ```scala
-Seq(1, 2)   .force.one      // error
-Seq(1, 2)   .force.option   // error
-Seq(1, 2, 1).force.distinct // error
-Seq(1, 2, 1).force.set      // error
-Seq(1, 2, 3).force.tuple2   // error
+Seq(1, 2)   .force.one      // runtime error
+Seq(1, 2)   .force.option   // runtime error
+Seq(1, 2, 1).force.distinct // runtime error
+Seq(1, 2, 1).force.set      // runtime error
+Seq(1, 2, 3).force.tuple2   // runtime error
 ... and so on
 ```
 
@@ -445,7 +449,7 @@ Seq(
 Most of the time, we want to zip collections of same size, and we want to code it defensively:
 ```scala
 Seq(1, 2, 3).zipSameSize(Seq(4, 5, 6)).p // Seq((1,4), (2,5), (3,6))
-Seq(1, 2, 3).zipSameSize(Seq(4, 5))   .p // error
+Seq(1, 2, 3).zipSameSize(Seq(4, 5))   .p // runtime error
 ```
 
 Ask yourselves: what are legitimate use cases where we zip two collections of different size and are perfectly happy to have the longuest silently truncated?
@@ -453,8 +457,8 @@ Ask yourselves: what are legitimate use cases where we zip two collections of di
 Other useful `zip`-related operations are:
 
 ```scala
-Seq("a", "b", "c").zipWithIsFirst.map { case (x, first) => if (first) ... else ... }
-Seq("a", "b", "c").zipWithIsLast .map { case (x, last ) => if (last)  ... else ... }
+Seq("a", "b", "c").zipWithIsFirst.map { case (x, first /* for "a" here */) => if (first) ... else ... }
+Seq("a", "b", "c").zipWithIsLast .map { case (x, last  /* for "c" here */) => if (last)  ... else ... }
 
 Seq("a", "b", "c").zipWithIndex.p // List((a,0), (b,1), (c,2))
 Seq("a", "b", "c").zipWithRank .p // List((a,1), (b,2), (c,3))
@@ -510,7 +514,7 @@ Most of the time, we do not want duplicates to be silently discarded:
 Seq(1 -> "a", 2 -> "b", 2 -> "c").toMap    .p // Map(1 -> "a", 2 -> "c")
 
 // likely not
-Seq(1 -> "a", 2 -> "b", 2 -> "c").force.map.p // error
+Seq(1 -> "a", 2 -> "b", 2 -> "c").force.map.p // runtime error
 Seq(1 -> "a", 2 -> "b")          .force.map.p // Map(1 -> "a", 2 -> "b")
 ```
 
@@ -519,9 +523,11 @@ Associate left/right:
 <a name="211005135616"></a><a name="associate-side"></a>
 
 ```scala
+Seq("foo", "bar")                                    .force.mapLeft(_.toUpperCase).p
 Seq("foo", "bar").map(_.associateLeft(_.toUpperCase)).force.map.p
   // returns: Map("FOO" -> "foo", "BAR" -> "bar")
 
+Seq("foo", "bar")                                    .force.mapRight(_.size).p
 Seq("foo", "bar").map(_.associateRight(_.size)).force.map.p
   // returns: Map("foo" -> 3, "bar" -> 3)
 ```
@@ -562,6 +568,8 @@ Seq("a", "b", "a", "c").countBySelf.p
 <!-- =========================================================================== -->
 ### Help with Tuples
 <a name="211006113939"></a>
+
+From `import aptus.Tuple{2,3,4,5}_`
 
 ```scala
 (1, 2).toSeq.p // Seq(1, 2)
@@ -627,17 +635,14 @@ Convenient for instance when you don't want to manage pairs of `Iterator/Closeab
 Seq("hello", "world").writeFileLines("/tmp/lines")
 
 // and stream them back
-val myCloseabled: Closeabled[Iterator[String]] =
-"/tmp/lines"
-  .streamFileLines()
-  .pipe(Closeabled.fromPair) // see scala.util.chaining for .pipe
+val myCloseabled: SelfClosingIterator[String] =
+  "/tmp/lines".streamFileLines()
 
 // for instance, we can consume the content (will automatically close)
 myCloseabled                   .consume(_.toList).p // as is
 <XOR>
 myCloseabled.map(_.map(_.size)).consume(_.toList).p // line pre-processing
 ```
-
 
 <!-- =========================================================================== -->
 ### Orphan methods

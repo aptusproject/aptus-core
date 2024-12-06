@@ -16,7 +16,7 @@ package object dyn
      /* no AptusMinExtensions (since already under aptus) */ {
 
   // ===========================================================================
-  trait HasTargetSelector { @abstrct protected def uber: TargetSelector }
+  trait HasTargetSelector { @abstrct protected def target: TargetSelector }
 
   // ---------------------------------------------------------------------------
   trait ValewGetter {

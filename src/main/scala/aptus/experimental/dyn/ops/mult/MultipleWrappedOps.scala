@@ -16,7 +16,7 @@ trait MultipleWrappedOps[Mult]
 
   // TODO: t241127134106 - macros for boilerplate (eg wrapped ops)
 
-  protected[dyn] final override def transformTargetSelector(uber: TargetSelector, f: ValueF): Mult = endoMap   (_.transformTargetSelector        (uber, f))
+  protected[dyn] final override def transformTargetSelector(target: TargetSelector, f: ValueF): Mult = endoMap(_.transformTargetSelector(target, f))
 
   // ===========================================================================
   final override def ensurePresent(key1: Key, more: Key*): Mult = endoMap(_.ensurePresent(key1, more: _*))

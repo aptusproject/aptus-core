@@ -9,15 +9,15 @@ trait DynTransformImpl
         dyn: Dyn =>
 
     // ---------------------------------------------------------------------------
-    protected[dyn] final override def transformTargetSelector(uber: TargetSelector, valueF: ValueF): Dyn =
-      DynTransformImpl(dyn)(uber, valueF) }
+    protected[dyn] final override def transformTargetSelector(target: TargetSelector, valueF: ValueF): Dyn =
+      DynTransformImpl(dyn)(target, valueF) }
 
   // ===========================================================================
   object DynTransformImpl { import TargetSelector._
 
     // ---------------------------------------------------------------------------
-    @inline private def apply(self: Dyn)(uber: TargetSelector, valueF: ValueF): Dyn =
-      uber match {
+    @inline private def apply(self: Dyn)(target: TargetSelector, valueF: ValueF): Dyn =
+      target match {
         case Explicit      (targetKey, guaranteed) => transform(self)(valueF, guaranteed)(_ => targetKey.name.in.seq, renamings = Map.empty)
         case Predicate     (p, guaranteed)         => transform(self)(valueF, guaranteed)(_.filter(p),                renamings = Map.empty)
         case SelectOne     (f, guaranteed)         => transform(self)(valueF, guaranteed)(_.pipe(f).in.seq,           renamings = Map.empty)

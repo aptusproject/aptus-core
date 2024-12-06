@@ -95,18 +95,18 @@ object CanNotForceKey extends ErrorCompanion(id = "E241126104802", stateError = 
 
     // ---------------------------------------------------------------------------
     object TransformSpecificType extends ErrorCompanion(id = "E241122144221") {
-        def throwIntegerLike       (deef: DEEF, uber: TargetSelector, valew: Valew): Nothing = TransformSpecificType(deef, uber, IntegerLike, valew).thro
-        def throwRealLike          (deef: DEEF, uber: TargetSelector, valew: Valew): Nothing = TransformSpecificType(deef, uber, RealLike   , valew).thro
+        def throwIntegerLike       (deef: DEEF, target: TargetSelector, valew: Valew): Nothing = TransformSpecificType(deef, target, IntegerLike, valew).thro
+        def throwRealLike          (deef: DEEF, target: TargetSelector, valew: Valew): Nothing = TransformSpecificType(deef, target, RealLike   , valew).thro
 
         // ---------------------------------------------------------------------------
-        def throwBasicType(deef: DEEF, uber: TS, valew: Valew)(basicType: BasicType.type => BasicType): Nothing =
-          TransformSpecificType(deef, uber, basicType(BasicType), valew).thro }
+        def throwBasicType(deef: DEEF, target: TS, valew: Valew)(basicType: BasicType.type => BasicType): Nothing =
+          TransformSpecificType(deef, target, basicType(BasicType), valew).thro }
       case class TransformSpecificType(
-          deef: DataEntityErrorFormatter, uber: TargetSelector,
+          deef: DataEntityErrorFormatter, target: TargetSelector,
           superType: SuperType,
           value: Valew = Valew.build("TODO:241126150248"))
         extends ErrorData { val companion = TransformSpecificType
           val msg: String =
-            s"target \"${uber.formatDefault}\" not a ${superType.formatErrorMessageString}:\n\t\t${deef.formatErrorEntity}" } }
+            s"target \"${target.formatDefault}\" not a ${superType.formatErrorMessageString}:\n\t\t${deef.formatErrorEntity}" } }
 
 // ===========================================================================

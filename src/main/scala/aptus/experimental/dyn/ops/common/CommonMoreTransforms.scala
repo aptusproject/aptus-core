@@ -48,17 +48,17 @@ trait CommonMoreTransforms[Data] {
 // TODO: if IntLike...?
 
   // ===========================================================================
-  @nonovrd final def transformIntegerLike[T](uber: TargetSelector)(f: IntegerLike[_] => T): Data = _transformIntegerLike[T](uber: TargetSelector)(f)
-  @nonovrd final def transformRealLike   [T](uber: TargetSelector)(f:    RealLike[_] => T): Data = _transformRealLike   [T](uber: TargetSelector)(f)
+  @nonovrd final def transformIntegerLike[T](target: TargetSelector)(f: IntegerLike[_] => T): Data = _transformIntegerLike[T](target: TargetSelector)(f)
+  @nonovrd final def transformRealLike   [T](target: TargetSelector)(f:    RealLike[_] => T): Data = _transformRealLike   [T](target: TargetSelector)(f)
 
     // ---------------------------------------------------------------------------
-    @inline private def _transformIntegerLike[T](uber: TargetSelector)(f: IntegerLike[_] => T): Data =
-      transform(uber).using { valew => valew.integerLikeOpt.map(f).getOrElse {
-        TransformSpecificType(deef, uber, IntegerLike).thro /* including Double/Float - see a241125115501 */ } }
+    @inline private def _transformIntegerLike[T](target: TargetSelector)(f: IntegerLike[_] => T): Data =
+      transform(target).using { valew => valew.integerLikeOpt.map(f).getOrElse {
+        TransformSpecificType(deef, target, IntegerLike).thro /* including Double/Float - see a241125115501 */ } }
 
-    @inline private def _transformRealLike[T](uber: TargetSelector)(f: RealLike[_] => T): Data =
-      transform(uber).using { valew => valew.realLikeOpt.map(f).getOrElse {
-        TransformSpecificType(deef, uber, RealLike).thro } }
+    @inline private def _transformRealLike[T](target: TargetSelector)(f: RealLike[_] => T): Data =
+      transform(target).using { valew => valew.realLikeOpt.map(f).getOrElse {
+        TransformSpecificType(deef, target, RealLike).thro } }
 
   // ===========================================================================
 //def transformIfType2(basicType: BasicType.type => BasicType)(key: Key)(f: basicType.T => NakedValue): Data = ???//-- can't becuase of basicType.T

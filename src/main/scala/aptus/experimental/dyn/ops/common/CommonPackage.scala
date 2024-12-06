@@ -9,7 +9,7 @@ package object common {
 
   trait CommonHasTransformTargetSelectorTrait[Data] {
     // most important transformation, most actions use that
-    @abstrct protected[dyn] def transformTargetSelector(uber: TargetSelector, f: ValueF): Data }
+    @abstrct protected[dyn] def transformTargetSelector(target: TargetSelector, f: ValueF): Data }
 
   // ===========================================================================
   trait HasIdent[Data] {

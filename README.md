@@ -1,4 +1,4 @@
-<p align="center"><img src="./images/logo.png" alt="icon"></p>
+<p align="center"><img src="./images/logo.png" alt="icon" style="height: 25%; width: 25%;"></p>
 
 <!-- =========================================================================== -->
 # Aptus

@@ -5,11 +5,11 @@ import com.google.gson._
 import aptus.experimental.dyn._
 import aptus.{JsonArrayString, JsonObjectString}
 import data.sngl.DynData
-import adaptor.GalliaScalaAliases._
+//import adaptor.GalliaScalaAliases._
 import org.apache.commons.math3.linear.RealMatrix
 
 // ===========================================================================
-/*private[dyn] */object BorrowedGsonTo { // TODO: t214360121145 - switch from gson to lihaoyi's ujson
+/*private[dyn] */object ObjToGson { // TODO: t214360121145 - switch from gson to lihaoyi's ujson
   private lazy val Gson = new GsonBuilder().create()
 
   // ===========================================================================

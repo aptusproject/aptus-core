@@ -3,7 +3,7 @@ package experimental
 package dyn
 package accessors
 
-import aptus.experimental.dyn.domain._
+import domain._
 
 // ===========================================================================
 private[dyn] trait ValewComplexAccessors { self: Valew =>
@@ -41,20 +41,20 @@ private[dyn] trait ValewComplexAccessors { self: Valew =>
   // ===========================================================================
   // codegened (see 241202212207)
 
-  def   stringOpt: Option[String       ] = naked match { case x: String        => Some(x); case _ => None }
-  def  booleanOpt: Option[Boolean      ] = naked match { case x: Boolean       => Some(x); case _ => None }
-  def      intOpt: Option[Int          ] = naked match { case x: Int           => Some(x); case _ => None }
-  def   doubleOpt: Option[Double       ] = naked match { case x: Double        => Some(x); case _ => None }
-  def     byteOpt: Option[Byte         ] = naked match { case x: Byte          => Some(x); case _ => None }
-  def    shortOpt: Option[Short        ] = naked match { case x: Short         => Some(x); case _ => None }
-  def     longOpt: Option[Long         ] = naked match { case x: Long          => Some(x); case _ => None }
-  def    floatOpt: Option[Float        ] = naked match { case x: Float         => Some(x); case _ => None }
-  def   bigIntOpt: Option[BigInt       ] = naked match { case x: BigInt        => Some(x); case _ => None }
-  def   bigDecOpt: Option[BigDecimal   ] = naked match { case x: BigDecimal    => Some(x); case _ => None }
-  def     dateOpt: Option[LocalDate    ] = naked match { case x: LocalDate     => Some(x); case _ => None }
-  def dateTimeOpt: Option[LocalDateTime] = naked match { case x: LocalDateTime => Some(x); case _ => None }
-  def  instantOpt: Option[Instant      ] = naked match { case x: Instant       => Some(x); case _ => None }
-  def   binaryOpt: Option[ByteBuffer   ] = naked match { case x: ByteBuffer    => Some(x); case _ => None }
+  @nonovrd final def   stringOpt: Option[String       ] = naked match { case x: String        => Some(x); case _ => None }
+  @nonovrd final def  booleanOpt: Option[Boolean      ] = naked match { case x: Boolean       => Some(x); case _ => None }
+  @nonovrd final def      intOpt: Option[Int          ] = naked match { case x: Int           => Some(x); case _ => None }
+  @nonovrd final def   doubleOpt: Option[Double       ] = naked match { case x: Double        => Some(x); case _ => None }
+  @nonovrd final def     byteOpt: Option[Byte         ] = naked match { case x: Byte          => Some(x); case _ => None }
+  @nonovrd final def    shortOpt: Option[Short        ] = naked match { case x: Short         => Some(x); case _ => None }
+  @nonovrd final def     longOpt: Option[Long         ] = naked match { case x: Long          => Some(x); case _ => None }
+  @nonovrd final def    floatOpt: Option[Float        ] = naked match { case x: Float         => Some(x); case _ => None }
+  @nonovrd final def   bigIntOpt: Option[BigInt       ] = naked match { case x: BigInt        => Some(x); case _ => None }
+  @nonovrd final def   bigDecOpt: Option[BigDec       ] = naked match { case x: BigDec        => Some(x); case _ => None }
+  @nonovrd final def     dateOpt: Option[Date         ] = naked match { case x: Date          => Some(x); case _ => None }
+  @nonovrd final def dateTimeOpt: Option[DateTime     ] = naked match { case x: DateTime      => Some(x); case _ => None }
+  @nonovrd final def  instantOpt: Option[Instant      ] = naked match { case x: Instant       => Some(x); case _ => None }
+  @nonovrd final def   binaryOpt: Option[ByteBuffer   ] = naked match { case x: ByteBuffer    => Some(x); case _ => None }
 
   // ===========================================================================
   // codegened (see 241202211928)
@@ -89,15 +89,14 @@ private[dyn] trait ValewComplexAccessors { self: Valew =>
       case _: Float         => Some(BasicType._Float)
 
       case _: BigInt        => Some(BasicType._BigInt)
-      case _: BigDecimal    => Some(BasicType._BigDec)
+      case _: BigDec        => Some(BasicType._BigDec)
 
-      case _: LocalDate     => Some(BasicType._Date)
-      case _: LocalDateTime => Some(BasicType._DateTime)
+      case _: Date          => Some(BasicType._Date)
+      case _: DateTime      => Some(BasicType._DateTime)
       case _: Instant       => Some(BasicType._Instant)
 
       case _: ByteBuffer    => Some(BasicType._Binary)
 
-      // ---------------------------------------------------------------------------
       case _                 => None } }
 
 // ===========================================================================

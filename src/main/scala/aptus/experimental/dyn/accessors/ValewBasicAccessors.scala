@@ -3,8 +3,6 @@ package experimental
 package dyn
 package accessors
 
-import util.Try
-
 // ===========================================================================
 private[dyn] trait ValewBasicAccessors { val naked: NakedValue
   import Error.{AccessAsSpecificType => e}
@@ -15,8 +13,6 @@ private[dyn] trait ValewBasicAccessors { val naked: NakedValue
   def doubless : Seq2D[Double]  = naked.asInstanceOf[Seq[Seq[Double]]]
   def stringss : Seq2D[String]  = naked.asInstanceOf[Seq[Seq[String]]]
   //TODO: codegen the rest
-
-  def realMatrixCommons: RealMatrixCommons = naked.asInstanceOf[RealMatrixCommons]
 
   // ===========================================================================
   // x = independent of multiplicity (0, 1, 2, .. dimensions)
@@ -42,100 +38,54 @@ private[dyn] trait ValewBasicAccessors { val naked: NakedValue
   // ===========================================================================
   // codegened (see 241121238316)
 
+  def string    : One[String    ] = naked match { case x: String     => x; case _ => e.throwString(naked) }
+  def boolean   : One[Boolean   ] = naked match { case x: Boolean    => x; case _ => e.throwString(naked) }
+  def int       : One[Int       ] = naked match { case x: Int        => x; case _ => e.throwString(naked) }
+  def double    : One[Double    ] = naked match { case x: Double     => x; case _ => e.throwString(naked) }
 
-  def string           : One[String] = naked match { case x: String => x; case _ => e.throwString(naked) }
-  def boolean           = naked.asInstanceOf[One[Boolean       ]]
-  def int               = naked.asInstanceOf[One[Int           ]]
-  def double            = naked.asInstanceOf[One[Double        ]]
+  def byte      : One[Byte      ] = naked match { case x: Byte       => x; case _ => e.throwString(naked) }
+  def short     : One[Short     ] = naked match { case x: Short      => x; case _ => e.throwString(naked) }
+  def long      : One[Long      ] = naked match { case x: Long       => x; case _ => e.throwString(naked) }
+  def float     : One[Float     ] = naked match { case x: Float      => x; case _ => e.throwString(naked) }
 
-  def byte              = naked.asInstanceOf[One[Byte          ]]
-  def short             = naked.asInstanceOf[One[Short         ]]
-  def long              = naked.asInstanceOf[One[Long          ]]
-  def float             = naked.asInstanceOf[One[Float         ]]
+  def bigInt    : One[BigInt    ] = naked match { case x: BigInt     => x; case _ => e.throwString(naked) }
+  def bigDec    : One[BigDec    ] = naked match { case x: BigDec     => x; case _ => e.throwString(naked) }
 
-  def bigInt            = naked.asInstanceOf[One[BigInt        ]]
-  def bigDecimal        = naked.asInstanceOf[One[BigDecimal    ]]
+  def date      : One[Date      ] = naked match { case x: Date       => x; case _ => e.throwString(naked) }
+  def dateTime  : One[DateTime  ] = naked match { case x: DateTime   => x; case _ => e.throwString(naked) }
+  def instant   : One[Instant   ] = naked match { case x: Instant    => x; case _ => e.throwString(naked) }
 
-  def localDate         = naked.asInstanceOf[One[LocalDate     ]]
-  def localTime         = naked.asInstanceOf[One[LocalTime     ]]
-  def localDateTime     = naked.asInstanceOf[One[LocalDateTime ]]
-  def offsetDateTime    = naked.asInstanceOf[One[OffsetDateTime]]
-  def zonedDateTime     = naked.asInstanceOf[One[ZonedDateTime ]]
-  def instant           = naked.asInstanceOf[One[Instant       ]]
-
-  def byteBuffer        = naked.asInstanceOf[One[ByteBuffer    ]]
+  def byteBuffer: One[ByteBuffer] = naked match { case x: ByteBuffer => x; case _ => e.throwString(naked) }
 
   // ---------------------------------------------------------------------------
-  //def strings           : Nes[String] = naked match { case x: Seq[String] => x; case _ => E.throwString(naked) }
+  def strings    : Seq[String    ] = _multiple.map { case x: String     => x; case _ => e.throwString(naked) }
+  def booleans   : Seq[Boolean   ] = _multiple.map { case x: Boolean    => x; case _ => e.throwString(naked) }
+  def ints       : Seq[Int       ] = _multiple.map { case x: Int        => x; case _ => e.throwString(naked) }
+  def doubles    : Seq[Double    ] = _multiple.map { case x: Double     => x; case _ => e.throwString(naked) }
 
+  def bytes      : Seq[Byte      ] = _multiple.map { case x: Byte       => x; case _ => e.throwString(naked) }
+  def shorts     : Seq[Short     ] = _multiple.map { case x: Short      => x; case _ => e.throwString(naked) }
+  def longs      : Seq[Long      ] = _multiple.map { case x: Long       => x; case _ => e.throwString(naked) }
+  def floats     : Seq[Float     ] = _multiple.map { case x: Float      => x; case _ => e.throwString(naked) }
 
-// FIXME in codegen
-def strings           = Try { naked.asInstanceOf[Seq[String        ]] }.getOrElse(e.throwString(naked))
-  def booleans          = naked.asInstanceOf[Seq[Boolean       ]]
-  def ints              = naked.asInstanceOf[Seq[Int           ]]
-  def doubles           = naked.asInstanceOf[Seq[Double        ]]
+  def bigInts    : Seq[BigInt    ] = _multiple.map { case x: BigInt     => x; case _ => e.throwString(naked) }
+  def bigDecs    : Seq[BigDec    ] = _multiple.map { case x: BigDec     => x; case _ => e.throwString(naked) }
 
-  def bytes             = naked.asInstanceOf[Seq[Byte          ]]
-  def shorts            = naked.asInstanceOf[Seq[Short         ]]
-  def longs             = naked.asInstanceOf[Seq[Long          ]]
-  def floats            = naked.asInstanceOf[Seq[Float         ]]
+  def dates      : Seq[Date      ] = _multiple.map { case x: Date       => x; case _ => e.throwString(naked) }
+  def dateTimes  : Seq[DateTime  ] = _multiple.map { case x: DateTime   => x; case _ => e.throwString(naked) }
+  def instants   : Seq[Instant   ] = _multiple.map { case x: Instant    => x; case _ => e.throwString(naked) }
 
-  def bigInts           = naked.asInstanceOf[Seq[BigInt        ]]
-  def bigDecimals       = naked.asInstanceOf[Seq[BigDecimal    ]]
-
-  def localDates        = naked.asInstanceOf[Seq[LocalDate     ]]
-  def localTimes        = naked.asInstanceOf[Seq[LocalTime     ]]
-  def localDateTimes    = naked.asInstanceOf[Seq[LocalDateTime ]]
-  def offsetDateTimes   = naked.asInstanceOf[Seq[OffsetDateTime]]
-  def zonedDateTimes    = naked.asInstanceOf[Seq[ZonedDateTime ]]
-  def instants          = naked.asInstanceOf[Seq[Instant       ]]
-
-  def byteBuffers       = naked.asInstanceOf[Seq[ByteBuffer    ]]
+  def byteBuffers: Seq[ByteBuffer] = _multiple.map { case x: ByteBuffer => x; case _ => e.throwString(naked) }
 
   // ---------------------------------------------------------------------------
-  def string_           = naked.asInstanceOf[Opt[String        ]]
-  def boolean_          = naked.asInstanceOf[Opt[Boolean       ]]
-  def int_              = naked.asInstanceOf[Opt[Int           ]]
-  def double_           = naked.asInstanceOf[Opt[Double        ]]
+  private def _multiple: Seq[Any] = naked match { case x: Seq[_] => x; case _ => e.throwString(naked) }
 
-  def byte_             = naked.asInstanceOf[Opt[Byte          ]]
-  def short_            = naked.asInstanceOf[Opt[Short         ]]
-  def long_             = naked.asInstanceOf[Opt[Long          ]]
-  def float_            = naked.asInstanceOf[Opt[Float         ]]
+  // ===========================================================================
+  def matrix = naked.asInstanceOf[org.apache.commons.math3.linear.RealMatrix]
+//def realMatrixCommons: RealMatrixCommons = naked.asInstanceOf[RealMatrixCommons]
 
-  def bigInt_           = naked.asInstanceOf[Opt[BigInt        ]]
-  def bigDecimal_       = naked.asInstanceOf[Opt[BigDecimal    ]]
+  def text           : One[String] = naked.toString
 
-  def localDate_        = naked.asInstanceOf[Opt[LocalDate     ]]
-  def localTime_        = naked.asInstanceOf[Opt[LocalTime     ]]
-  def localDateTime_    = naked.asInstanceOf[Opt[LocalDateTime ]]
-  def offsetDateTime_   = naked.asInstanceOf[Opt[OffsetDateTime]]
-  def zonedDateTime_    = naked.asInstanceOf[Opt[ZonedDateTime ]]
-  def instant_          = naked.asInstanceOf[Opt[Instant       ]]
-
-  def byteBuffer_       = naked.asInstanceOf[Opt[ByteBuffer    ]]
-
-  // ---------------------------------------------------------------------------
-  def strings_          = naked.asInstanceOf[Pes[String        ]]
-  def booleans_         = naked.asInstanceOf[Pes[Boolean       ]]
-  def ints_             = naked.asInstanceOf[Pes[Int           ]]
-  def doubles_          = naked.asInstanceOf[Pes[Double        ]]
-
-  def bytes_            = naked.asInstanceOf[Pes[Byte          ]]
-  def shorts_           = naked.asInstanceOf[Pes[Short         ]]
-  def longs_            = naked.asInstanceOf[Pes[Long          ]]
-  def floats_           = naked.asInstanceOf[Pes[Float         ]]
-
-  def bigInts_          = naked.asInstanceOf[Pes[BigInt        ]]
-  def bigDecimals_      = naked.asInstanceOf[Pes[BigDecimal    ]]
-
-  def localDates_       = naked.asInstanceOf[Pes[LocalDate     ]]
-  def localTimes_       = naked.asInstanceOf[Pes[LocalTime     ]]
-  def localDateTimes_   = naked.asInstanceOf[Pes[LocalDateTime ]]
-  def offsetDateTimes_  = naked.asInstanceOf[Pes[OffsetDateTime]]
-  def zonedDateTimes_   = naked.asInstanceOf[Pes[ZonedDateTime ]]
-  def instants_         = naked.asInstanceOf[Pes[Instant       ]]
-
-  def byteBuffers_      = naked.asInstanceOf[Pes[ByteBuffer    ]] }
+}
 
 // ===========================================================================

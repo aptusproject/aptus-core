@@ -1,7 +1,6 @@
 package aptus
-package experimental
-package dyn
-package domain
+package aptdata
+package meta
 package selectors
 
 // ===========================================================================
@@ -18,7 +17,8 @@ case class Ren(from: Key, to: Key)
 
 // ===========================================================================
 /** renamings */
-case class Rens(values: Seq[Ren]) extends Items[Rens, Ren] {
+case class Rens(values: Seq[Ren])
+    extends aptitems.Items[Rens, Ren] {
   final override val const = Rens.apply
 
   // ---------------------------------------------------------------------------

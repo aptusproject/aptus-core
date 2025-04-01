@@ -1,7 +1,6 @@
 package aptus
-package experimental
-package dyn
-package domain
+package aptdata
+package meta
 package selectors
 
 // ===========================================================================
@@ -34,7 +33,8 @@ case class Path(parent: Seq[Key], key: Key) // t241205112955 - do offer a Path+R
 
 // ===========================================================================
 /** nestings */
-case class Paths(values: Seq[Path]) extends Items[Paths, Path] {
+case class Paths(values: Seq[Path])
+    extends aptitems.Items[Paths, Path] {
   // TODO: requires
 
   // ---------------------------------------------------------------------------

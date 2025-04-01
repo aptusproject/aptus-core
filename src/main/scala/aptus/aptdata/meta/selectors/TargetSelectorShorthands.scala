@@ -1,7 +1,6 @@
 package aptus
-package experimental
-package dyn
-package domain
+package aptdata
+package meta
 package selectors
 
 // ===========================================================================

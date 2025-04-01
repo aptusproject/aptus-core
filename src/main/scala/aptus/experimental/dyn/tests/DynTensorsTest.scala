@@ -51,6 +51,8 @@ object DynTensorsTest {
     // ---------------------------------------------------------------------------
     dyn(matrix ->   m3x2).formatCompactJson         .check(s"""{"$matrix":[[1.1,2.2],[3.3,4.4],[5.5,6.6]]}""")
     dyn(matrix ->  _m3x2).formatCompactJson         .check(s"""{"$matrix":[[1.1,2.2],[3.3,4.4],[5.5,6.6]]}""")
+    dyn(matrix ->  _m3x2).transform(matrix).using(_.matrix.doubless)
+                         .formatCompactJson         .check(s"""{"$matrix":[[1.1,2.2],[3.3,4.4],[5.5,6.6]]}""")
 
     dyn(matrix ->   m2x3).formatCompactJson         .check(s"""{"$matrix":[["a","b","c"],["d","e","f"]]}""")
     dyn(tensor -> tex2x4).formatCompactJson.take(50).check(s"""{"$tensor":[[[0.111,0.112,0.113,0.114],[0.121,0.122""")
@@ -78,7 +80,7 @@ object DynTensorsTest {
     // ---------------------------------------------------------------------------
     dyn(matrix -> _matrix((1.1, 2.2), (3.3, 4.4)))
       .transform(matrix).using { _.doubless.toRealMatrixCommons }
-      .transform(matrix).using { _.realMatrixCommons.inverse }
+      .transform(matrix).using { _.matrix.inverse }
       .realMatrixCommons(matrix)
       .checkMatrix(maxDecimals = 2,
         (-1.82, 0.91), (1.36, -0.45))

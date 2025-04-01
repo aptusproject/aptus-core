@@ -46,16 +46,16 @@ object DynTransformDerivedTest {
       // far more likely to be unintended (eg from reading from JSON and meant to be an Int)
       .check(TransformSpecificType, IntegerLike)
 
-    _Sngl1 .convert(baz).toLong.transformIntegerLike(domain.selectors.TargetSelectorShorthands.explicitKey(baz))(_ + 1).check(_Sngl1b)
+    _Sngl1 .convert(baz).toLong.transformIntegerLike(selectors.TargetSelectorShorthands.explicitKey(baz))(_ + 1).check(_Sngl1b)
 
     Try {
-_Sngl1 .convert(baz).toDouble.transformIntegerLike(domain.selectors.TargetSelectorShorthands.explicitKey(baz))(_ + 1) }  .check(TransformSpecificType, IntegerLike)
+_Sngl1 .convert(baz).toDouble.transformIntegerLike(selectors.TargetSelectorShorthands.explicitKey(baz))(_ + 1) }  .check(TransformSpecificType, IntegerLike)
 
-    _Sngl1b.convert(baz).toLong.transformIntegerLike(domain.selectors.TargetSelectorShorthands.explicitKey(baz))(_ * 2)  .check(dyn(foo -> bar, baz -> 4))
-    _Sngl1b.convert(baz).toLong.transformIntegerLike(domain.selectors.TargetSelectorShorthands.explicitKey(baz))(_ / 2)  .check(dyn(foo -> bar, baz -> 1))
+    _Sngl1b.convert(baz).toLong.transformIntegerLike(selectors.TargetSelectorShorthands.explicitKey(baz))(_ * 2)  .check(dyn(foo -> bar, baz -> 4))
+    _Sngl1b.convert(baz).toLong.transformIntegerLike(selectors.TargetSelectorShorthands.explicitKey(baz))(_ / 2)  .check(dyn(foo -> bar, baz -> 1))
     Try {
-    _Sngl1b.convert(baz).toLong.transformIntegerLike(domain.selectors.TargetSelectorShorthands.explicitKey(baz))(_ / 3) }.check(AccessAsSpecificType, _Int)
-    _Sngl1b.convert(baz).toLong.transformIntegerLike(domain.selectors.TargetSelectorShorthands.explicitKey(baz))(_ / 2.0).check(dyn(foo -> bar, baz -> 1.0))
+    _Sngl1b.convert(baz).toLong.transformIntegerLike(selectors.TargetSelectorShorthands.explicitKey(baz))(_ / 3) }.check(AccessAsSpecificType, _Int)
+    _Sngl1b.convert(baz).toLong.transformIntegerLike(selectors.TargetSelectorShorthands.explicitKey(baz))(_ / 2.0).check(dyn(foo -> bar, baz -> 1.0))
 
     Try { _Sngl1.increment(foo).check(_Sngl1) }.check(TransformSpecificType, IntegerLike)
 

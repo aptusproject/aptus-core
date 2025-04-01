@@ -39,10 +39,10 @@ object DynSelectorsTests {
     _Sngl1.transform($m(_.filter(_ == baz)))    .using(f1).check(_Sngl1b)
 
     // ---------------------------------------------------------------------------
-    _Sngl1.transform(domain.selectors.TargetSelector.Explicit      (              baz))     .using(f1).check(_Sngl1b)
-    _Sngl1.transform(domain.selectors.TargetSelector.Predicate     (         _ == baz))     .using(f1).check(_Sngl1b)
-    _Sngl1.transform(domain.selectors.TargetSelector.SelectOne     (_.find  (_ == baz).get)).using(f1).check(_Sngl1b)
-    _Sngl1.transform(domain.selectors.TargetSelector.SelectMultiple(_.filter(_ == baz)))    .using(f1).check(_Sngl1b)
+    _Sngl1.transform(selectors.TargetSelector.Explicit      (              baz))     .using(f1).check(_Sngl1b)
+    _Sngl1.transform(selectors.TargetSelector.Predicate     (         _ == baz))     .using(f1).check(_Sngl1b)
+    _Sngl1.transform(selectors.TargetSelector.SelectOne     (_.find  (_ == baz).get)).using(f1).check(_Sngl1b)
+    _Sngl1.transform(selectors.TargetSelector.SelectMultiple(_.filter(_ == baz)))    .using(f1).check(_Sngl1b)
 
     // ===========================================================================
     _Sngl1.transform          (baz).using(f1).check(_Sngl1b)

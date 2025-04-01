@@ -2,8 +2,6 @@ package aptus
 package experimental
 package dyntest
 
-import util.chaining._
-
 // ===========================================================================
 object DynTestUtils {
 

@@ -19,17 +19,17 @@ object DynUberTests {
     mult.DynzTest()
     mult.DynMultipleWrappingTest()
     mult.DynsGroupingTest()
-    mult.DynMultipleTest()
+    mult.DynMultipleTest ()
 
     DynSelectorsTests() /* eg transform(_.soleKey).using(...) */
-    DynAccessorsTest()
+    DynAccessorsTest ()
     DynNestingTest()
     DynTensorsTest()
 
     // ---------------------------------------------------------------------------
-    DynVeryBasicTest()
+    DynVeryBasicTest ()
     DynTransformsTest()
-    DynTransformDerivedTest()
+    DynTransformDerivedTest ()
     DynHeterogenousTypesTest()
     DynMoreTests()
 

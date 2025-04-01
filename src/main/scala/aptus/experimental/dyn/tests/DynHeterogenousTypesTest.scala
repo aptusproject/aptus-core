@@ -5,8 +5,7 @@ package dyntest
 // ===========================================================================
 object DynHeterogenousTypesTest {
   import dyn._
-  import Dyn .dyn
-  import Dyns.dyns
+  import Dyn.dyn
 
   // ===========================================================================
   def main(args: Array[String]): Unit = { apply(); msg(getClass).p }
@@ -35,6 +34,8 @@ object DynHeterogenousTypesTest {
 
       Try { in.transformGuaranteed(qux).using(identity) }.check(Error.TransformGuaranteeFailure)
       Try { in.transformGuaranteed(foo).using(_.string) }.check(Error.AccessAsSpecificType)
+
+      Try { in.transformType(BasicType._String)(foo)(f) }.check(Error.TransformSpecificType)
 
       forAll(in, out = expected)(
           _.transform(foo).ifString(f),

@@ -54,7 +54,7 @@ assert(1 == xy)
     // r241119153446
     (   !(Some(1): Option[Int]).isInstanceOf[Iterable[_]] &&
          (Some(1): Option[Int]).isInstanceOf[IterableOnce[_]])
-      .checkTrue
+      .checkTrue()
 
     // ---------------------------------------------------------------------------
     // allowed...

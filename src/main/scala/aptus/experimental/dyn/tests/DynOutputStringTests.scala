@@ -44,7 +44,7 @@ object DynOutputStringTests {
     _Mult1
       .increment(baz)
       .formatPrettyJson
-      .check(expected2) }
+      .check(expected2)
 
     // ===========================================================================
     // custom formatter
@@ -54,13 +54,13 @@ object DynOutputStringTests {
 
     // ---------------------------------------------------------------------------
     // TODO: t241205093939 - simplify
-    _root_.gallia.gson.customJsonFormatters +
+    data.json.customJsonFormatters +
         (classOf[java.nio.file.Path] ->
-          new _root_.gallia.gson.CustomJsonFormatter {
+          new data.json.CustomJsonFormatter {
             def format(value: Any): String =
               value.asInstanceOf[java.nio.file.Path].toFile.getAbsolutePath })
 
       dyn(foo -> bar, qux -> java.nio.file.Paths.get("/my/path")).formatCompactJson
-        .check("""{"foo":"bar","qux":"/my/path"}""") }
+        .check("""{"foo":"bar","qux":"/my/path"}""") } }
 
 // ===========================================================================

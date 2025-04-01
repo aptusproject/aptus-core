@@ -44,7 +44,7 @@ object DynOutputTableStringsTests {
     _Multiple01.dynz.append(dyn(foo -> "bar3")).formatTable(foo, baz)(_.missingValue("NA")).check(
       Header.newline(Rows12).newline(Row3).newline)
 
-    _Multiple01.dynz.formatRows(foo, baz)(_.missingValue("NA")).consumeAll.joinln.newline.check(HeaderRows12nl)
+    _Multiple01.dynz.formatRows(foo, baz)(_.missingValue("NA")).consumeAll().joinln.newline.check(HeaderRows12nl)
 
     // ===========================================================================
     _Multiple01.dynz.formatTableLike.check(Rows12.newline)

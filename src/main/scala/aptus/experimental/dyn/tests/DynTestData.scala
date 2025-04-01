@@ -48,6 +48,8 @@ trait DynTestData {
   val _Sngl1s = dyn(foo -> bar, baz -> "1")
   val _Sngl1r  = dyn(foo -> bar, baz -> 1.0)
 
+  val _Sngl1z  = dyn(foo -> List(bar1, bar2), baz -> 1.0)
+
   val _Sngl1x1  = dyn(foo -> bar1, baz ->  1)
   val _Sngl1x1s = dyn(foo -> bar1, baz -> "1")
   val _Sngl1x2  = dyn(foo -> bar2, baz ->  2)

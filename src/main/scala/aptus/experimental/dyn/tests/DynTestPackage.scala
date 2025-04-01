@@ -3,8 +3,9 @@ package experimental
 
 // ===========================================================================
 package object dyntest
-    extends DynTestAliases
-       with DynTestData {
+    extends DynTestData
+       with DynTestAliases
+       with aptus.apttraits.AptusChaining {
   import dyn._
 
   // ---------------------------------------------------------------------------
@@ -28,6 +29,10 @@ implicit class StringSeq2D_(valuess: Seq2D[String]) { // TODO: toaptus
   // ---------------------------------------------------------------------------
   implicit class Dyns_(u: Dyns) {
     def testDynz(f: Dynz => Dynz): Dyns = u.asDynz.pipe(f).asList }
+
+  // ---------------------------------------------------------------------------
+  implicit class Cls_(u: aptdata.meta.schema.Cls) {
+    def toOptional(skey: String): aptdata.meta.schema.Cls = u.replaceExactlyOneItem(_.skey == skey)(_.toOptional) }
 
   // ===========================================================================
   implicit class TryTests_[T](val value: Try[T]) extends TestsTrait[Try[T]] { val format = _.toString /* TODO */

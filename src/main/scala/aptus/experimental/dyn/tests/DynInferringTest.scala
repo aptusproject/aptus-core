@@ -8,7 +8,7 @@ object DynInferringTest {
   import Dyn .dyn
 
   // ---------------------------------------------------------------------------
-  import meta._
+  import aptus.aptdata.meta.schema._
   private val c1 = cls(foo.string, baz.int)
   private val c3 = cls(p.cls(c1))
 
@@ -37,7 +37,7 @@ object DynInferringTest {
 
     Try { _Mult1.append(dyn(foo -> 3)).inferSchema }
       // for now we error out (see task t241129144211)
-      .checkException(classOf[_root_.gallia.inferring.SchemaInferrerUtils.IncompatibleInfoException])
+      .checkException(classOf[aillag.inferring.SchemaInferrerUtils.IncompatibleInfoException])
 
     // ===========================================================================
     // from JSON:

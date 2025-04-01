@@ -1,38 +1,54 @@
-package gallia
+package aptus
+package aptdata
+package meta
 
 // ===========================================================================
-package object basic extends aptus.min.AptusMinimal {
-  private[basic] type CT[T]      = scala.reflect.ClassTag[T]
-  private[basic] def ctag[T: CT] = scala.reflect.classTag[T]
+package object basic {
+  type pseudosealed = aptus.pseudosealed
 
   // ---------------------------------------------------------------------------
-  implicit class BasicType__(val value: BasicType)
-    extends BasicTypeBooleanChecks
+  trait ClassTagRelated {
+      type T
 
-  // ---------------------------------------------------------------------------
-  private[basic] type FullNameString = String
-  private[basic] type AnyValue       = String
+      // ---------------------------------------------------------------------------
+      def _ctag: CT[                T  ]
+      def nctag: CT[       Iterable[T] ]
+      def octag: CT[       Option  [T] ]
+      def pctag: CT[Option[Iterable[T]]]
 
-  // ---------------------------------------------------------------------------
-  private[basic] object CustomOrdering {
-    val localDate     = aptus.localDateOrdering
-    val localDateTime = aptus.localDateTimeOrdering
-    val byteBuffer    = aptus.byteBufferOrdering }
-
-  // ===========================================================================
-  private[basic] trait EnumEntry {
-      val entryName: String =
-        getClass.getSimpleName.stripSuffixGuaranteed("$") }
+      // ---------------------------------------------------------------------------
+      def ordA: Ordering[T]
+      def ordD: Ordering[T] }
 
     // ---------------------------------------------------------------------------
-    trait Enum[E <: EnumEntry] { import basic.BasicType._
-      def findValues: Seq[E] = // excludes those in anticipation of gallia: _LocalTime, _OffsetDateTime, _ZonedDateTime
-        Seq(
-            _String, _Boolean, _Int, _Double,
-            _Byte, _Short, _Long, _Float,
-            _BigInt, _BigDec,
-            _Date, _DateTime, _Instant,
-            _Binary )
-          .map(_.asInstanceOf[E]) } }
+    private[basic] type CT  [T]     = scala.reflect.ClassTag[T]
+    private[basic] def  ctag[T: CT] = scala.reflect.classTag[T]
+
+  // ===========================================================================
+  // enums
+
+  type EnumStringValue = String /* eg "Red" for color enum */
+
+  // ---------------------------------------------------------------------------
+  /** a simple wrapper for enum values */
+  case class EnumValue(stringValue: EnumStringValue) extends AnyVal {
+      override def toString: String = stringValue /* used by convert(myEnum).toStr */ }
+
+    // ---------------------------------------------------------------------------
+    object EnumValue {
+      def enumValueOrdering: Ordering[EnumValue] = Ordering.by(_.stringValue)
+
+      def valid(values: Seq[EnumValue]): Boolean = !(values.isEmpty || values.distinct != values) }
+
+  // ===========================================================================
+  // inferring
+  def combine(values: Seq[BasicType]): BasicType = // TODO: subtype these 3?
+    values.distinct.sortBy(_.name) match {
+      case Seq(                   BasicType._Int                   ) => BasicType._Int
+      case Seq(BasicType._Double                                   ) => BasicType._Double
+      case Seq(BasicType._Double, BasicType._Int                   ) => BasicType._Double
+      case Seq(                                   BasicType._String) => BasicType._String
+      case Seq(_                                , BasicType._String) => BasicType._String
+      case Seq(_                , _             , BasicType._String) => BasicType._String } }
 
 // ===========================================================================

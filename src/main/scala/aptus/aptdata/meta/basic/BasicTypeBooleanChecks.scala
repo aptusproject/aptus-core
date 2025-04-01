@@ -1,23 +1,32 @@
-package gallia
+package aptus
+package aptdata
+package meta
 package basic
 
 // ===========================================================================
-trait BasicTypeBooleanChecks { val value: BasicType
+trait BasicTypeBooleanChecks { self: BasicType =>
+  def isBoundedNumber: Boolean = self.isInstanceOf[BoundedNumber] // used by inferring
 
-  // codegened (see 241121238316)
-  def isString  : Boolean = value == BasicType._String
-  def isBoolean : Boolean = value == BasicType._Boolean
-  def isInt     : Boolean = value == BasicType._Int
-  def isDouble  : Boolean = value == BasicType._Double
-  def isByte    : Boolean = value == BasicType._Byte
-  def isShort   : Boolean = value == BasicType._Short
-  def isLong    : Boolean = value == BasicType._Long
-  def isFloat   : Boolean = value == BasicType._Float
-  def isBigInt  : Boolean = value == BasicType._BigInt
-  def isBigDec  : Boolean = value == BasicType._BigDec
-  def isDate    : Boolean = value == BasicType._Date
-  def isDateTime: Boolean = value == BasicType._DateTime
-  def isInstant : Boolean = value == BasicType._Instant
-  def isBinary  : Boolean = value == BasicType._Binary }
+  // ---------------------------------------------------------------------------
+  // codegened (see 241121238317)
+
+  def isString  : Boolean = self == BasicType._String
+  def isBoolean : Boolean = self == BasicType._Boolean
+  def isInt     : Boolean = self == BasicType._Int
+  def isDouble  : Boolean = self == BasicType._Double
+
+  def isByte    : Boolean = self == BasicType._Byte
+  def isShort   : Boolean = self == BasicType._Short
+  def isLong    : Boolean = self == BasicType._Long
+  def isFloat   : Boolean = self == BasicType._Float
+
+  def isBigInt  : Boolean = self == BasicType._BigInt
+  def isBigDec  : Boolean = self == BasicType._BigDec
+
+  def isDate    : Boolean = self == BasicType._Date
+  def isDateTime: Boolean = self == BasicType._DateTime
+  def isInstant : Boolean = self == BasicType._Instant
+
+  def isBinary  : Boolean = self == BasicType._Binary }
 
 // ===========================================================================

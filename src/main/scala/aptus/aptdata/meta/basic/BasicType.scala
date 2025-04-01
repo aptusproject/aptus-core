@@ -1,400 +1,170 @@
-package gallia
+package aptus
+package aptdata
+package meta
 package basic
 
-import aptus.Long_
-import aptus.experimental.dyn.meta
-import aptus.experimental.dyn.meta.Fld
-import gallia.data.{DataFormatting, DataParsing}
-import gallia.reflect.{FullyQualifiedName, TypeNodeBuiltIns}
-import gallia.reflect.TypeNode
-import adaptor.GalliaScalaAliases._
-import adaptor.GalliaAnnotations._
-
-// borrowed from gallia (TODO: t241130165320 - refactor)
-
-                                                                            // ===========================================================================
-                                                                            sealed trait NumericalType extends BasicType
-
-                                                                              // ---------------------------------------------------------------------------
-                                                                              sealed trait UnboundedNumber extends NumericalType                     // bignums
-                                                                              sealed trait   BoundedNumber extends NumericalType with HasParseDouble // excluding bignums
-
-                                                                                // ---------------------------------------------------------------------------
-                                                                                sealed trait IntegerLikeType extends BoundedNumber { // basically: byte, short, int & long
-                                                                                    // especially useful for JSON (since doesn't differentiate integers)
-                                                                                    def toIntegerLike(value: Double): Any /* eg value.toLong for _Long */ }
-
-                                                                                // ---------------------------------------------------------------------------
-                                                                                sealed trait RealLikeType extends BoundedNumber { // basically: float & double
-                                                                                    // especially useful for JSON (since doesn't differentiate integers)
-                                                                                    def toRealLike(value: Double): Any /* eg value.toDouble for _Float */ }
-
-                                                                            // ===========================================================================
-                                                                            sealed trait HasParseString {
-                                                                                type T
-
-                                                                                // ---------------------------------------------------------------------------
-                                                                                      def parseString     : String => T
-                                                                                final def parseStringAsAny: Any    => T = value => parseString(value.asInstanceOf[String]) }
-
-                                                                              // ===========================================================================
-                                                                              sealed trait HasParseDouble {
-                                                                                type T
-
-                                                                                // ---------------------------------------------------------------------------
-                                                                                      def parseDouble     : Double => T
-                                                                                final def parseAnyToDouble: Any    => T = value => parseDouble(value.asInstanceOf[Double]) }
-
-                                                                            // ===========================================================================
-                                                                            sealed trait HasFormatString {
-                                                                              type T
-
-                                                                              // ---------------------------------------------------------------------------
-                                                                                    def formatString     : T   => String
-                                                                              final def formatStringAsAny: Any => String = value => formatString(value.asInstanceOf[T]) }
-
-                                                                            // ===========================================================================
-                                                                            sealed trait HasPair { x: HasParseString =>
-                                                                              type T
-                                                                              def pair: (String => T, Long => T)
-                                                                              final override def parseString = { val (ifString, ifLong) = pair; BasicTypeUtils.stringOrLong(ifString, ifLong)(_) } }
-
-                                                                            // ---------------------------------------------------------------------------
-                                                                            sealed trait HasFieldHasType { def has: Fld => Boolean }
-
-                                                                            // ---------------------------------------------------------------------------
-                                                                            trait HasValuePredicate { def valuePredicate: AnyValue => Boolean }
-
-                                                                            // ===========================================================================
-                                                                            sealed trait ParameterizedBasicType
-                                                                                  extends BasicType
-
-                                                                              // ---------------------------------------------------------------------------
-                                                                              sealed trait UnparameterizedBasicType
-                                                                                  extends BasicType
-                                                                                  with    HasParseString
-                                                                                  with    HasFieldHasType
-                                                                                  with    HasValuePredicate {
-                                                                                final override def has: Fld => Boolean = _.hasBasicType(this)
-                                                                                def valuePredicate: AnyValue => Boolean }
-
-                                                                            // ===========================================================================
-                                                                            // note: intentionally not called "PrimitiveType"
-                                                                            sealed trait BasicType // TODO: t210125111338 - investigate union types (coming in scala 3?)
-                                                                                  extends EnumEntry
-                                                                                  with    BasicTypeHelper
-                                                                                  with    HasFormatString
-                                                                                  with    meta.ValueType {
-                                                                                type T
-
-                                                                                protected[basic]       val node          : TypeNode
-                                                                                protected[basic]       val ordinal       : Int // scala 3
-                                                                                protected[basic] final def fullNameString: FullNameString     = node.leaf.fullName.format
-                                                                                                 final def fullName      : FullyQualifiedName = node.leaf.fullName
-
-                                                                                def formatScala  : String = fullName.format.replace("scala.", "").replace("java.lang.String", "String") // TODO
-                                                                                def formatDefault: String = entryName }
-
-                                                                              // ===========================================================================
-                                                                              @TypeMatching object BasicType extends Enum[BasicType]  {
-                                                                                @deprecated val values        = findValues
-                                                                                            val orderedValues = findValues.sortBy(_.ordinal).distinct // TODO: distinct necessary with scala-3?
-
-                                                                                private[gallia] lazy val fullNames  : Seq[FullyQualifiedName] = orderedValues.map(_.node.leaf.fullName) :+ _Enm.Node.leaf.fullName
-                                                                                private[gallia] lazy val fullNameSet: Set[FullyQualifiedName] = fullNames.toSet
-
-                                                                                // ---------------------------------------------------------------------------
-                                                                                def fromFullNameOpt(value: FullyQualifiedName): Option[BasicType] = lookup.get     (FullyQualifiedName.normalizeFullName(value))
-                                                                                def isKnown        (value: FullyQualifiedName):        Boolean    = lookup.contains(FullyQualifiedName.normalizeFullName(value))
-
-                                                                                // ---------------------------------------------------------------------------
-                                                                                  private val lookup: Map[FullyQualifiedName, BasicType] = BasicTypeUtils.createLookup(orderedValues)
+import lowlevel.{DataFormatting, DataParsing, DataValueTransforming}
+
+// ===========================================================================
+/** Which data type gets a proper `BasicType`? Those most likely to be manipulated. */
+@pseudosealed
+trait BasicType // note: intentionally not called "PrimitiveType"
+        extends schema.ValueType
+        with    schema.HasValuePredicate
+        with    ClassTagRelated
+        with    HasFormatString
+        with    BasicTypeBooleanChecks {
+      type T
+    lazy val name: String = getClass.getSimpleName.stripSuffixIfApplicable /* not so for _Enm */ ("$")
+    def formatDefault: String = name
+    protected[basic] val ordinal: Int /* scala 3 */ }
+
+  // ===========================================================================
+  @TypeMatching
+  object BasicType {
+      type Selector = BasicType.type => BasicType
+
+      // ---------------------------------------------------------------------------
+      def unparameterizedBasicType: Seq[UnparameterizedBasicType] =
+        Seq( // order matters
+            _String, _Boolean, _Int, _Double,
+            _Byte, _Short, _Long, _Float,
+            _BigInt, _BigDec,
+            _Date, _DateTime, _Instant,
+            _Binary )
+
+      // ---------------------------------------------------------------------------
+      def withName(value: String): BasicType = unparameterizedBasicType.find(_.name == value).get
+
+    // ===========================================================================
+    case object _String extends UnparameterizedBasicType {
+      type T = String
+
+      // ---------------------------------------------------------------------------
+      override val ordinal = 0
+
+      // ---------------------------------------------------------------------------
+      override val  valuePredicate = _.isInstanceOf[T]
+
+      // ---------------------------------------------------------------------------
+      override val   parseString   = identity
+      override val  formatString   = identity
+
+      // ---------------------------------------------------------------------------
+      // unpacked boilerplate:
+
+        override lazy val _ctag: CT[                T  ] = ctag[                T  ]
+        override lazy val nctag: CT[       Iterable[T] ] = ctag[       Iterable[T] ]
+        override lazy val octag: CT[       Option  [T] ] = ctag[       Option  [T] ]
+        override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]
+
+        // ---------------------------------------------------------------------------
+        override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]
+        override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse /* TODO: cost of reverse? */ }
+
+    // ===========================================================================
+    case object _Boolean extends UnparameterizedBasicType { type T = Boolean; override val ordinal = 1; /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse; override val valuePredicate = _.isInstanceOf[T]
+      override val formatString   = DataFormatting.formatBoolean
+      override val parseString    = _.toBoolean }
+
+    // ===========================================================================
+    case object _Int extends UnparameterizedBasicType with IntegerLikeType { type T = Int; override val ordinal = 2; /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse; override def toIntegerLike(value: Double) = value.toInt; override val valuePredicate = _.isInstanceOf[T]
+      override val formatString   = DataFormatting.formatInt
+      override val parseString    = _.toInt
+      override val parseDouble    = DataValueTransforming.intFromDouble }
+
+    // ---------------------------------------------------------------------------
+    case object _Double extends UnparameterizedBasicType with RealLikeType { type T = Double; override val ordinal = 3; /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse; override def toRealLike(value: Double) = value; override val valuePredicate = _.isInstanceOf[T]
+      override val formatString   = DataFormatting.formatDouble
+      override val parseString    = _.toDouble
+      override val parseDouble    = identity }
+
+    // ===========================================================================
+    //TODO: t250326103249 - rename these to Int{8, 16, 64}?
+    case object _Byte  extends UnparameterizedBasicType with IntegerLikeType { type T = Byte; override val ordinal = 4; /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse; override def toIntegerLike(value: Double) = value.toByte; override val valuePredicate = _.isInstanceOf[T]
+      override val formatString   = DataFormatting.formatByte
+      override val parseString    = _.toByte
+      override val parseDouble    = DataValueTransforming.byteFromDouble }
+
+    // ---------------------------------------------------------------------------
+    case object _Short extends UnparameterizedBasicType with IntegerLikeType { type T = Short; override val ordinal = 5; /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse; override def toIntegerLike(value: Double) = value.toShort; override val valuePredicate = _.isInstanceOf[T]
+      override val formatString   = DataFormatting.formatShort
+      override val parseString    = _.toShort
+      override val parseDouble    = DataValueTransforming.shortFromDouble }
+
+    // ---------------------------------------------------------------------------
+    case object _Long extends UnparameterizedBasicType with IntegerLikeType { type T = Long; override val ordinal = 6; /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse; override def toIntegerLike(value: Double) = value.toLong; override val valuePredicate = _.isInstanceOf[T]
+      override val formatString   = DataFormatting.formatLong
+      override val parseString    = _.toLong
+      override val parseDouble    = DataValueTransforming.longFromDouble }
+
+    // ---------------------------------------------------------------------------
+    case object _Float extends UnparameterizedBasicType with RealLikeType { type T = Float; override val ordinal = 7; /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse; override def toRealLike(value: Double) = value.toFloat; override val valuePredicate = _.isInstanceOf[T]
+      override val formatString   = DataFormatting.formatFloat
+      override val parseString    = _.toFloat
+      override val parseDouble    = DataValueTransforming.floatFromDouble }
+
+    // ===========================================================================
+    case object _BigInt extends UnparameterizedBasicType with UnboundedNumber { type T = BigInt; override val ordinal = 8; /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse; override val valuePredicate = _.isInstanceOf[T]
+      override val  parseString   = BigInt.apply
+      override val formatString   = DataFormatting.formatBigInt }
 
-                                                                                // ---------------------------------------------------------------------------
-                                                                                @inline def matchingSubinfos(info: meta.InfoLike)(multiple: meta.Multiple)(value: Any): Seq[meta.SubInfo] =
-                                                                                  BasicTypeUtils.matchingSubinfos(info)(multiple)(value)
+    // ---------------------------------------------------------------------------
+    case object _BigDec extends UnparameterizedBasicType with UnboundedNumber { type T = BigDecimal; override val ordinal = 9; /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse; override val valuePredicate = _.isInstanceOf[T]
+      override val  parseString   = BigDecimal.apply
+      override val formatString   = DataFormatting.formatBigDec }
 
-                                                                                // ---------------------------------------------------------------------------
-                                                                                private type CT[T] = scala.reflect.ClassTag[T] // just to help with boilerplate
+    // ===========================================================================
+    case object _Date extends UnparameterizedBasicType with HasPair { type T = Date; override val ordinal = 10; /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse; override val valuePredicate = _.isInstanceOf[T]
+      override val pair           = (DataParsing   . parseLocalDate, _.toLocalDate /* aptus' */)
+      override val formatString   =  DataFormatting.formatDate
 
-                                                                                // ---------------------------------------------------------------------------
-                                                                                // TODO: t240208161247 - create a proper placeholder rather, so can easily identify this use case (eg .forceAny("f"))
-                                                                                private[gallia] val ScalaAnyPlaceHolder = _Boolean // 240208154224 - arbitrarily use _Boolean as placeholder for Any (for internal use only)
-                                                                                private[gallia] val ScalaAnyFullName    = "scala.Any"
+      private implicit val ord: Ordering[T] = aptus.localDateOrdering }
 
-                                                                                // ===========================================================================
-                                                                                // TODO:
-                                                                                // - t210108114447 - support own "flag" type?
-                                                                                // - t210109142406 - dedicated matrix/tensor object (dense/sparse); look into existing libraries
-                                                                                // - t210110094829 - accept Obj as value, albeit the standalone version (see t210104164037)
-                                                                                // - t210110095252 - CLOB
-                                                                                // - change names upon serialization (eg "string" instead of _String)
-                                                                                // - t220513135713 - provide built-in enum: "Char", gender, nucleotides, ...
-
-                                                                                // ---------------------------------------------------------------------------
-                                                                                case object _String extends UnparameterizedBasicType {
-                                                                                  type T = String
-
-                                                                                  override val  node           = TypeNodeBuiltIns.String
-                                                                                  override val  ordinal        = 0
+    // ---------------------------------------------------------------------------
+    case object _DateTime extends UnparameterizedBasicType with HasPair { type T = DateTime; override val ordinal = 11; /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse; override val valuePredicate = _.isInstanceOf[T]
+      override val pair           = (DataParsing   . parseLocalDateTime, _.toLocalDateTime /* aptus' */)
+      override val formatString   =  DataFormatting.formatDateTime
 
-                                                                                  // ---------------------------------------------------------------------------
-                                                                                  override val   parseString   = identity
-                                                                                  override val  formatString   = identity
-                                                                                  override val  valuePredicate = _.isInstanceOf[T]
-                                                                                  // ---------------------------------------------------------------------------
-                                                                                  // unpacked boilerplate:
+      private implicit val ord: Ordering[T] = aptus.localDateTimeOrdering }
 
-                                                                                    override lazy val _ctag: CT[                T  ] = ctag[                T  ]
-                                                                                    override lazy val nctag: CT[       Iterable[T] ] = ctag[       Iterable[T] ]
-                                                                                    override lazy val octag: CT[       Option  [T] ] = ctag[       Option  [T] ]
-                                                                                    override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]
+    // ---------------------------------------------------------------------------
+    case object _Instant extends UnparameterizedBasicType with HasPair { type T = Instant; override val ordinal = 12; /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse; override val valuePredicate = _.isInstanceOf[T]
+      override val pair         = (DataParsing   . parseInstant, _.toInstant /* aptus' */)
+      override val formatString =  DataFormatting.formatInstant
 
-                                                                                    // ---------------------------------------------------------------------------
-                                                                                    override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]
-                                                                                    override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse /* TODO: cost of reverse? */ }
+      private implicit val ord: Ordering[T] = Ordering.by(identity) /* not sure why needed */ }
 
-                                                                                // ===========================================================================
-                                                                                case object _Boolean extends UnparameterizedBasicType { /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse
-                                                                                  type T = Boolean
+    // ===========================================================================
+    case object _Binary extends UnparameterizedBasicType with HasParseAny { type T = ByteBuffer; override val ordinal = 13; /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse; override val valuePredicate = _.isInstanceOf[T]
+      override val  parseString   = DataParsing   . parseBinary
+      override val formatString   = DataFormatting.formatBinary
 
-                                                                                  override val node    = TypeNodeBuiltIns.ScalaBoolean
-                                                                                  override val ordinal = 1
+      private implicit val ord: Ordering[T] = aptus.byteBufferOrdering }
 
-                                                                                  override val valuePredicate = _.isInstanceOf[T]
-                                                                                  override val formatString = DataFormatting.formatBoolean
-                                                                                  override val parseString  = _.toBoolean }
+    // ===========================================================================
+    // TODO:
+    // - t210330102827 - capture enum name for macros (currently stored in Fld hackily)
+    case class _Enm(values: Seq[EnumValue]) extends ParameterizedBasicType { type T = EnumValue; override val ordinal = 14; /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse
+        require(EnumValue.valid(values), formatDefault)
 
-                                                                                // ===========================================================================
-                                                                                case object _Int extends UnparameterizedBasicType with IntegerLikeType { /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse
-                                                                                  type T = Int
+        // ---------------------------------------------------------------------------
+        override def formatDefault: String = name.colon(values.map(_.stringValue.surroundWith("|")).mkString(","))
+        def stringValues: Seq[EnumStringValue] = values.map(_.stringValue)
 
-                                                                                  override val node    = TypeNodeBuiltIns.ScalaInt
-                                                                                  override val ordinal = 2
+        // ---------------------------------------------------------------------------
+        override val valuePredicate = _.isInstanceOf[EnumValue]
+        override val formatString   = _.stringValue
 
-                                                                                  def toIntegerLike(value: Double) = value.toInt
+        // ---------------------------------------------------------------------------
+        private implicit val ord: Ordering[T] = basic.EnumValue.enumValueOrdering }
 
-                                                                                  override val valuePredicate = _.isInstanceOf[T]
-                                                                                  override val formatString = DataFormatting.formatInt
-                                                                                  override val parseString  = _.toInt
-                                                                                  override val parseDouble  = d => d.toInt.ensuring(_.toDouble == d) }
+      // ===========================================================================
+      object _Enm extends HasParseString with HasParseAny {
+        type T = EnumValue // still needed?
+        override def parseString = EnumValue.apply
 
-                                                                                // ---------------------------------------------------------------------------
-                                                                                case object _Double extends UnparameterizedBasicType with RealLikeType { /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse
-                                                                                  type T = Double
-
-                                                                                  override val node    = TypeNodeBuiltIns.ScalaDouble
-                                                                                  override val ordinal = 3
-
-                                                                                  def toRealLike(value: Double) = value
-
-                                                                                  override val valuePredicate = _.isInstanceOf[T]
-                                                                                  override val formatString = DataFormatting.formatDouble
-                                                                                  override val parseString  = _.toDouble
-                                                                                  override val parseDouble  = identity }
-
-                                                                                // ===========================================================================
-                                                                                //TODO: rename these to Int{8, 16, 64}?
-                                                                                case object _Byte  extends UnparameterizedBasicType with IntegerLikeType   { /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse
-                                                                                  type T = Byte
-
-                                                                                  override val node    = TypeNodeBuiltIns.ScalaByte
-                                                                                  override val ordinal = 4
-
-                                                                                  def toIntegerLike(value: Double) = value.toByte
-
-                                                                                  override val valuePredicate = _.isInstanceOf[T]
-                                                                                  override val formatString = DataFormatting.formatByte
-                                                                                  override val parseString  = _.toByte
-                                                                                  override val parseDouble  = d => d.toByte.ensuring(_.toDouble == d) }
-
-                                                                                // ---------------------------------------------------------------------------
-                                                                                case object _Short extends UnparameterizedBasicType with IntegerLikeType   { /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse; def toIntegerLike(value: Double) = value.toShort
-                                                                                  type T = Short
-
-                                                                                  override val node    = TypeNodeBuiltIns.ScalaShort
-                                                                                  override val ordinal = 5
-
-                                                                                  override val valuePredicate = _.isInstanceOf[T]
-                                                                                  override val formatString = DataFormatting.formatShort
-                                                                                  override val parseString  = _.toShort
-                                                                                  override val parseDouble  = d => d.toShort.ensuring(_.toDouble == d) }
-
-                                                                                // ---------------------------------------------------------------------------
-                                                                                case object _Long  extends UnparameterizedBasicType with IntegerLikeType   { /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse; def toIntegerLike(value: Double) = value.toLong
-                                                                                  type T = Long
-
-                                                                                  override val node    = TypeNodeBuiltIns.ScalaLong
-                                                                                  override val ordinal = 6
-
-                                                                                  override val valuePredicate = _.isInstanceOf[T]
-                                                                                  override val formatString = DataFormatting.formatLong
-                                                                                  override val parseString  = _.toLong
-                                                                                  override val parseDouble  = d => d.ensuring(BasicTypeUtils.doubleFitsLong(_)) .toLong.ensuring(_.toDouble == d) }
-
-                                                                                // ---------------------------------------------------------------------------
-                                                                                case object _Float extends UnparameterizedBasicType with RealLikeType      { /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse; def toRealLike   (value: Double) = value.toFloat
-                                                                                  type T = Float
-
-                                                                                  override val node    = TypeNodeBuiltIns.ScalaFloat
-                                                                                  override val ordinal = 7
-
-                                                                                  override val valuePredicate = _.isInstanceOf[T]
-                                                                                  override val formatString = DataFormatting.formatFloat
-                                                                                  override val parseString  = _.toFloat
-                                                                                  override val parseDouble  = _.ensuring(BasicTypeUtils.doubleFitsFloat(_)).toFloat /* note: precision may also be affected */ }
-
-                                                                                // ===========================================================================
-                                                                                case object _BigInt extends UnparameterizedBasicType with UnboundedNumber { /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse
-                                                                                  type T = BigInt
-
-                                                                                  override val node    = TypeNodeBuiltIns.ScalaMathBigInt
-                                                                                  override val ordinal = 8
-
-                                                                                  override val valuePredicate = _.isInstanceOf[T]
-                                                                                  override val  parseString = BigInt.apply
-                                                                                  override val formatString = DataFormatting.formatBigInt }
-
-                                                                                // ---------------------------------------------------------------------------
-                                                                                case object _BigDec extends UnparameterizedBasicType with UnboundedNumber { /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse
-                                                                                  type T = BigDecimal
-
-                                                                                  override val node    = TypeNodeBuiltIns.ScalaMathBigDecimal
-                                                                                  override val ordinal = 9
-
-                                                                                  override val valuePredicate = _.isInstanceOf[T]
-                                                                                  override val  parseString = BigDecimal.apply
-                                                                                  override val formatString = DataFormatting.formatBigDec
-
-                                                                                  override protected def accessorNameModifier(value: FullNameString): String = value.replace("imal", "") }
-
-                                                                                // ===========================================================================
-case object _Date extends UnparameterizedBasicType with HasPair { /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse
-                                                                                    type T = LocalDate
-
-                                                                                    override val node    = TypeNodeBuiltIns.JavaTimeLocalDate
-                                                                                    override val ordinal = 10
-
-                                                                                    override val valuePredicate = _.isInstanceOf[T]
-                                                                                    override val pair         = (DataParsing   . parseLocalDate, _.toLocalDate /* aptus' */)
-                                                                                    override val formatString =  DataFormatting.formatLocalDate
-
-                                                                                    private implicit val ord: Ordering[T] = CustomOrdering.localDate }
-
-                                                                                  // ---------------------------------------------------------------------------
-//                                                                                  case object _LocalTime extends UnparameterizedBasicType { /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse
-//                                                                                    type T = LocalTime
-//
-//                                                                                    override val node    = TypeNodeBuiltIns.JavaTimeLocalTime
-//                                                                                    override val ordinal = 11
-//
-//                                                                                    override val valuePredicate = _.isInstanceOf[T]
-//                                                                                    override val  parseString = DataParsing   . parseLocalTime
-//                                                                                    override val formatString = DataFormatting.formatLocalTime
-//
-//                                                                                    private implicit val ord: Ordering[T] = CustomOrdering.localTime }
-
-                                                                                  // ---------------------------------------------------------------------------
-case object _DateTime extends UnparameterizedBasicType with HasPair { /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse
-                                                                                    type T = LocalDateTime
-
-                                                                                    override val node    = TypeNodeBuiltIns.JavaTimeLocalDateTime
-                                                                                    override val ordinal = 12
-
-                                                                                    override val valuePredicate = _.isInstanceOf[T]
-                                                                                    override val pair           = (DataParsing   . parseLocalDateTime, _.toLocalDateTime /* aptus' */)
-                                                                                    override val formatString   =  DataFormatting.formatLocalDateTime
-
-                                                                                    private implicit val ord: Ordering[T] = CustomOrdering.localDateTime }
-
-                                                                                // ===========================================================================
-//                                                                                case object _OffsetDateTime extends UnparameterizedBasicType { /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse
-//                                                                                    type T = OffsetDateTime
-//
-//                                                                                    override val node    = TypeNodeBuiltIns.JavaTimeOffsetDateTime
-//                                                                                    override val ordinal = 13
-//
-//                                                                                    override val valuePredicate = _.isInstanceOf[T]
-//                                                                                    override val  parseString = DataParsing   . parseOffsetDateTime
-//                                                                                    override val formatString = DataFormatting.formatOffsetDateTime
-//
-//                                                                                    private implicit val ord: Ordering[T] = CustomOrdering.offsetDateTime }
-//
-//                                                                                  // ---------------------------------------------------------------------------
-//                                                                                  case object _ZonedDateTime extends UnparameterizedBasicType { /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse
-//                                                                                    type T = ZonedDateTime
-//
-//                                                                                    override val node    = TypeNodeBuiltIns.JavaTimeZonedDateTime
-//                                                                                    override val ordinal = 14
-//
-//                                                                                    override val valuePredicate = _.isInstanceOf[T]
-//                                                                                    override val  parseString = DataParsing   . parseZonedDateTime
-//                                                                                    override val formatString = DataFormatting.formatZonedDateTime
-//
-//                                                                                    private implicit val ord: Ordering[T] = CustomOrdering.zonedDateTime }
-
-                                                                                  // ---------------------------------------------------------------------------
-                                                                                  case object _Instant extends UnparameterizedBasicType with HasPair { /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse
-                                                                                    type T = Instant
-
-                                                                                    override val node    = TypeNodeBuiltIns.JavaTimeInstant
-                                                                                    override val ordinal = 15
-
-                                                                                    override val valuePredicate = _.isInstanceOf[T]
-                                                                                    override val pair         = (DataParsing   . parseInstant, _.toInstant /* aptus' */)
-                                                                                    override val formatString =  DataFormatting.formatInstant
-
-                                                                                    private implicit val ord: Ordering[T] = Ordering.by(identity) /* not sure why needed */ }
-
-                                                                                // ===========================================================================
-                                                                                case object _Binary extends UnparameterizedBasicType { /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse
-                                                                                  type T = ByteBuffer
-
-                                                                                  override val node    = TypeNodeBuiltIns.JavaNioByteByffer
-                                                                                  override val ordinal = 16
-
-                                                                                  override val valuePredicate = _.isInstanceOf[T]
-                                                                                  override val  parseString = DataParsing   . parseBinary
-                                                                                  override val formatString = DataFormatting.formatBinary
-
-                                                                                  private implicit val ord: Ordering[T] = CustomOrdering.byteBuffer }
-
-  trait _Enm extends BasicType
-/*private[basic] */object _Enm {
-    def Node: TypeNode = ???
-    def parseString(value: String): _Enm = ???}
-                                                                            //    // ===========================================================================
-                                                                            //    // TODO:
-                                                                            //    // - t210330102827 - capture enum name for macros (currently stored in Fld hackily)
-                                                                            //    case class _Enm(values: Seq[EnumValue]) extends ParameterizedBasicType { /* boilerplate: */ override lazy val _ctag: CT[T] = ctag[T]; override lazy val nctag: CT[Iterable[T]] = ctag[Iterable[T]]; override lazy val octag: CT[Option [T]] = ctag[Option [T]]; override lazy val pctag: CT[Option[Iterable[T]]] = ctag[Option[Iterable[T]]]; override lazy val ordA: Ordering[T] = implicitly[Ordering[T]]; override lazy val ordD: Ordering[T] = implicitly[Ordering[T]].reverse
-                                                                            //        vldt.MetaValidation.checkAreValidEnumValues(values).ensuring(_.isEmpty /* ie no errors reported */)
-                                                                            //
-                                                                            //        override def formatDefault: String = entryName.colon(values.map(_.stringValue.surroundWith("|")).mkString(","))
-                                                                            //
-                                                                            //        type T = gallia.EnumValue
-                                                                            //
-                                                                            //        override val node    = _Enm.Node
-                                                                            //        override val ordinal = 17
-                                                                            //
-                                                                            //        def stringValues: Seq[EnumStringValue] = values.map(_.stringValue)
-                                                                            //
-                                                                            //        override val valuePredicate = _.isInstanceOf[EnumValue]
-                                                                            //        override val formatString   = _.stringValue
-                                                                            //
-                                                                            //        // ---------------------------------------------------------------------------
-                                                                            //        override protected def accessorNameModifier(value: FullNameString): String = "enm"
-                                                                            //        private implicit val ord: Ordering[T] = CustomOrdering.enumValue }
-                                                                            //
-                                                                            //      // ===========================================================================
-                                                                            //      object _Enm extends HasFieldHasType with HasParseString {
-                                                                            //        type T = EnumValue
-                                                                            //        override def has         = _.hasEnum
-                                                                            //        override def parseString = EnumValue.apply
-                                                                            //
-                                                                            //        val Node = TypeNodeBuiltIns.GalliaEnumValue
-                                                                            //
-                                                                            //        // ---------------------------------------------------------------------------
-                                                                            //        private[gallia] val Dummy = _Enm(Seq(EnumValue("_"))) /* useful for internal comparisons in validation, see 220506101842 */ }
-}
+        // ---------------------------------------------------------------------------
+        val Dummy = _Enm(Seq(EnumValue("_"))) /* useful for internal comparisons in validation, see 220506101842 */ } }
 
 // ===========================================================================

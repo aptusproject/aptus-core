@@ -24,6 +24,8 @@ trait AptusAnnotations { import scala.annotation.StaticAnnotation
   class abstrct (val message: String = "") extends StaticAnnotation
 
   /** to convey that the order of the following code is important */
-  class ordermatters(val message: String = "") extends StaticAnnotation }
+  class ordermatters(val message: String = "") extends StaticAnnotation
+
+  class notthreadsafe(val message: String = "") extends StaticAnnotation }
 
 // ===========================================================================

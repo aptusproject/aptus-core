@@ -20,6 +20,7 @@ trait AptusAliases extends AptusMinimalAliases {
   type MirrorIndex       = Int
   type Rank              = Int // = index + 1
   type Depth             = Int
+  type Ordinal           = Int
 
   // ---------------------------------------------------------------------------
   type Probability       = Double
@@ -82,8 +83,11 @@ trait AptusAliases extends AptusMinimalAliases {
   /** just to convey intention, nothing enforced */
   type One[T] =               T
   type Opt[T] =        Option[T]
+
+  @deprecated("change to be alias for Seq where empty is allowed")
   type Pes[T] = Option[Seq   [T]]
-//type Nes[T] =        Seq   [T] -- in Minimal
+//type Nes[T] =        Seq   [T] -- moved to Minimal
+  type Ons[T] = Option[Nes   [T]]
 
   // ===========================================================================
   type CharsetSelector = aptmisc.StandardCharsets.type => Charset

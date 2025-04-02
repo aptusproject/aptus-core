@@ -20,7 +20,7 @@ trait CommonTransformTrait[Data] {
   // ===========================================================================
   @inline private def innie(_target: TargetSelector): Innie = new _Innie(diss.deef, _target)
 
-    /*private */class _Innie private[common](val deef: DataEntityErrorFormatter, val target: TargetSelector)
+    private class _Innie private[common](val deef: DataEntityErrorFormatter, val target: TargetSelector)
         extends CommonTransformByTypesHelperTrait[Data]
            with HasDataEntityErrorFormatter[Data]
            with HasTargetSelector {

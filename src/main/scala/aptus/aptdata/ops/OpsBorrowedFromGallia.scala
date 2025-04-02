@@ -5,16 +5,11 @@ package ops
 import aptus.experimental.dyn
 import aptus.experimental.dyn._
 
-import aptus.experimental.dyn.domain.selectors.{Key => DKey}
-
 // ===========================================================================
-trait GalliaBorrowedOps { self: Dyn =>
-
-  // ---------------------------------------------------------------------------
-  private type SKey   = String
+trait OpsBorrowedFromGallia { self: Dyn =>
   private type Keyz   = Seq[Key]
   private type KPathW = Path
-  type NakedValue = Any
+          type NakedValue = Any
 
   // ---------------------------------------------------------------------------
   private implicit class Path_(u: Path) { def value: Path = u }
@@ -84,12 +79,11 @@ trait GalliaBorrowedOps { self: Dyn =>
                                               .galliaDyn
 
   // ===========================================================================
-  private def _tmp(f: Seq[String] => Seq[String]): Seq[DKey] => Seq[DKey] =
-    (keys: Seq[DKey]) =>
+  private def _tmp(f: Seq[SKey] => Seq[SKey]): Seq[Key] => Seq[Key] =
+    (keys: Seq[Key]) =>
       keys
         .map(_.name)
         .pype(f)
-        .map(Symbol.apply)
-        .map(DKey.apply) }
+        .map(Key._fromString) }
 
 // ===========================================================================

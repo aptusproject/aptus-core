@@ -10,7 +10,7 @@ object TargetSelectorShorthands {
   def keyPredicate(p: SKeyPred): TargetSelector = TargetSelector.Predicate(p)
 
   def selectOne(f: SKeys => SKey): TargetSelector = TargetSelector.SelectOne(f)
-def selection(f: SKeysSelection): TargetSelector = TargetSelector.SelectMultiple(f) // TODO: rename
+def selection(f: SKeysSelection): TargetSelector = TargetSelector.SelectMultiple(f) // TODO: t250401120253 - rename
 
   def renaming(from: Key, to: Key): TargetSelector = TargetSelector.Renaming(Ren(from, to))
   def renaming(ren: Ren)          : TargetSelector = TargetSelector.Renaming(ren)

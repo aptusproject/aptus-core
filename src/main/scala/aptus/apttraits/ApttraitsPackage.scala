@@ -19,8 +19,8 @@ package apttraits { // not sure why not letting me put those in the package obje
   // ---------------------------------------------------------------------------
   trait AptusChaining {
     implicit class Chaining_[A](value: A) { // so as to not import chaining._ everywhere
-      def pipe[B](f: A => B)   : B =   f(value)
-      def tap    (f: A => Unit): A = { f(value); value } } }
+      @inline def pipe[B](f: A => B)   : B =   f(value)
+      @inline def tap    (f: A => Unit): A = { f(value); value } } }
 
   // ===========================================================================
   /** convenient for quick prototyping */

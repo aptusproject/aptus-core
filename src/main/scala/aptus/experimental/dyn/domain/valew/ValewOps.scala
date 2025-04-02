@@ -17,8 +17,9 @@ private object ValewOps {
   // ---------------------------------------------------------------------------
   /* typically when transforming eg one key among many others */
   def potentiallyUnwrap(value: Any): Valew = // 241126120322
-    Valew(value match {
-      case Valew(x) => x
-      case       x  => x }) }
+    (value match {
+        case x: Valew => x.naked
+        case x        => x })
+      .pipe(Valew.build) }
 
 // ===========================================================================

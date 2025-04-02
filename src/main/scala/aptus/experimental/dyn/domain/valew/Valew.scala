@@ -21,7 +21,7 @@ case class Valew private[Valew] (naked: NakedValue)
         s"Valew(${naked.getClass}:${naked.toString})"
 
     // ---------------------------------------------------------------------------
-    def format: String = _root_.gallia.data.DataFormatting.format(naked) }
+    def format: String = aillag.data.lowlevel.format(naked) }
 
   // ===========================================================================
   object Valew {

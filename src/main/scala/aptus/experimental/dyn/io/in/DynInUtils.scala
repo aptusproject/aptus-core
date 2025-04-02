@@ -6,7 +6,7 @@ package in
 
 // ===========================================================================
 object DynInUtils {
-  private val fromJson = _root_.gallia.gson.BorrowedGsonFrom
+  private val fromJson = aillag.data.json.GsonToObj
 
   // ===========================================================================
   def jsono(value: InputFilePath): Dyn =
@@ -23,37 +23,36 @@ object DynInUtils {
     value
       .readFileContent() // TODO: stream JSON array - t241022104721
       .pipe(fromJson.fromArrayString)
-      .dyns
 
   // ---------------------------------------------------------------------------
   def jsonaz(value: InputFilePath): Dynz =
     value
       .readFileContent() // TODO: stream JSON array - t241022104721
       .pipe(fromJson.fromArrayString)
-      .dynz
+      .asIterator
 
   // ===========================================================================
   def jsonAs(value: JsonArrayString): Dyns =
     value
       .pipe(fromJson.fromArrayString)
-      .dyns
+
   // ---------------------------------------------------------------------------
   def jsonAz(value: JsonArrayString): Dynz =
     value
       .pipe(fromJson.fromArrayString)
-      .dynz
+      .asIterator
 
   // ===========================================================================
   def jsonls(value: InputFilePath): Dyns =
       value
-        .streamFileLines3()
+        .streamFileLines()
         .map (fromJson.fromObjectString)
         .dyns
 
     // ---------------------------------------------------------------------------
     def jsonlz(value: InputFilePath): Dynz =
       value
-        .streamFileLines3()
+        .streamFileLines()
         .map (fromJson.fromObjectString)
         .dynz
 
@@ -63,8 +62,8 @@ object DynInUtils {
 
     // ---------------------------------------------------------------------------
     private def _tsv(s: InputFilePath): IteratoR[Dyn] = {
-      val cells = s .streamFileTsv3()
-      val first: Seq[Key] = cells.next().map(Key._from)
+      val cells = s .streamFileTsv()
+      val first: Seq[Key] = cells.next().map(Key._fromString)
 
       cells
         .map { x =>

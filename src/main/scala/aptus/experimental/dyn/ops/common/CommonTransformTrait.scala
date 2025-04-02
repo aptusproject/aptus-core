@@ -11,11 +11,16 @@ trait CommonTransformTrait[Data] {
   private   type Innie = CommonTransformByTypesHelperTrait[Data]
   private   val  diss  = this
 
-  def generate(x: Any) = new { def from(y: Any) = new { def using(f: Valew => Any): Data = ??? } } // TODO:t241205125816 - all the generates: generusion and generussion
+  // ---------------------------------------------------------------------------
+// TODO:t241205125816 - all the generates: generusion and generussion
+  def generate(x: Any): _GenerateFrom = new _GenerateFrom(x)
+    final class _GenerateFrom private[dyn] (x: Any) { def from(y: Any): _GenerateFromUsing = new _GenerateFromUsing(x) }
+      final class _GenerateFromUsing private[dyn] (x: Any) { def using(f: Valew => Any): Data = ??? }
 
   // ===========================================================================
   @inline private def innie(_target: TargetSelector): Innie = new _Innie(diss.deef, _target)
-    private class _Innie private[common](val deef: DataEntityErrorFormatter, val target: TargetSelector)
+
+    /*private */class _Innie private[common](val deef: DataEntityErrorFormatter, val target: TargetSelector)
         extends CommonTransformByTypesHelperTrait[Data]
            with HasDataEntityErrorFormatter[Data]
            with HasTargetSelector {

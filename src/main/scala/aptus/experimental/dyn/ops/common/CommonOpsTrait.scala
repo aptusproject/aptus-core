@@ -27,7 +27,7 @@ trait CommonOpsTrait[Data] {
 
   // ===========================================================================
   @abstrct       def add(entry: Entry)               : Data
-  @nonovrd final def add(key: Key, value: NakedValue): Data = add(Entry(key, Valew(value)))
+  @nonovrd final def add(key: Key, value: NakedValue): Data = value.pipe(Valew.build).pipe(Entry.buildw(key, _)).pipe(add)
 
   @abstrct       def add(entries: List[Entry])                       : Data
   @nonovrd final def add(entry1 : Entry, entry2: Entry, more: Entry*): Data = (Seq(entry1, entry2) ++ more) .toList.pipe(add)

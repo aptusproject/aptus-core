@@ -24,7 +24,8 @@ trait DynOpsImpl {
   final override def remove(targets: Set[Key]): Dyn = flatMapEntries(_.removeOpt(targets)) // TODO: specialized for 1?
 
 // 241120
-final def rename(path: Path) = new { def to(x :Key): Dyn = ??? }
+final def rename(path: Path): _RenamePath = new _RenamePath(path)
+  final class _RenamePath(path: Path) { def to(x :Key): Dyn = ??? /* TODO: t250402144718 */ }
 final def retain(path: Path): Dyn = ???
 final def remove(path: Path): Dyn = ???
 

@@ -92,7 +92,7 @@ private[aptus] trait FldOps extends FldOrInfo { self: Fld =>
   def subInfo1: SubInfo = info.subInfo1 }
 
 // ===========================================================================
-private[aptus] trait InfoOps extends FldOrInfo { self: Info =>
+private[aptus] trait InfoOps extends FldOrInfo with SchemaValueExtraction { self: Info =>
   type Self = Info
 
   // ---------------------------------------------------------------------------

@@ -5,15 +5,20 @@ package domain
 
 // ===========================================================================
 /** basically a bare version of Dyn */
-case class Entries private (values: Seq[Entry]) extends Items[Entries, Entry] {
-  val const = Entries.apply
+case class Entries private (values: Seq[Entry])
+      extends Items[Entries, Entry] {
+    val const = Entries.apply
 
-  def keys: Keys = values.map(_.key) }
+    // ---------------------------------------------------------------------------
+    def keys: Keys = values.map(_.key) }
+
+  // ---------------------------------------------------------------------------
+  object Entries {
+    def build(values: Seq[Entry]): Entries = Entries(values) }
 
 // ===========================================================================
 case class Entry private (key: Key, valew: Valew) {
-    def galliaPair1: (Symbol, Any) = key.und  -> valew.naked
-    def galliaPair2: (String, Any) = key.name -> valew.naked
+    def galliaPair: (Symbol, Any) = key.und -> valew.naked
 
     // ===========================================================================
     def retainOpt(targets: KeySet): Option[Entry] =
@@ -42,8 +47,7 @@ case class Entry private (key: Key, valew: Valew) {
     def buildn(pair: (Key, NakedValue)): Entry = Entry(pair._1, Valew.potentiallyUnwrap(pair._2))
 
     // ---------------------------------------------------------------------------
-    def fromGallia(pair: (Symbol, Any)): Entry = Entry(pair._1, Valew.build(pair._2))
-    def fromGallia2(pair: (String, Any)): Entry = Entry(pair._1, Valew.build(pair._2))
+    def fromGallia(pair: (Key, Any)): Entry = Entry(pair._1, Valew.build(pair._2))
 
     // ---------------------------------------------------------------------------
     implicit def _fromSymbol(x: (Symbol, NakedValue)): Entry = Entry(x._1, Valew.build(x._2))

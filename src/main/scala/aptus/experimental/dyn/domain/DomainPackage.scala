@@ -2,14 +2,16 @@ package aptus
 package experimental
 package dyn
 
+import aptdata.meta.selectors.TargetSelectorShorthands
+
 // ===========================================================================
 package object domain {
   trait NumberLike[N]
 
   // ===========================================================================
   object Sel {
-    type Sel = selectors.TargetSelectorShorthands.type => TargetSelector
-    def apply(sel: Sel): TargetSelector = sel(selectors.TargetSelectorShorthands) }
+    type Sel = TargetSelectorShorthands.type => TargetSelector
+    def apply(sel: Sel): TargetSelector = sel(TargetSelectorShorthands) }
 
   // ===========================================================================
   private[domain] implicit class Fractional_[F: Fractional](frac: Fractional[F]) {

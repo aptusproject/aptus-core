@@ -3,8 +3,7 @@ package aptus
 // ===========================================================================
 package object aptdata
     extends AptdataAnything
-       with aptus.aptdata.AptusGalliaDataAdaptor
-       with aptus.aptdata.adaptor.SchemaValueExtractions {
+       with aptus.aptdata.AptusGalliaDataAdaptor {
 
   // ---------------------------------------------------------------------------
   implicit class AptusDataChaining_[A](value: A) {

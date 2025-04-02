@@ -27,7 +27,7 @@ package object aptus
 
        with AptusAnnotations    /* eg @aptus.nonovrd, @aptus.ordermatters, ... */
 
-       with AptusScalaVersionSpecific /*    aptus.Items, aptus.listMap */
+       with AptusScalaVersionSpecific /*    aptus.listMap & WTT */
        with AptusAliases              /* eg aptus.FilePath, aptus.Size, ... */
        with AptusCommonAliases        /* eg aptus.Regex, aptus.Charset, ... */
        with AptusFormattingTraits     /* eg aptus.HasFormatDefault, ... */
@@ -41,6 +41,8 @@ package object aptus
   val all = this
 
   val traits = AptusTraits
+
+  type Items[$Items <: aptitems.Items[_, _], $Item] = aptitems.Items[$Items, $Item]
 
   // ===========================================================================
   /* for extends AnyVals, see https://stackoverflow.com/questions/14929422/should-implicit-classes-always-extend-anyval */
@@ -79,14 +81,17 @@ package object aptus
     // ---------------------------------------------------------------------------
     def ensuring2(p: A => Boolean, f: A => Any): A = { Predef.assert(p(a), f(a)); a }
 
-    @deprecated("use .ensuring instead") def assert(p: A => Boolean):              A = assert(p, identity)
-                                         def assert(p: A => Boolean, f: A => Any): A = { Predef.assert(p(a), f(a)); a }
+    def assert(p: A => Boolean):              A = assert(p, identity) // keeping for consistency (same as stdlib's .ensuring)
+    def assert(p: A => Boolean, f: A => Any): A = { Predef.assert(p(a), f(a)); a }
 
-    @deprecated("use .ensuring instead") def require(p: A => Boolean):              A = require(p, identity)
-                                         def require(p: A => Boolean, f: A => Any): A = { Predef.require(p(a), f(a)); a }
+    def require(p: A => Boolean):              A = require(p, identity) // keeping for consistency (same as stdlib's .ensuring)
+    def require(p: A => Boolean, f: A => Any): A = { Predef.require(p(a), f(a)); a }
 
     def assertEquals[B]                (expected: => B): A = assertEquals(identity, expected)
     def assertEquals[B](actual: A => B, expected: => B): A = { val _actual = actual(a); val _expected = expected; Predef.assert(_actual == _expected, s"\n\texpected: |${_expected}|\n\tactual:   |${_actual}|" ); a }
+
+    def assertTrue (implicit ev: A =:= Boolean): A = assertEquals(true)
+    def assertFalse(implicit ev: A =:= Boolean): A = assertEquals(false)
 
     // ---------------------------------------------------------------------------
     def in  : aptmisc.In[A] = new aptus.aptmisc.In[A](a)
@@ -295,7 +300,9 @@ package object aptus
     // ===========================================================================
     def removeIfApplicable( potentialSubStr: String) = str.replace( potentialSubStr, "")
     def removeGuaranteed  (guaranteedSubStr: String) = str.replace(guaranteedSubStr, "").ensuring(_ != str)
-    def remove            (guaranteedSubStr: String) = str.replace(guaranteedSubStr, "").ensuring(_ != str)
+
+    // avoid, favor explicit ones above
+    def remove(guaranteedSubStr: String) = str.replace(guaranteedSubStr, "").ensuring(_ != str)
 
     //TODO: All versions as well
     def replaceGuaranted   (from: String, to: String): String = str.replace(from, to).ensuring(_ != str)
@@ -344,6 +351,9 @@ package object aptus
   implicit class Seq_[A](val coll: Seq[A]) extends AnyVal { // TODO: t210124092716 - codegen specializations (List, Vector, ...?)
     def requireNonEmpty()              : Seq[A] = coll.ensuring(_.nonEmpty)
     def  assertNonEmpty()              : Seq[A] = coll.ensuring(_.nonEmpty)
+
+    def requireEmpty()                 : Seq[A] = coll.ensuring(_.isEmpty)
+    def  assertEmpty()                 : Seq[A] = coll.ensuring(_.isEmpty)
 
     def requireDistinct()              : Seq[A] = SeqUtils.distinct(coll, Predef.require(_, _))
     def  assertDistinct()              : Seq[A] = SeqUtils.distinct(coll, Predef.require(_, _))
@@ -476,6 +486,9 @@ package object aptus
       def groupByKey           [K, V](implicit ev: A <:< (K, V)):     Map[K, Seq[V]] = data.groupByKey
       def groupByKeyWithListMap[K, V](implicit ev: A <:< (K, V)): ListMap[K, Seq[V]] = data.groupByKeyWithListMap
 
+      def groupByWithListMap[K, V](f: A => K, g: A => V): ListMap[K, Seq[V]] = data.groupByWithListMap(f, g)
+      def groupByWithListMap[K]   (f: A => K)           : ListMap[K, Seq[A]] = data.groupByWithListMap(f, identity)
+
       def innerJoin[B](that: Seq[B]): joining.FluencyDomain.InnerJoin[A, B] = data.innerJoin(that)
 
       /** no prior grouping of key/values */ def pivot[K, V](implicit ev: A <:< (K, V)): ListMap[V, Seq[K]] = data.pivot
@@ -581,6 +594,10 @@ package object aptus
   implicit class Option_[A](val opt: Option[A]) extends AnyVal {
     @inline def force = opt.get // stdlib polyseme (see Map's)
 
+    // TODO: on Iterable rather?
+    def mapIf[B <: A](test:      Boolean)(f: A => B): Option[A] = opt.map { x => if (test)    f(x) else   x }
+    def mapIf[B <: A](pred: A => Boolean)(f: A => B): Option[A] = opt.map { x => if (pred(x)) f(x) else   x }
+
     def swap[B](f: => B): Option[B] = if (opt.isDefined) None else Some(f)
 
     def isExclusiveWith[B](that: Option[B]): Boolean = (opt.isDefined && that.isEmpty) || (opt.isEmpty && that.isDefined) } // convenient for assertions
@@ -612,6 +629,8 @@ package object aptus
   implicit class Tuple3_[A, B, C](val tup: Tuple3[A, B, C]) extends AnyVal {
     def toSeq[Z](implicit ev1: A <:< Z, ev2: B <:< Z, ev3: C <:< Z) = Seq[Z](tup._1, tup._2, tup._3)
 
+    def toOptionalTuple[Z, Y, W](implicit ev1: A <:< Option[Z], ev2: B <:< Option[Y], ev3: C <:< Option[W]): Option[(Z, Y, W)] = for { a <- tup._1; b <- tup._2; c <- tup._3 } yield (a, b, c)
+
     def mapFirst [A2](fa: A => A2) = (fa(tup._1),   tup._2,     tup._3 )
     def mapSecond[B2](fb: B => B2) = (   tup._1, fb(tup._2),    tup._3 )
     def mapThird [C2](fc: C => C2) = (   tup._1,    tup._2 , fc(tup._3))
@@ -632,6 +651,11 @@ package object aptus
   // ===========================================================================
   // ===========================================================================
   implicit class Int_(val nmbr: Int) extends AnyVal {
+      def negate   : Int = -nmbr
+      def increment: Int =  nmbr + 1
+      def decrement: Int =  nmbr - 1
+
+      // ---------------------------------------------------------------------------
       def tab    (s: String) = nmbr.str.tab    (s)
       def colon  (s: String) = nmbr.str.colon  (s)
       def newline(s: String) = nmbr.str.newline(s)
@@ -649,8 +673,10 @@ package object aptus
       def isInBetweenInclusive(fromInclusive: Int, toInclusive: Int): Boolean = nmbr >= fromInclusive && nmbr <= toInclusive
 
       // ---------------------------------------------------------------------------
-      def assertRange         (fromInclusive: Int, toExclusive: Int): Int     = nmbr.assert(_.isInBetween         (fromInclusive, toExclusive), x => s"out of range: ${x} ([${fromInclusive}, ${toExclusive}[)")
-      def assertRangeInclusive(fromInclusive: Int, toInclusive: Int): Int     = nmbr.assert(_.isInBetweenInclusive(fromInclusive, toInclusive), x => s"out of range: ${x} ([${fromInclusive}, ${toInclusive}])")
+      def  assertRange         (fromInclusive: Int, toExclusive: Int): Int     = nmbr.assert (_.isInBetween         (fromInclusive, toExclusive), x => s"out of range: ${x} ([${fromInclusive}, ${toExclusive}[)")
+      def requireRange         (fromInclusive: Int, toExclusive: Int): Int     = nmbr.require(_.isInBetween         (fromInclusive, toExclusive), x => s"out of range: ${x} ([${fromInclusive}, ${toExclusive}[)")
+      def  assertRangeInclusive(fromInclusive: Int, toInclusive: Int): Int     = nmbr.assert (_.isInBetweenInclusive(fromInclusive, toInclusive), x => s"out of range: ${x} ([${fromInclusive}, ${toInclusive}])")
+      def requireRangeInclusive(fromInclusive: Int, toInclusive: Int): Int     = nmbr.require(_.isInBetweenInclusive(fromInclusive, toInclusive), x => s"out of range: ${x} ([${fromInclusive}, ${toInclusive}])")
 
       // ---------------------------------------------------------------------------
       def add       (n: Int): Int = nmbr + n
@@ -672,6 +698,11 @@ package object aptus
 
     // ---------------------------------------------------------------------------
     implicit class Long_(val nmbr: Long) extends AnyVal {
+      def negate   : Long = -nmbr
+      def increment: Long =  nmbr + 1
+      def decrement: Long =  nmbr - 1
+
+      // ---------------------------------------------------------------------------
       def isInBetween         (fromInclusive: Long, toExclusive: Long): Boolean = nmbr >= fromInclusive && nmbr <  toExclusive
       def isInBetweenInclusive(fromInclusive: Long, toInclusive: Long): Boolean = nmbr >= fromInclusive && nmbr <= toInclusive
 
@@ -690,6 +721,8 @@ package object aptus
 
     // ===========================================================================
     implicit class Double_(val nmbr: Double) extends AnyVal {
+      def negate: Double = -nmbr
+
       def isInBetween         (fromInclusive: Double, toExclusive: Double): Boolean = nmbr >= fromInclusive && nmbr <  toExclusive
       def isInBetweenInclusive(fromInclusive: Double, toInclusive: Double): Boolean = nmbr >= fromInclusive && nmbr <= toInclusive
       def isInBetweenExclusive(fromExclusive: Double, toExclusive: Double): Boolean = nmbr >  fromExclusive && nmbr <  toExclusive

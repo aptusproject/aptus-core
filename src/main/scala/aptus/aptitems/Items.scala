@@ -16,7 +16,7 @@ trait Items[$Items <: Items[_, _], $Item] // TODO: t241202115349 - splitup + own
   type Item = $Item // nicer, if used by client
 
   // ---------------------------------------------------------------------------
-  def values: Seq[$Item]
+  def values: Seq[$Item] // TODO: t241216143625 - consider making private (+ accessible via a method)?
 
   // ---------------------------------------------------------------------------
   def size: Int = values.size
@@ -32,8 +32,13 @@ trait Items[$Items <: Items[_, _], $Item] // TODO: t241202115349 - splitup + own
   @inline def map    [T](f: $Item =>          T ): Seq[T] = exoMap(f)
   @inline def flatMap[T](f: $Item => Iterable[T]): Seq[T] = exoFlatMap(f)
 
+  // ---------------------------------------------------------------------------
   def zipWithIndex: Seq[($Item, Index)] = values.zipWithIndex
+  def zipAll         [A1 >: $Item, B](that: Iterable[B], thisElem: A1, thatElem: B): Seq[(A1, B)] = values.zipAll(that, thisElem, thatElem)
+  def zipAllWithNulls[A1 >: $Item, B](that: Iterable[B])                           : Seq[(A1, B)] = values.zipAll(that, thisElem = null.asInstanceOf[A1], thatElem = null.asInstanceOf[B])
+  def zipSameSize[A](that: Seq[A]) = values.zipSameSize(that)
 
+  // ---------------------------------------------------------------------------
   def sliding (size: Int): Iterator[Seq[$Item]] = values.sliding(size, 1)
   def grouping(size: Int): Iterator[Seq[$Item]] = values.grouped(size)
 
@@ -59,6 +64,8 @@ trait Items[$Items <: Items[_, _], $Item] // TODO: t241202115349 - splitup + own
   // ---------------------------------------------------------------------------
   def filter   (p: $Item => Boolean): $Items = values.filter   (p).pipe(const)
   def filterNot(p: $Item => Boolean): $Items = values.filterNot(p).pipe(const)
+  def filter   (item: $Item)        : $Items = values.filter   (_ == item).pipe(const)
+  def filterNot(item: $Item)        : $Items = values.filterNot(_ == item).pipe(const)
 
     // ---------------------------------------------------------------------------
     def filterBy   [B](f: $Item => B)(p: B => Boolean): $Items = filter { x =>  p(f(x)) }
@@ -94,6 +101,10 @@ trait Items[$Items <: Items[_, _], $Item] // TODO: t241202115349 - splitup + own
   def sorted(implicit ord: Ordering[$Item]): $Items = values.sorted   .pipe(const)
   def sortBy[T : Ordering](f: $Item => T)  : $Items = values.sortBy(f).pipe(const)
   def distinct                             : $Items = values.distinct .pipe(const)
+
+  // ---------------------------------------------------------------------------
+  def   foldLeft[B](z: B)   (op: (B, $Item) => B): B = values.  foldLeft[B](z)(op)
+  def reduceLeft[B >: $Item](op: (B, $Item) => B): B = values.reduceLeft[B]   (op)
 
   // ---------------------------------------------------------------------------
   // TODO: t241129122610 - rename + deprecate to mergeItems, appendItem, etc to avoid name conflicts with client code

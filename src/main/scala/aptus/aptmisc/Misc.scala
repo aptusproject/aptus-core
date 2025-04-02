@@ -69,6 +69,8 @@ object Reflection {
 object Time { import aptutils.TimeUtils.elapsed
   lazy val TimestampFormat = new java.text.SimpleDateFormat("yyMMddHHmmss")
 
+  def stampEpochMs(): Long = new java.util.Date().getTime
+
   def stamp(): String = TimestampFormat.format(new java.util.Date())
 
   def milliseconds[A](block: => A): A = { val (result, time) = elapsed(block);  time                               .pipe(elapsed => println(s"done: ${elapsed} ms"     )); result }

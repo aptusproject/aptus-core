@@ -3,8 +3,6 @@ package experimental
 package dyntest
 package io
 
-import util.chaining._
-
 // ===========================================================================
 object DynDataClassesTest {
   import aptus.experimental.dyn

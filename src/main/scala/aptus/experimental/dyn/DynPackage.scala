@@ -1,22 +1,30 @@
 package aptus
 package experimental
 
-import scala.collection.View
-
 // ===========================================================================
 package object dyn
-    extends apttraits.AptusNullShorthands
-       with apttraits.AptusChaining
+    extends dyn.DynAnything
+       // ---------------------------------------------------------------------------
+       with apttraits.AptusNullShorthands
        with apttraits.AptusDummyImplicitShorthand
-       with dyn.aliases.DynAliases                 /* eg type BasicType = _root_.gallia.basic.BasicType */
-       with dyn.aliases.DynScalaAliases            /* eg private[dyn] type LocalTime     = java.time.LocalTime */
+       // ---------------------------------------------------------------------------
+       with dyn.aliases.DynAliases                 /* eg BasicType */
+       with dyn.aliases.DynScalaAliases            /* eg Instant */
        with dyn.io.in.TopLevelBuildingUtils        /* eg dyn.single("""{"name": ..}"""") */
        with dyn.io.in.TupleBasedBuildingExtensions /* eg ("name": "Alice", "age" -> 30).dyn */
-       with dyn.data.mult.iter.CloseabledIteratorTrait
+       with dyn.data.mult.iter.CloseabledIteratorAbstractionTrait
      /* no AptusMinExtensions (since already under aptus) */ {
+
+  private[dyn] implicit def _symbol2String(value: Symbol): String = value.name
+  private[dyn] implicit def _string2Symbol(value: String): Symbol = Symbol(value)
 
   // ===========================================================================
   trait HasTargetSelector { @abstrct protected def target: TargetSelector }
+
+  // ---------------------------------------------------------------------------
+  object selectors {
+      val TargetSelectorShorthands = aptdata.meta.selectors.TargetSelectorShorthands
+      val TargetSelector           = aptdata.meta.selectors.TargetSelector }
 
   // ---------------------------------------------------------------------------
   trait ValewGetter {
@@ -31,7 +39,7 @@ package object dyn
     trait shorthands {
 
       // basic types
-      val $$ = _root_.gallia.basic.BasicType
+      val $$ = aptus.aptdata.meta.basic.BasicType
 
       // ---------------------------------------------------------------------------
       // selectors - TODO: worth keeping?
@@ -67,15 +75,13 @@ package object dyn
     private[dyn] def dynz: Dynz = data.mult.iter.Dynz.build(values.iterator.toIteratoR)}
 
   // ---------------------------------------------------------------------------
-  private[dyn] implicit class View___(values: View[Dyn]) {
+  private[dyn] implicit class View___(values: collection.View[Dyn]) {
     private[dyn] def dyns: Dyns = data.mult.list.Dyns.build(values.toList) }
 
   // ===========================================================================
   private[dyn] implicit class Iterator__(values: IteratoR[Dyn]) {
     private[dyn] def dyns: Dyns = data.mult.list.Dyns.build(values.toList)
-    private[dyn] def dynz: Dynz = data.mult.iter.Dynz.build(values.toIteratoR) }
-}
-
+    private[dyn] def dynz: Dynz = data.mult.iter.Dynz.build(values.toIteratoR) } }
 
 // ===========================================================================
 

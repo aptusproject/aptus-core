@@ -11,7 +11,8 @@ import common.CommonOutputter
 
 // ===========================================================================
 /** a241128152444 - does not HAVE to fit in memory (unlike `Dyns`), but more limited in terms of operations */
-case class Dynz(protected[dyn] val values: IteratoR[Dyn])
+case class Dynz(
+      protected[dyn] val values: IteratoR[Dyn])
     extends ops.mult.HasAllMultiple[_Self]
 
        with ops.mult.MultipleTrait[_Self]
@@ -27,7 +28,7 @@ with aspects.DynzSchemaInferrer2
     /** costly if big */ def keysVeryCostly  : Seq[Key] = ??? // TODO - t241203145246
 
     // ---------------------------------------------------------------------------
-    override final protected      lazy val empty               : _Self = _Self.empty
+    override final protected      lazy val empty               : _Self = _Self.empty // parent as "def" else scl3 error: error overriding value empty in trait MultipleOpsTrait of type aptus.experimental.dyn.data.mult.iter.Dynz
     override final protected           def const(values: Sngls): _Self = _Self.apply(values)
     override final protected[dyn]      def valuesIterator      : Sngls = values
 
@@ -62,7 +63,10 @@ with aspects.DynzSchemaInferrer2
   object Dynz
     extends aspects.DynzBuilding
        with aspects.DynzFluentBuilding
-       with aspects.DynzDummies
+       with aspects.DynzDummies {
+    /* only for builder */
+    private[dyn] def _build(values: IteratoR[Dyn]): Dynz =
+      new Dynz(values) }
 
 
 // ===========================================================================

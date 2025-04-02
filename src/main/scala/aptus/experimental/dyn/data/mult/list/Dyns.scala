@@ -11,7 +11,8 @@ import common.CommonOutputter
 
 // ===========================================================================
 /** MUST fit in memory (unlike `Dynz`) */
-case class Dyns private[Dyns] (protected[dyn] val values: Seq[Dyn])
+case class Dyns private[Dyns] (
+      protected[dyn] val values: Seq[Dyn])
     extends ops.mult.HasAllMultiple[_Self]
 
        with ops.mult.MultipleTrait[_Self]
@@ -22,16 +23,14 @@ case class Dyns private[Dyns] (protected[dyn] val values: Seq[Dyn])
        with aspects.DynsSchemaInferrer
        with CanConvertFromTable {
 
-/** mostly to convert doubles to int when applicable ("JSON number tax")  - overkill in aptus (vs gallia)*/
-def fromJson: Dyns = inferSchema.pipe(x => endoMap(_root_.gallia.gson.GsonToGalliaData.convertRecursively(x)))
+/** mostly to convert doubles to int when applicable ("JSON number tax")  - overkill in aptus (vs gallia) */
+def fromJson: Dyns = inferSchema.pipe(x => endoMap { y => aillag.data.json.GsonToGalliaData.convertRecursively(x)(y) } )
 
 // TODO: t241203213031 - all the missing accessors
 
 //TODO: codegen - t241203151355
 def doubles(key: Key): Seq[Double] = exoMap(_.double(key)).toList
 def doubles          : Seq[Double] = ???//  TODO: t241203151505 exoMap(_.double(_.soleKey)).toList
-
-
 
     // ---------------------------------------------------------------------------
     override final protected      lazy val empty               : _Self = _Self.empty
@@ -61,8 +60,8 @@ def doubles          : Seq[Double] = ???//  TODO: t241203151505 exoMap(_.double(
     // ===========================================================================
     override final def write(s: OutputFilePath): OutputFilePath = io.out.DynOut.write(this)(s)
 
-    override final def formatCompactJson: String = _root_.gallia.gson.BorrowedGsonTo.formatCompact(this)
-    override final def  formatPrettyJson: String = _root_.gallia.gson.BorrowedGsonTo.formatPretty(this)
+    override final def formatCompactJson: String = aillag.data.json.ObjToGson.formatCompact(this)
+    override final def  formatPrettyJson: String = aillag.data.json.ObjToGson.formatPretty (this)
 
     //TODO: csv
     def formatTsv  : String = io.out.DynOut2.formatTable(this)(sep = "\t")
@@ -73,6 +72,9 @@ def doubles          : Seq[Double] = ???//  TODO: t241203151505 exoMap(_.double(
   object Dyns
     extends aspects.DynsBuilding
        with aspects.DynsFluentBuilding
-       with aspects.DynsDummies
+       with aspects.DynsDummies {
+    /* only for builder */
+    private[dyn] def _build(values: Seq[Dyn]): Dyns =
+      new Dyns(values) }
 
 // ===========================================================================

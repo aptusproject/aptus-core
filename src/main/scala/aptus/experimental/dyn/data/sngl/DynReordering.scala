@@ -7,7 +7,7 @@ package sngl
 // ===========================================================================
 trait DynReordering {
     self: DynDataWithGetter
-    with gallia.GalliaBorrowedOps =>
+    with aptus.aptdata.ops.OpsBorrowedFromGallia =>
   private type _Self = DynReordering
 
   // ---------------------------------------------------------------------------

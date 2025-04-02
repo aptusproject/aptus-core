@@ -22,8 +22,8 @@ trait DynFormatDefault
   // ---------------------------------------------------------------------------
   trait DynJsonWriter
     extends CommonOutputter /* eg .write("/my/file") */ {
-      self: DynData =>
-    override final def formatCompactJson: String = _root_.gallia.gson.BorrowedGsonTo.formatCompact(this)
-    override final def formatPrettyJson : String = _root_.gallia.gson.BorrowedGsonTo.formatPretty (this) }
+      self: Dyn =>
+    override final def formatCompactJson: String = aillag.data.json.ObjToGson.formatCompact(this)
+    override final def formatPrettyJson : String = aillag.data.json.ObjToGson.formatPretty (this) }
 
 // ===========================================================================

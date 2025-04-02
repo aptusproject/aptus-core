@@ -4,10 +4,10 @@ package dyn
 package data
 package sngl
 
+import aptus.aptdata.ops.OpsBorrowedFromGallia
 import dyn.{Dyn => _Self}
 import dyn.ops._
 import dyn.ops.common._
-import gallia.GalliaBorrowedOps
 
 // ===========================================================================
 // no duplicate keys, order matters
@@ -20,7 +20,7 @@ case class Dyn private[Dyn] (
        with DynTransformImpl /* ONLY transform (concrete) */
        with DynOpsImpl       /* eg retain (concrete) */
 
-       with GalliaBorrowedOps /* eg nest, reorderKeysRecursively, ... */
+       with OpsBorrowedFromGallia /* eg nest, reorderKeysRecursively, ... */
        with DynData
        with DynEntryMapping        /* map/flatMap on entry */
        with DynEntriesTransforming /* transform entries direction (full control) */
@@ -38,7 +38,7 @@ case class Dyn private[Dyn] (
 
     // ---------------------------------------------------------------------------
     /** mostly to convert doubles to int when applicable ("JSON number tax" - see gallia) - overkill in aptus (vs gallia) */
-    def fromJson: Dyn = inferSchema.pipe(_root_.gallia.gson.GsonToGalliaData.convertRecursively(_)(self))
+    def fromJson: Dyn = inferSchema.pipe { y => aillag.data.json.GsonToGalliaData.convertRecursively(y)(self) }
 
     def toDataClass[DC <: Product: WTT]: DC = ??? // TODO - t241204140907b - see a counterpart (dc -> dyn)
 
@@ -50,6 +50,9 @@ case class Dyn private[Dyn] (
   object Dyn
     extends aspects.DynBuilding
        with aspects.DynFluentBuilding
-       with aspects.DynDummies
+       with aspects.DynDummies {
+    /* only for builder */
+    private[sngl] def _build(data: List[Entry]): Dyn =
+      new Dyn(data) }
 
 // ===========================================================================

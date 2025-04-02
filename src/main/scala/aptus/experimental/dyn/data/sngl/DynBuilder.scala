@@ -30,7 +30,7 @@ private[data] object DynBuilder { // 241120103136
             .map(Valew.build)
             .map(Entry.buildw(entry.key, _)) }
         .toList
-        .pipe(Dyn.apply) } }
+        .pipe(Dyn._build) } }
 
   // ===========================================================================
   // not meant to be 100% idiot proof

@@ -16,9 +16,11 @@ trait DynData {
   // ---------------------------------------------------------------------------
   def values        : Seq     [NakedValue] = data.map(_.valew)
   def valuesIterator: Iterator[NakedValue] = values.iterator
-  def valewsIterator: Iterator[Valew]      = valewsIterator.map(Valew.apply)
+  def valewsIterator: Iterator[Valew]      = valuesIterator.map(Valew.build)
 
   // ---------------------------------------------------------------------------
-  def entries: Entries = Entries(data) }
+  def entries: Entries = Entries.build(data)
+
+  @inline def galliaPairs = entries.map(_.galliaPair) /* for compatibility with aptus' dyn */ }
 
 // ===========================================================================

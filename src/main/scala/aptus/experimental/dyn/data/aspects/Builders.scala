@@ -13,11 +13,11 @@ trait DynBuilding {
   // ---------------------------------------------------------------------------
   trait DynsBuilding {
     lazy val empty                        : Dyns = build(Iterable.empty)
-         def build(values: Iterable[Sngl]): Dyns = values.toList.pipe(data.Dyns.apply) /* TODO consider offering Vector version too? (t241120102540) */ }
+         def build(values: Iterable[Sngl]): Dyns = values.toList.pipe(data.Dyns._build) /* TODO consider offering Vector version too? (t241120102540) */ }
 
   // ---------------------------------------------------------------------------
   trait DynzBuilding {
     lazy val empty                        : Dynz = data.Dyns.empty.asIterator
-         def build(values: IteratoR[Sngl]): Dynz = values.pipe(data.Dynz.apply)  }
+         def build(values: IteratoR[Sngl]): Dynz = values.pipe(data.Dynz._build)  }
 
 // ===========================================================================

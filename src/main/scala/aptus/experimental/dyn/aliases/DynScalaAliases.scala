@@ -15,12 +15,8 @@ type RealMatrixCommons = org.apache.commons.math3.linear.RealMatrix
   private[dyn] type BigDec     = BigDecimal
   private[dyn] type ByteBuffer = java.nio.ByteBuffer
 
-  private[dyn] type LocalTime     = java.time.LocalTime
-  private[dyn] type LocalDate     = java.time.LocalDate
-  private[dyn] type LocalDateTime = java.time.LocalDateTime
-
-  private[dyn] type DateTime = LocalDateTime
-  private[dyn] type Date     = LocalDate
+  private[dyn] type Date     = java.time.LocalDate
+  private[dyn] type DateTime = java.time.LocalDateTime
 
   private[dyn] type Instant        = java.time.Instant
   private[dyn] type  ZonedDateTime = java.time.ZonedDateTime

@@ -99,7 +99,7 @@ object CanNotForceKey extends ErrorCompanion(id = "E241126104802", stateError = 
         def throwRealLike          (deef: DEEF, target: TargetSelector, valew: Valew): Nothing = TransformSpecificType(deef, target, RealLike   , valew).thro
 
         // ---------------------------------------------------------------------------
-        def throwBasicType(deef: DEEF, target: TS, valew: Valew)(basicType: BasicType.type => BasicType): Nothing =
+        def throwBasicType(deef: DEEF, target: TS, valew: Valew)(basicType: BasicType.Selector): Nothing =
           TransformSpecificType(deef, target, basicType(BasicType), valew).thro }
       case class TransformSpecificType(
           deef: DataEntityErrorFormatter, target: TargetSelector,

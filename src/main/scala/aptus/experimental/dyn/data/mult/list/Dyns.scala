@@ -34,13 +34,13 @@ def doubles          : Seq[Double] = ???//  TODO: t241203151505 exoMap(_.double(
 
     // ---------------------------------------------------------------------------
     override final protected      lazy val empty               : _Self = _Self.empty
-    override final protected           def const(values: Sngls): _Self = new Bug(values).consumeAll.pipe(_Self.apply)
-    override final protected[dyn]      def valuesIterator      : Sngls = values.iterator.toIteratoR
+    override final protected           def const(values: Sngls): _Self = values.consumeAll().pipe(_Self.apply)
+    override final protected[dyn]      def valuesIterator      : Sngls = CloseabledIterator.fromSeq(values)
 
     // ---------------------------------------------------------------------------
     // TODO: choose
-    def asIterator: Dynz = values.iterator.dynz
-    def asDynz    : Dynz = values.iterator.dynz
+    def asIterator: Dynz = valuesIterator.dynz
+    def asDynz    : Dynz = valuesIterator.dynz
 
     // ===========================================================================
     /** costly if big */ lazy val valueList: Seq[Dyn] = values.toList

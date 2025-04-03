@@ -17,9 +17,9 @@ trait MultipleTrait[Mult <: HasIteratorRelated[Mult]]
     self: HasAllMultiple[Mult] =>
   override final protected[dyn] def deef: DataEntityErrorFormatter = valuesIterator.pipe(DataEntityErrorFormatter.fromIterator)
 
-  override final def endoFlatMap   (f: Sngl => Iterable[Sngl]): Mult        = valuesIterator.flatMap(f).pipe(const)
-  override final def     endoMap   (f: Sngl => Sngl)          : Mult        = valuesIterator.    map(f).pipe(const)
-  override final def      exoMap[T](f: Sngl => T)             : IteratoR[T] = valuesIterator.    map(f)
-  /*override */final def      exoFlatMap[T](f: Sngl => Iterable[T])             : IteratoR[T] = valuesIterator.    flatMap(f) }
+  override final def endoFlatMap       (f: Sngl => Iterable[Sngl]): Mult                  = valuesIterator.flatMap(f).pipe(const)
+  override final def     endoMap       (f: Sngl => Sngl)          : Mult                  = valuesIterator.    map(f).pipe(const)
+  override final def      exoMap    [T](f: Sngl => T)             : CloseabledIterator[T] = valuesIterator.    map(f)
+           final def      exoFlatMap[T](f: Sngl => Iterable[T])   : CloseabledIterator[T] = valuesIterator.flatMap(f) }
 
 // ===========================================================================

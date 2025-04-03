@@ -34,6 +34,6 @@ private[dyn] trait DynDataAliases {
   private[dyn] type Sngl = data.sngl.Dyn
   private[dyn] val  Sngl = data.sngl.Dyn
 
-  private[dyn] type Sngls = IteratoR[Sngl] /* TODO: create actual wrapper? */ }
+  private[dyn] type Sngls = CloseabledIterator[Sngl] /* TODO: create actual wrapper? */ }
 
 // ===========================================================================

@@ -12,7 +12,7 @@ package object mult {
   // ===========================================================================
   trait HasEndoMap    [Mult] { @abstrct def     endoMap   (f: Sngl => Sngl)          : Mult }
   trait HasEndoFlatMap[Mult] { @abstrct def endoFlatMap   (f: Sngl => Iterable[Sngl]): Mult }
-  trait HasExoMap     [Mult] { @abstrct def      exoMap[T](f: Sngl => T)             : IteratoR[T] }
+  trait HasExoMap     [Mult] { @abstrct def      exoMap[T](f: Sngl => T)             : CloseabledIterator[T] }
 
   // ---------------------------------------------------------------------------
   // two-way

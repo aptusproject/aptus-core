@@ -48,12 +48,12 @@ private[dyn] object TableFormatting {
       val Default: Self = TableLikeCtx() }
 
   // ===========================================================================
-  def _formatRows(ctx: TableCtx)(keys: Keys)(values: IteratoR[Dyn]): IteratoR[FormattedRow] =
-      keys.in.someIf(_ => ctx.includeHeader).map(_.mkString(ctx.separator)).toList.iteratoR ++
+  def _formatRows(ctx: TableCtx)(keys: Keys)(values: CloseabledIterator[Dyn]): CloseabledIterator[FormattedRow] =
+      keys.in.someIf(_ => ctx.includeHeader).map(_.mkString(ctx.separator)).toList.pipe(CloseabledIterator.fromSeq) union
       _formatCells(ctx.missingValue)(keys)(values).map(_.mkString(ctx.separator))
 
     // ---------------------------------------------------------------------------
-    def _formatCells(missingValue: String)(keys: Keys)(values: IteratoR[Dyn]): IteratoR[Seq[Cell]] =
+    def _formatCells(missingValue: String)(keys: Keys)(values: CloseabledIterator[Dyn]): CloseabledIterator[Seq[Cell]] =
       values
         .map { row =>
           keys
@@ -66,7 +66,7 @@ private[dyn] object TableFormatting {
   /** not very optimized, but then again the version where keys are provided should be preferred most of the time.
    *
    * note that table may not have the same number of columns for each row */
-  def _formatTableLikeCells(missingValue: String)(values: IteratoR[Dyn]): IteratoR[List[Cell]] = {
+  def _formatTableLikeCells(missingValue: String)(values: CloseabledIterator[Dyn]): CloseabledIterator[List[Cell]] = {
     var encountered = collection.mutable.LinkedHashSet[Key]()
 
     // ---------------------------------------------------------------------------

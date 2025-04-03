@@ -10,7 +10,7 @@ trait MultipleOpsTrait[Mult] {
        with common.HasIdent[Mult] =>
 
   @abstrct       protected def empty            : Mult // as "def" else scl3 error: error overriding value empty in trait MultipleOpsTrait of type aptus.experimental.dyn.data.mult.iter.Dynz
-  @nonovrd final protected def unit(value: Sngl): Mult = const(IteratoR(value))
+  @nonovrd final protected def unit(value: Sngl): Mult = const(CloseabledIterator.fromValues(value))
 
   // ===========================================================================
   override final def ident: Mult = union(empty)

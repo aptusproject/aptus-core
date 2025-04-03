@@ -11,8 +11,8 @@ trait MultipleOpsImpl[Mult <: HasValuesIterator[Mult]]
        with HasValuesIterator   [Mult]
        with common.HasIdent[Mult] =>
 
-  override final def union  (that : Mult): Mult = (this.valuesIterator ++ that.valuesIterator).pipe(const)
-  override final def prepend(value: Sngl): Mult = (IteratoR(value)     ++ this.valuesIterator).pipe(const)
+  override final def union  (that : Mult): Mult = (this.valuesIterator                  union that.valuesIterator).pipe(const)
+  override final def prepend(value: Sngl): Mult = (CloseabledIterator.fromValues(value) union this.valuesIterator).pipe(const)
 
   // ---------------------------------------------------------------------------
 //TODO: ensure n is valid in the context here

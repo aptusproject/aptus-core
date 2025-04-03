@@ -12,7 +12,6 @@ package object dyn
        with dyn.aliases.DynScalaAliases            /* eg Instant */
        with dyn.io.in.TopLevelBuildingUtils        /* eg dyn.single("""{"name": ..}"""") */
        with dyn.io.in.TupleBasedBuildingExtensions /* eg ("name": "Alice", "age" -> 30).dyn */
-       with dyn.data.mult.iter.CloseabledIteratorAbstractionTrait
      /* no AptusMinExtensions (since already under aptus) */ {
 
   private[dyn] implicit def _symbol2String(value: Symbol): String = value.name
@@ -72,16 +71,16 @@ package object dyn
   // ---------------------------------------------------------------------------
   private[dyn] implicit class Seq___ (values: Seq [Dyn]) {
     private[dyn] def dyns: Dyns = data.mult.list.Dyns.build(values)
-    private[dyn] def dynz: Dynz = data.mult.iter.Dynz.build(values.iterator.toIteratoR)}
+    private[dyn] def dynz: Dynz = data.mult.iter.Dynz.build(CloseabledIterator.fromSeq(values)) }
 
   // ---------------------------------------------------------------------------
   private[dyn] implicit class View___(values: collection.View[Dyn]) {
     private[dyn] def dyns: Dyns = data.mult.list.Dyns.build(values.toList) }
 
   // ===========================================================================
-  private[dyn] implicit class Iterator__(values: IteratoR[Dyn]) {
+  private[dyn] implicit class Iterator__(values: CloseabledIterator[Dyn]) {
     private[dyn] def dyns: Dyns = data.mult.list.Dyns.build(values.toList)
-    private[dyn] def dynz: Dynz = data.mult.iter.Dynz.build(values.toIteratoR) } }
+    private[dyn] def dynz: Dynz = data.mult.iter.Dynz.build(values) } }
 
 // ===========================================================================
 

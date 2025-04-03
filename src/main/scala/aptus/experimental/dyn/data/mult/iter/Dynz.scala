@@ -10,9 +10,10 @@ import dyn.data.mult.iter.{Dynz => _Self}
 import common.CommonOutputter
 
 // ===========================================================================
-/** a241128152444 - does not HAVE to fit in memory (unlike `Dyns`), but more limited in terms of operations */
+/** a241128152444 - does not HAVE to fit in memory (unlike `Dyns`), but more limited in terms of operations
+ * unlike gallia's counterpart, one cannot just "fork" Dynz directly: must "checkpoint" it manually */
 case class Dynz(
-      protected[dyn] val values: IteratoR[Dyn])
+      protected[dyn] val values: CloseabledIterator[Dyn])
     extends ops.mult.HasAllMultiple[_Self]
 
        with ops.mult.MultipleTrait[_Self]
@@ -20,8 +21,10 @@ case class Dynz(
 
        with CommonOutputter          /* eg .write("/my/file") */
        with io.out.DynzTables        /* tables formatting */
-with aspects.DynzSchemaInferrer2
-{
+with aspects.DynzSchemaInferrer2 {
+
+    /** typically only in case of error, else it closes itself upon full consumption: see underlying CloseabledIterator */
+    def closeUnderlying() = { values.close() }
 
     // ---------------------------------------------------------------------------
     /** costly if big */ def keySetVeryCostly: Set[Key] = keysVeryCostly.toSet
@@ -37,8 +40,8 @@ with aspects.DynzSchemaInferrer2
 
     // ---------------------------------------------------------------------------
     // TODO: choose
-    def asList: Dyns = new Bug(values).consumeAll.dyns
-    def asDyns: Dyns = new Bug(values).consumeAll.dyns
+    def asList: Dyns = values.consumeAll().dyns
+    def asDyns: Dyns = values.consumeAll().dyns
 
     // ===========================================================================
     def join   (that: Dyns): _Self = ??? // TODO: t241203101550 - since Dyns fits in memory (see a241203101826)
@@ -65,7 +68,7 @@ with aspects.DynzSchemaInferrer2
        with aspects.DynzFluentBuilding
        with aspects.DynzDummies {
     /* only for builder */
-    private[dyn] def _build(values: IteratoR[Dyn]): Dynz =
+    private[dyn] def _build(values: CloseabledIterator[Dyn]): Dynz =
       new Dynz(values) }
 
 

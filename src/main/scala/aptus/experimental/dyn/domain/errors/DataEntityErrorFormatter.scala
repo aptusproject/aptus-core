@@ -20,11 +20,10 @@ trait DataEntityErrorFormatter { def formatErrorEntity: String }
 
       // ---------------------------------------------------------------------------
       private def _fromIterator(valuesIterator: Sngls): String =
-new Bug(
         valuesIterator
           .take(10)
-          .map (_.formatCompactJson))
-          .consumeAll // consuming Iterator is okay because this is always in the context of a runtime error anyway
+          .map (_.formatCompactJson)
+          .consumeAll() // consuming Iterator is okay because this is always in the context of a runtime error anyway
           .joinln
           .append("[possibly truncated]" /* TODO: better */) }
 

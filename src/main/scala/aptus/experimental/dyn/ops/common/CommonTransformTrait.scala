@@ -20,7 +20,7 @@ trait CommonTransformTrait[Data] {
   // ===========================================================================
   @inline private def innie(_target: TargetSelector): Innie = new _Innie(diss.deef, _target)
 
-    private class _Innie private[common](val deef: DataEntityErrorFormatter, val target: TargetSelector)
+    private[common] class _Innie private[common](val deef: DataEntityErrorFormatter, val target: TargetSelector)
         extends CommonTransformByTypesHelperTrait[Data]
            with HasDataEntityErrorFormatter[Data]
            with HasTargetSelector {
@@ -46,7 +46,6 @@ trait CommonTransformTrait[Data] {
   @nonovrd final def transformIfPresent(ren : Ren ): Innie = transformIfPresent(TargetSelector.Renaming(ren).mayBeMissing /* default */)
   @nonovrd final def transformIfPresent(path: Path): Innie = transformIfPresent(TargetSelector.Nesting(path).mayBeMissing /* default */)
   @nonovrd final def transformIfPresent(sel : Sel ): Innie = transformIfPresent(Sel(sel).mayBeMissing /* default */)
-  @nonovrd final def transformIfPresent(target: TargetSelector): Innie = transform          (target.mayBeMissing /* default */)
-}
+  @nonovrd final def transformIfPresent(target: TargetSelector): Innie = transform          (target.mayBeMissing /* default */) }
 
 // ===========================================================================

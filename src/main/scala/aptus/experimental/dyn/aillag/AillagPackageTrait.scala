@@ -34,8 +34,8 @@ trait AillagPackageTrait {
 
   // ===========================================================================
   implicit class AillagDyns_(u: Dyns) {
-      def toListAndTrash    : List    [Dyn] = u.values.toList
-      def consumeSelfClosing: Iterator[Dyn] = u.asIterator.values }
+      def toListAndTrash    : List              [Dyn] = u.values.toList
+      def consumeSelfClosing: CloseabledIterator[Dyn] = u.valuesIterator }
 
     // ---------------------------------------------------------------------------
     implicit class AillagDynComp_(u: Dyn.type) {

@@ -17,7 +17,7 @@ trait DynBuilding {
 
   // ---------------------------------------------------------------------------
   trait DynzBuilding {
-    lazy val empty                        : Dynz = data.Dyns.empty.asIterator
-         def build(values: IteratoR[Sngl]): Dynz = values.pipe(data.Dynz._build)  }
+    lazy val empty                                  : Dynz = data.Dyns.empty.asIterator
+         def build(values: CloseabledIterator[Sngl]): Dynz = values.pipe(data.Dynz._build)  }
 
 // ===========================================================================

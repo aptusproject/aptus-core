@@ -19,6 +19,12 @@ object SchemaInferrer { // mostly for JSON for now...
       .reduceLeft(_ combine _)
 
   // ---------------------------------------------------------------------------
+  def klass(values: aptus.CloseabledIterator[Obj]): Cls =
+    values
+      .map(klass(_))
+      .reduceLeft(_ combine _)
+
+  // ---------------------------------------------------------------------------
   def klass(
 o: aptus.experimental.dyn.data.sngl.DynData): Cls =
     o .galliaPairs

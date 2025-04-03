@@ -45,14 +45,14 @@ object DynInUtils {
   // ===========================================================================
   def jsonls(value: InputFilePath): Dyns =
       value
-        .streamFileLines()
+        .streamFileLines2() // for CloseabledIterator
         .map (fromJson.fromObjectString)
         .dyns
 
     // ---------------------------------------------------------------------------
     def jsonlz(value: InputFilePath): Dynz =
       value
-        .streamFileLines()
+        .streamFileLines2() // for CloseabledIterator
         .map (fromJson.fromObjectString)
         .dynz
 
@@ -61,8 +61,8 @@ object DynInUtils {
   def tsvz(s: InputFilePath): Dynz = _tsv(s).dynz
 
     // ---------------------------------------------------------------------------
-    private def _tsv(s: InputFilePath): IteratoR[Dyn] = {
-      val cells = s .streamFileTsv()
+    private def _tsv(s: InputFilePath): CloseabledIterator[Dyn] = {
+      val cells = s .streamFileTsv2() // for CloseabledIterator
       val first: Seq[Key] = cells.next().map(Key._fromString)
 
       cells

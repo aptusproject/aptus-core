@@ -15,6 +15,11 @@ object CloseabledTests extends TestSuite {
         CloseabledIterator.fromValues("hello", "world").pipe(transform), 
         Seq("HE", "LLO", "WO", "RLD")) }
 
+    // ---------------------------------------------------------------------------
+    test {
+      compare(List(1, 2, 3).iterator.toCloseabledIterator.reduce(_ + _), 6) }
+
+    // ---------------------------------------------------------------------------
     test {
       val cls = List(1, 2, 3).iterator.toCloseabledIterator.toCloseabled
 

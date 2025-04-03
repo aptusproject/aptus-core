@@ -533,7 +533,8 @@ package object aptus
     // ---------------------------------------------------------------------------
     def zipSameSize[B](that: Iterator[B]): Iterator[(A, B)] = IteratorUtils.zipSameSize(itr, that)
 
-    def toCloseabledIterator: CloseabledIterator[A] = CloseabledIterator.fromUncloseable(itr)
+    def toSelfClosingIterator: SelfClosingIterator[A] = new SelfClosingIterator(itr)
+    def toCloseabledIterator : CloseabledIterator [A] = CloseabledIterator.fromUncloseable(itr)
 
     // ===========================================================================
     def logProgress(n: Int                    ): Iterator[A] = IteratorUtils.logIteratorProgress(n, (_: A) => ""   )(itr)

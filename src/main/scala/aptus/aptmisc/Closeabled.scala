@@ -41,7 +41,7 @@ private[aptus] final class Closeabled[T](
   
   // ===========================================================================
   // TODO: t210204105730 - look into https://github.com/com-lihaoyi/geny?
-  private[aptus] final class CloseabledIterator[T](
+  private[aptus] final class CloseabledIterator[+T](
           val underlying: Iterator[T],
           val cls       : Closeable)
         extends Closeable
@@ -57,7 +57,7 @@ private[aptus] final class Closeabled[T](
       def filter(p: T => Boolean): CloseabledIterator[T] = alter(_.filter(p))
       def find  (p: T => Boolean): Option            [T] = consume(_.find(p))
 
-      def reduce(op: (T, T) => T):                    T  = consume(_.reduce(op))
+      def reduce[U >: T](op: (U, U) => U): U = consume(_.reduce(op))
 
       // ---------------------------------------------------------------------------
       def drop     (n: Int)         : CloseabledIterator[T] = alter(_.drop(n))
@@ -70,12 +70,12 @@ private[aptus] final class Closeabled[T](
       def size   : Int     = consume(_.size) // TODO: t220629101212 - offer a Long alternative as well (account for knownSize)
 
       // ===========================================================================
-      def toCloseabled : Closeabled[Iterator[T]] = new Closeabled(underlying, cls)
-      def toSelfClosing:            Iterator[T]  = new SelfClosingIterator(underlying, cls)
+      def toCloseabled[U >: T]: Closeabled[Iterator[U]] = new Closeabled(underlying, cls)
+      def toSelfClosing:                   Iterator[T]  = new SelfClosingIterator(underlying, cls)
 
       // ---------------------------------------------------------------------------
       def consume[U](f: Iterator[T] => U):      U  = { val result = f(underlying); close(); result }
-      def consumeAll                     : List[T] = consume(_.toList)
+      def consumeAll()                   : List[T] = consume(_.toList)
       def consumeNext()                  :      T  = consume(_.next())
 
       // ---------------------------------------------------------------------------

@@ -11,7 +11,7 @@ class CoLookup[A, B](
   // ---------------------------------------------------------------------------
   object CoLookup {
     def forceDoubleLookup[Z, A, B](z: CloseabledIterator[Z])(f1: Z => A, f2: Z => B): (Map[A, B], Map[B, A]) =
-        z.map { obj => f1(obj) -> f2(obj) }.consumeAll.pipe(_forceDoubleLookup(f1, f2))
+        z.map { obj => f1(obj) -> f2(obj) }.consumeAll().pipe(_forceDoubleLookup(f1, f2))
 
       def forceDoubleLookup[Z, A, B](z: Iterator[Z])(f1: Z => A, f2: Z => B): (Map[A, B], Map[B, A]) =
         z.map { obj => f1(obj) -> f2(obj) }.toSeq.pipe(_forceDoubleLookup(f1, f2))
@@ -25,9 +25,9 @@ class CoLookup[A, B](
          pairs.map(_.swap).force.map) }
 
     // ---------------------------------------------------------------------------
-    def forceLookup1[Z, A, B](z: Iterator          [Z])(f1: Z => A, f2: Z => B): Map[A,     B ] = { z.map { obj => f1(obj) -> f2(obj) }.toSeq     .force.map }
-    def forceLookup1[Z, A, B](z: CloseabledIterator[Z])(f1: Z => A, f2: Z => B): Map[A,     B ] = { z.map { obj => f1(obj) -> f2(obj) }.consumeAll.force.map }
-    def forceLookup2[Z, A, B](z: Iterator          [Z])(f1: Z => A, f2: Z => B): Map[A, Seq[B]] = { z.map { obj => f1(obj) -> f2(obj) }.toSeq     .groupByKey }
-    def forceLookup2[Z, A, B](z: CloseabledIterator[Z])(f1: Z => A, f2: Z => B): Map[A, Seq[B]] = { z.map { obj => f1(obj) -> f2(obj) }.consumeAll.groupByKey }}
+    def forceLookup1[Z, A, B](z: Iterator          [Z])(f1: Z => A, f2: Z => B): Map[A,     B ] = { z.map { obj => f1(obj) -> f2(obj) }.toSeq       .force.map }
+    def forceLookup1[Z, A, B](z: CloseabledIterator[Z])(f1: Z => A, f2: Z => B): Map[A,     B ] = { z.map { obj => f1(obj) -> f2(obj) }.consumeAll().force.map }
+    def forceLookup2[Z, A, B](z: Iterator          [Z])(f1: Z => A, f2: Z => B): Map[A, Seq[B]] = { z.map { obj => f1(obj) -> f2(obj) }.toSeq       .groupByKey }
+    def forceLookup2[Z, A, B](z: CloseabledIterator[Z])(f1: Z => A, f2: Z => B): Map[A, Seq[B]] = { z.map { obj => f1(obj) -> f2(obj) }.consumeAll().groupByKey }}
 
 // ===========================================================================

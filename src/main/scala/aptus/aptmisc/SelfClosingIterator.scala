@@ -3,7 +3,7 @@ package aptmisc
 
 // ===========================================================================
 // TODO: consider replacing with geny.Generator
-class SelfClosingIterator[A](parent: Iterator[A], cls: Closeable*) extends Iterator[A] with Closeable {
+class SelfClosingIterator[+A](parent: Iterator[A], cls: Closeable*) extends Iterator[A] with Closeable {
     private var closed: Boolean = false
 
     // ===========================================================================

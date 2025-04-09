@@ -9,7 +9,7 @@ import aptus._
   def main(args: Array[String]): Unit = { apply(); println("ok") }
 
   // ---------------------------------------------------------------------------
-  def apply() { // run with: sbt "Test / runMain aptustesting.AptusQuicktest"
+  def apply() = { // run with: sbt "Test / runMain aptustesting.AptusQuicktest"
     init ()
     init2() }
   
@@ -236,9 +236,9 @@ import aptus._
     val myCloseabled: CloseabledIterator[String] = "/tmp/content".streamFileLines2()
 
     if (true)
-      myCloseabled.consumeAll.p // we can consume the content (will automatically close)
+      myCloseabled.consumeAll().p // we can consume the content (will automatically close)
     else
-      myCloseabled.map(_.toUpperCase).consumeAll.p // with line pre-processing
+      myCloseabled.map(_.toUpperCase).consumeAll().p // with line pre-processing
 
     // ---------------------------------------------------------------------------
     ()

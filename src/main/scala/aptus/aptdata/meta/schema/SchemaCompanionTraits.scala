@@ -3,11 +3,13 @@ package aptdata
 package meta
 package schema
 
+import aptreflect.lowlevel.ReflectionTypesAbstraction.{WTT, WeakTypeTag_}
+import aptreflect.nodes.utils.TypeNodeToSchemaUtils
+
 // ===========================================================================
 trait ClsCompanionTrait {
   /* to do eg: meta.cls("foo" -> 3, ...) */
-//def cls[T: WTT]                         : Cls = implicitly[WTT[T]].typeNode.leaf.forceDataClass -- TODO: t250401142005 (borrow from gallia)
-//def cls(schemaFilePath: String)         : Cls = -- TODO (borrow from gallia)
+  def cls[T: WTT]                 : Cls = implicitly[WTT[T]].typeNode.leaf.pipe(TypeNodeToSchemaUtils.forceNestedClass)
   def cls(field1: Fld, more: Fld*): Cls = Cls((field1 +: more).toList)
   def cls(fields: Seq[Fld])       : Cls = Cls(fields.toList)
 

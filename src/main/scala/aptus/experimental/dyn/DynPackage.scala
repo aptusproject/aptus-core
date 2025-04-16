@@ -4,14 +4,19 @@ package experimental
 // ===========================================================================
 package object dyn
     extends dyn.DynAnything
+
        // ---------------------------------------------------------------------------
        with apttraits.AptusNullShorthands
        with apttraits.AptusDummyImplicitShorthand
+
        // ---------------------------------------------------------------------------
        with dyn.aliases.DynAliases                 /* eg BasicType */
        with dyn.aliases.DynScalaAliases            /* eg Instant */
        with dyn.io.in.TopLevelBuildingUtils        /* eg dyn.single("""{"name": ..}"""") */
        with dyn.io.in.TupleBasedBuildingExtensions /* eg ("name": "Alice", "age" -> 30).dyn */
+
+       // ---------------------------------------------------------------------------
+       with aptreflect.dynamic.DynStaticToDynamic  /* eg Person("Bob", 30).toDynamic */
      /* no AptusMinExtensions (since already under aptus) */ {
 
   private[dyn] implicit def _symbol2String(value: Symbol): String = value.name

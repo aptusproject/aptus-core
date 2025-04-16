@@ -16,8 +16,11 @@ package object dyntest
   // ---------------------------------------------------------------------------
   type NakedValue = Any
 
-  // ---------------------------------------------------------------------------
-implicit class StringSeq2D_(valuess: Seq2D[String]) { // TODO: toaptus
+  type Valew      = domain.valew.Valew
+  val  Valew      = domain.valew.Valew
+
+  // ===========================================================================
+  implicit class StringSeq2D_(valuess: Seq2D[String]) { // TODO: toaptus
     def formatTable: String = utils.TableUtils.formatTable(valuess) }
 
   // ---------------------------------------------------------------------------

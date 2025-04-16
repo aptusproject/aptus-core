@@ -46,7 +46,6 @@ object DynUberTests extends TestSuite {
     // ---------------------------------------------------------------------------
     DynInputTests()
     DynOutputStringTests()
-    DynOutputTableStringsTests()
-    DynOutputFileTests() } }
+    DynOutputTableStringsTests() } }
 
 // ===========================================================================

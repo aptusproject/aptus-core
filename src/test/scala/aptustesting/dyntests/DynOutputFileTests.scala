@@ -30,8 +30,8 @@ object DynOutputFileTests extends TestSuite {
 
     // ---------------------------------------------------------------------------
     // write back TSV
-    test(writeNRead("dyns2.tsv"){ f => TsvFilePath      .dyns.write(f); f.readFileContent.checkCharArrays(TsvFilePath.readFileContent()) })
-    test(writeNRead("dyns3.tsv"){ f => TsvWithCRFilePath.dyns.write(f); f.readFileContent.checkCharArrays(TsvFilePath.readFileContent()) }) }
+    test(writeNRead("dyns2.tsv"){ f => TsvFilePath      .dyns.write(f); f.readFileContent().checkCharArrays(TsvFilePath.readFileContent()) })
+    test(writeNRead("dyns3.tsv"){ f => TsvWithCRFilePath.dyns.write(f); f.readFileContent().checkCharArrays(TsvFilePath.readFileContent()) }) }
 
   // ===========================================================================
   private def writeNRead(fileName: FileName)(f: FilePath => Unit) = {

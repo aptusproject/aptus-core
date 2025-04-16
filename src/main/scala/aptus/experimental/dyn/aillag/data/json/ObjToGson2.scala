@@ -5,8 +5,8 @@ package json
 import org.apache.commons.math3.linear.RealMatrix
 
 import aptus.aptdata.lowlevel.DataFormatting
-import aptus.experimental.dyn.domain.valew.Valew
 import aptus.experimental.dyn.data.sngl.Dyn
+import aptus.experimental.dyn.data.mult.list.Dyns
 
 // ===========================================================================
 private object ObjToGson2 {
@@ -16,17 +16,18 @@ private object ObjToGson2 {
   private lazy val GsonInstance = new com.google.gson.GsonBuilder().create()
 
   // ---------------------------------------------------------------------------
-  def apply(o: Obj ): JsonObject = // TODO: t201230140315 - hopefully there's a more efficient way (no access to "members"?)...
+  def apply(o: Obj): JsonObject = // TODO: t201230140315 - hopefully there's a more efficient way (no access to "members"?)...
       new JsonObject()
         .tap { mut =>
           o .entries
             .foreach { entry =>
               mut.add(
                 /* property = */ entry.key.name, // note: underlying map "uses insertion order for iteration order"
-                /* value    = */ entry.valew match {
-  case Valew(aptus.experimental.dyn.data.mult.list.Dyns(_))   => ???//array(seq.map(element)) // no nested Dynz/Iterator (see a241119155444) - TODO: t250402132436
-                  case Valew(seq: Seq[_]) => jsonArray(seq.map(element))
-                  case Valew(sgl)         => element(sgl) }) } }
+                /* value    = */ entry.valew.naked match {
+                  // note: no nested Dynz/Iterator (see a241119155444) - TODO: t250402132436
+                  case dyns: Dyns  => jsonArray(dyns.exoMap(element))
+                  case seq: Seq[_] => jsonArray(seq.map    (element))
+                  case sgl         => element(sgl) }) } }
 
     // ===========================================================================
     private def element(value: Any): JsonElement =

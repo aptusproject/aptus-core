@@ -80,7 +80,7 @@ private[dyn] trait ValewGetterAccessors {
   def objs (key: Key): Nes[Dyn] = ???
   def obj_ (key: Key): Opt[Dyn] = ???
   def obj  (key: Key): One[Dyn] = ???
-  def objs_(key: Key): Pes[Dyn] = ???
+  def objs_(key: Key): Ons[Dyn] = ???
 
   // ===========================================================================
   // 2D
@@ -113,7 +113,7 @@ private[dyn] trait ValewGetterAccessors {
   def objs (key: Path): Nes[Dyn] = ???
   def obj_ (key: Path): Opt[Dyn] = ???
   def obj  (key: Path): One[Dyn] = ???
-  def objs_(key: Path): Pes[Dyn] = ???
+  def objs_(key: Path): Ons[Dyn] = ???
 
   // ===========================================================================
   //def values$ [$Type](key: KeyW):        Seq[$Type]  = anys$ (key).asInstanceOf[    Seq[$Type] ]
@@ -125,7 +125,7 @@ private[dyn] trait ValewGetterAccessors {
 
   def objs$_(key: Key): Option[Nes[Dyn]] = ???//values$_[Obj](key)
   def objs$$(key: Key):        Seq[Dyn]  = ???//values$$[Obj](key)
-  def objs$$2_(path: Path): Pes[Dyn] = ???
+  def objs$$2_(path: Path): Ons[Dyn] = ???
   def objs$$2 (path: Key) : Nes[Dyn]  = ??? // dis._plumbing.nestingAccess$$2(pnk)(_.accessors.objs$$)
 
   //def texts$_(key: KeyW): Option[Nes[String]] = anys$_(key).map(_.map(_.str))

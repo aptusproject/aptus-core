@@ -44,9 +44,29 @@ private[aptus] trait ClsOps { self: Cls => // TODO: use lenses for transformatio
   def replace(key: Key, info: Info): Self = spr.replaceExactlyOneItem(_.key == key)(_.updateInfo(info)) }
 
 // ===========================================================================
-trait FldOrInfo { def union: Seq[SubInfo]
+trait FldOrInfo {
+  def isOptional: Boolean
+  def union: Seq[SubInfo]
+
+  // ---------------------------------------------------------------------------
+  def subInfo1: SubInfo
 
   // TODO: t250401115230 - bring from gallia: def nestedClassesOpt(disambiguatorOpt: UnionObjectDisambiguatorOpt): Seq   [Cls] = ...
+
+  // ---------------------------------------------------------------------------
+  def  isBasicType(value: BasicType): Boolean = subInfo1.valueType == value
+  def hasBasicType(value: BasicType): Boolean = valueTypes.flatMap(_.basicTypeOpt).contains(value)
+
+  // ---------------------------------------------------------------------------
+  def isRequired: Boolean = !isOptional
+  def isSingle  : Boolean = !subInfo1.multiple
+  def isMultiple: Boolean =  subInfo1.multiple
+
+  // ---------------------------------------------------------------------------
+  def isOne: Boolean = isRequired &&  subInfo1.single
+  def isOpt: Boolean = isOptional &&  subInfo1.single
+  def isNes: Boolean = isRequired && !subInfo1.single
+  def isPes: Boolean = isOptional && !subInfo1.single
 
   // ---------------------------------------------------------------------------
   protected def valueTypes: Seq[ValueType] = union.map(_.valueType)
@@ -64,21 +84,11 @@ private[aptus] trait FldOps extends FldOrInfo { self: Fld =>
   type Self = Fld
 
   // ---------------------------------------------------------------------------
-  override def union = self.info.union
+  override def union      = self.info.union
+  override def isOptional = self.info.optional
 
   // ---------------------------------------------------------------------------
   def skey: String = key.name
-
-  // ---------------------------------------------------------------------------
-  def  isBasicType(value: BasicType): Boolean = subInfo1.valueType == value
-  def hasBasicType(value: BasicType): Boolean = valueTypes.flatMap(_.basicTypeOpt).contains(value)
-
-  // ---------------------------------------------------------------------------
-  def isRequired: Boolean = !info.optional
-  def isOptional: Boolean =  info.optional
-
-  def isSingle  : Boolean = !subInfo1.multiple
-  def isMultiple: Boolean =  subInfo1.multiple
 
   // ---------------------------------------------------------------------------
   def toOptional: Self = copy(info = info.toOptional)
@@ -94,6 +104,8 @@ private[aptus] trait FldOps extends FldOrInfo { self: Fld =>
 // ===========================================================================
 private[aptus] trait InfoOps extends FldOrInfo with SchemaValueExtraction { self: Info =>
   type Self = Info
+
+  override def isOptional = self.optional
 
   // ---------------------------------------------------------------------------
   def toOptional: Self = copy(optional = true)

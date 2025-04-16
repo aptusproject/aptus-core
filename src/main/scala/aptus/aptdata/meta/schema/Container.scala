@@ -5,6 +5,9 @@ package schema
 
 // ===========================================================================
 sealed trait Container {
+    def name: String
+
+    // ---------------------------------------------------------------------------
     def isOne: Boolean = isSingle   && isRequired
     def isOpt: Boolean = isSingle   && isOptional
     def isNes: Boolean = isMultiple && isRequired
@@ -26,6 +29,14 @@ sealed trait Container {
         case Container._Pes => Info.pes(valueType) }
 
     // ---------------------------------------------------------------------------
+    def info1(valueType: ValueType): Info1 =
+      this match {
+        case Container._One => Info1.one(valueType)
+        case Container._Opt => Info1.opt(valueType)
+        case Container._Nes => Info1.nes(valueType)
+        case Container._Pes => Info1.pes(valueType) }
+
+    // ---------------------------------------------------------------------------
     def containerWrap(f: Any => Any): Any => Any =
       this match {
         case Container._One =>                                          f
@@ -38,10 +49,10 @@ sealed trait Container {
     // ---------------------------------------------------------------------------
     // TODO: change name upon serialization (eg "one" instead of "_One")
 
-    case object _One extends Container { val isOptional: Boolean = false; val isMultiple: Boolean = false }
-    case object _Opt extends Container { val isOptional: Boolean = true ; val isMultiple: Boolean = false }
-    case object _Nes extends Container { val isOptional: Boolean = false; val isMultiple: Boolean = true  }
-    case object _Pes extends Container { val isOptional: Boolean = true ; val isMultiple: Boolean = true  }
+    case object _One extends Container { val name = "_One"; val isOptional: Boolean = false; val isMultiple: Boolean = false }
+    case object _Opt extends Container { val name = "_Opt"; val isOptional: Boolean = true ; val isMultiple: Boolean = false }
+    case object _Nes extends Container { val name = "_Nes"; val isOptional: Boolean = false; val isMultiple: Boolean = true  }
+    case object _Pes extends Container { val name = "_Pes"; val isOptional: Boolean = true ; val isMultiple: Boolean = true  }
 
     // ---------------------------------------------------------------------------
     /*

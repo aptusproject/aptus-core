@@ -6,7 +6,7 @@ package schema
 // ===========================================================================
 trait ClsCompanionTrait {
   /* to do eg: meta.cls("foo" -> 3, ...) */
-//def cls[T: WTT]                         : Cls = typeNode[T].leaf.forceDataClass -- TODO: t250401142005 (borrow from gallia)
+//def cls[T: WTT]                         : Cls = implicitly[WTT[T]].typeNode.leaf.forceDataClass -- TODO: t250401142005 (borrow from gallia)
 //def cls(schemaFilePath: String)         : Cls = -- TODO (borrow from gallia)
   def cls(field1: Fld, more: Fld*): Cls = Cls((field1 +: more).toList)
   def cls(fields: Seq[Fld])       : Cls = Cls(fields.toList)

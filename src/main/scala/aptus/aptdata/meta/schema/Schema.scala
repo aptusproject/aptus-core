@@ -31,7 +31,7 @@ case class Cls(
                optional: Optional,
                union   : Seq[SubInfo])
               extends InfoTraits {
-          def required = !optional
+          val required = !optional
            /* see t210125111338 (union types) */
           def   subInfo1: SubInfo   = forceUnionOption(union).force
           def container1: Container = subInfo1.multiple.pype(Container.from(optional, _)) }
@@ -52,6 +52,7 @@ case class Cls(
               multiple : Multiple,
               valueType: ValueType)
             extends SubInfoTraits {
+          val single = !multiple
           def info1(optional: Optional): Info1 =
             Info1(optional, multiple, valueType) }
         object SubInfo

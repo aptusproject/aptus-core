@@ -9,7 +9,7 @@ object TestData {
   import testmeta.TestMeta._
 
   // ---------------------------------------------------------------------------
-  val johnStatic: Person =
+  lazy val johnStatic: Person =
     Person(
         name      = "John Smith",
         age       = 32,
@@ -19,10 +19,10 @@ object TestData {
           Address("2 Belle Blvd"  , "Lyon",    primary = false)))
 
   // ---------------------------------------------------------------------------
-  val johnDynamics: Dyns = Dyns.build(johnDynamic, johnDynamic)
+  lazy val johnDynamics: Dyns = Dyns.build(johnDynamic, johnDynamic)
 
   // ---------------------------------------------------------------------------
-  val johnDynamic: Dyn =
+  lazy val johnDynamic: Dyn =
     dyn(
       "name"      -> "John Smith",
       "age"       -> 32,

@@ -1,0 +1,324 @@
+{
+  "leaf": {
+    "name": "aptustesting.testmeta.TestMeta$.MyComplexData",
+    "dataClass": true,
+    "enumValue": false,
+    "bytes": false,
+    "inheritsSeq": false,
+    "fields": [
+      {
+        "key": "b",
+        "node": {
+          "leaf": {
+            "name": "scala.Boolean",
+            "dataClass": false,
+            "enumValue": false,
+            "bytes": false,
+            "inheritsSeq": false
+          }
+        }
+      },
+      {
+        "key": "myString",
+        "node": {
+          "leaf": {
+            "name": "java.lang.String",
+            "dataClass": false,
+            "enumValue": false,
+            "bytes": false,
+            "inheritsSeq": false
+          }
+        }
+      },
+      {
+        "key": "myOptInt",
+        "node": {
+          "leaf": {
+            "name": "scala.Option",
+            "dataClass": false,
+            "enumValue": false,
+            "bytes": false,
+            "inheritsSeq": false
+          },
+          "args": [
+            {
+              "leaf": {
+                "name": "scala.Int",
+                "dataClass": false,
+                "enumValue": false,
+                "bytes": false,
+                "inheritsSeq": false
+              }
+            }
+          ]
+        }
+      },
+      {
+        "key": "myDoubles",
+        "node": {
+          "leaf": {
+            "name": "scala.collection.immutable.Seq",
+            "dataClass": false,
+            "enumValue": false,
+            "bytes": false,
+            "inheritsSeq": true
+          },
+          "args": [
+            {
+              "leaf": {
+                "name": "scala.Double",
+                "dataClass": false,
+                "enumValue": false,
+                "bytes": false,
+                "inheritsSeq": false
+              }
+            }
+          ]
+        }
+      },
+      {
+        "key": "myOptBooleans",
+        "node": {
+          "leaf": {
+            "name": "scala.Option",
+            "dataClass": false,
+            "enumValue": false,
+            "bytes": false,
+            "inheritsSeq": false
+          },
+          "args": [
+            {
+              "leaf": {
+                "name": "scala.collection.immutable.Seq",
+                "dataClass": false,
+                "enumValue": false,
+                "bytes": false,
+                "inheritsSeq": true
+              },
+              "args": [
+                {
+                  "leaf": {
+                    "name": "scala.Boolean",
+                    "dataClass": false,
+                    "enumValue": false,
+                    "bytes": false,
+                    "inheritsSeq": false
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "key": "myObj",
+        "node": {
+          "leaf": {
+            "name": "aptustesting.testmeta.TestMeta$.MyComplexSubData",
+            "dataClass": true,
+            "enumValue": false,
+            "bytes": false,
+            "inheritsSeq": false,
+            "fields": [
+              {
+                "key": "mySubString",
+                "node": {
+                  "leaf": {
+                    "name": "java.lang.String",
+                    "dataClass": false,
+                    "enumValue": false,
+                    "bytes": false,
+                    "inheritsSeq": false
+                  }
+                }
+              },
+              {
+                "key": "mySubInt",
+                "node": {
+                  "leaf": {
+                    "name": "scala.Int",
+                    "dataClass": false,
+                    "enumValue": false,
+                    "bytes": false,
+                    "inheritsSeq": false
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "key": "myOptObj",
+        "node": {
+          "leaf": {
+            "name": "scala.Option",
+            "dataClass": false,
+            "enumValue": false,
+            "bytes": false,
+            "inheritsSeq": false
+          },
+          "args": [
+            {
+              "leaf": {
+                "name": "aptustesting.testmeta.TestMeta$.MyComplexSubData",
+                "dataClass": true,
+                "enumValue": false,
+                "bytes": false,
+                "inheritsSeq": false,
+                "fields": [
+                  {
+                    "key": "mySubString",
+                    "node": {
+                      "leaf": {
+                        "name": "java.lang.String",
+                        "dataClass": false,
+                        "enumValue": false,
+                        "bytes": false,
+                        "inheritsSeq": false
+                      }
+                    }
+                  },
+                  {
+                    "key": "mySubInt",
+                    "node": {
+                      "leaf": {
+                        "name": "scala.Int",
+                        "dataClass": false,
+                        "enumValue": false,
+                        "bytes": false,
+                        "inheritsSeq": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "key": "myObjs",
+        "node": {
+          "leaf": {
+            "name": "scala.collection.immutable.Seq",
+            "dataClass": false,
+            "enumValue": false,
+            "bytes": false,
+            "inheritsSeq": true
+          },
+          "args": [
+            {
+              "leaf": {
+                "name": "aptustesting.testmeta.TestMeta$.MyComplexSubData",
+                "dataClass": true,
+                "enumValue": false,
+                "bytes": false,
+                "inheritsSeq": false,
+                "fields": [
+                  {
+                    "key": "mySubString",
+                    "node": {
+                      "leaf": {
+                        "name": "java.lang.String",
+                        "dataClass": false,
+                        "enumValue": false,
+                        "bytes": false,
+                        "inheritsSeq": false
+                      }
+                    }
+                  },
+                  {
+                    "key": "mySubInt",
+                    "node": {
+                      "leaf": {
+                        "name": "scala.Int",
+                        "dataClass": false,
+                        "enumValue": false,
+                        "bytes": false,
+                        "inheritsSeq": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "key": "myOptObjs",
+        "node": {
+          "leaf": {
+            "name": "scala.Option",
+            "dataClass": false,
+            "enumValue": false,
+            "bytes": false,
+            "inheritsSeq": false
+          },
+          "args": [
+            {
+              "leaf": {
+                "name": "scala.collection.immutable.Seq",
+                "dataClass": false,
+                "enumValue": false,
+                "bytes": false,
+                "inheritsSeq": true
+              },
+              "args": [
+                {
+                  "leaf": {
+                    "name": "aptustesting.testmeta.TestMeta$.MyComplexSubData",
+                    "dataClass": true,
+                    "enumValue": false,
+                    "bytes": false,
+                    "inheritsSeq": false,
+                    "fields": [
+                      {
+                        "key": "mySubString",
+                        "node": {
+                          "leaf": {
+                            "name": "java.lang.String",
+                            "dataClass": false,
+                            "enumValue": false,
+                            "bytes": false,
+                            "inheritsSeq": false
+                          }
+                        }
+                      },
+                      {
+                        "key": "mySubInt",
+                        "node": {
+                          "leaf": {
+                            "name": "scala.Int",
+                            "dataClass": false,
+                            "enumValue": false,
+                            "bytes": false,
+                            "inheritsSeq": false
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "key": "myClosing",
+        "node": {
+          "leaf": {
+            "name": "scala.Boolean",
+            "dataClass": false,
+            "enumValue": false,
+            "bytes": false,
+            "inheritsSeq": false
+          }
+        }
+      }
+    ]
+  }
+}
+

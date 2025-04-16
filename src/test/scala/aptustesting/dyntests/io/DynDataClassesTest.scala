@@ -2,28 +2,49 @@ package aptustesting
 package dyntest
 package io
 
+import aptus.CloseabledIterator
+import utest._
+
 // ===========================================================================
-object DynDataClassesTest {
-  import aptus.experimental.dyn
+object DynDataClassesTest extends TestSuite {
+  import testmeta.TestMeta.Person
+  import testdata.TestData.{johnStatic, johnDynamic, johnDynamics}
+
+  import aptus.experimental.dyn._ // for .toDynamic
 
   // ---------------------------------------------------------------------------
-  case class Datum(foo: String, baz: Int)
+  val tests = Tests {
+    test("singles") {
+      test( johnStatic.toDynamic       .check(johnDynamic))
+      test(johnDynamic.toStatic[Person].check(johnStatic))
 
-  val datum = Datum(foo = bar, baz = 1)
+      test(util.Try(johnDynamic.toStatic[Nothing])               .checkException(classOf[java.lang.IllegalArgumentException], "E250415171031", "scala.Nothing"))
+      // only a problem for scala 2.x:
+      // test(util.Try(johnDynamic.toStatic)                        .checkException(classOf[java.lang.IllegalArgumentException], "E250415171031", "scala.Nothing"))
 
-  // ===========================================================================
-  def main(args: Array[String]): Unit = { apply(); msg(getClass).p }
+      test(util.Try(johnDynamic.toStatic[Option[Person]])        .checkException(classOf[java.lang.IllegalArgumentException], "E250415171031", "scala.Option"))
+      test(util.Try(johnDynamic.toStatic[Either[Person, Person]]).checkException(classOf[java.lang.IllegalArgumentException], "E250415171031", "scala.util.Either"))
+      test(util.Try(johnDynamic.toStatic[Try   [Person]])        .checkException(classOf[java.lang.IllegalArgumentException], "E250415171031", "scala.util.Try"))
 
-  // ---------------------------------------------------------------------------
-  def apply(): Unit = {
+      // only a problem for scala 2.x:
+      // def myMethod[T <: Product /* forgetting to add ": WTT" */] = johnDynamic.toStatic[T]
+      // test(util.Try(myMethod[Person]).checkException(classOf[java.lang.IllegalArgumentException])) // <none>.T
 
-    if (_f) { //TODO: t241204140907{a,b}
-    dyn.fromDataClass[Datum](datum)               .add(qux -> T)     .check(_Sngl1_T)
-      //      dyn.fromDataClass[Datum](datum)(WTT.to[Datum]).add(qux -> T)     .check(_Sngl1_T)
-      //
-      //      /* round trip */
-      //      datum.pipe(dyn.fromDataClass[Datum]).toDataClass[Datum].check(datum)
-  } } }
+      test(fromDataClass(johnStatic).check(johnDynamic)) }
+
+    // ---------------------------------------------------------------------------
+    test("multiples") {
+      test(List                         (johnStatic, johnStatic).toDynamic.check(johnDynamics))
+      test(Iterator                     (johnStatic, johnStatic).toDynamic.check(johnDynamics))
+      test(CloseabledIterator.fromValues(johnStatic, johnStatic).toDynamic.check(johnDynamics))
+
+      test(johnDynamics       .toStatic[Person]             .check(List(johnStatic, johnStatic)))
+      test(johnDynamics.asDynz.toStatic[Person].consumeAll().check(List(johnStatic, johnStatic))) }
+
+    // ---------------------------------------------------------------------------
+    test("round trips") {
+      test(     johnStatic             .noop(_.toDynamic.toStatic[Person]))
+      test(List(johnStatic, johnStatic).noop(_.toDynamic.toStatic[Person])) } } }
 
 // ===========================================================================
 

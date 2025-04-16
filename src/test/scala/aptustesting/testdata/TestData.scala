@@ -19,7 +19,7 @@ object TestData {
           Address("2 Belle Blvd"  , "Lyon",    primary = false)))
 
   // ---------------------------------------------------------------------------
-  lazy val johnDynamics: Dyns = Dyns.build(johnDynamic, johnDynamic)
+  lazy val johnDynamics: Dyns = Dyns.dyns(johnDynamic, johnDynamic)
 
   // ---------------------------------------------------------------------------
   lazy val johnDynamic: Dyn =

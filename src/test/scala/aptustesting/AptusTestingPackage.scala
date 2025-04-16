@@ -2,11 +2,18 @@
 package object aptustesting {
   import scala.reflect.{classTag, ClassTag}
   import scala.util.{Try, Failure, Success}
+  import scala.util.chaining._
 
   // ---------------------------------------------------------------------------
   type ListMap[K, V] = collection.immutable.ListMap[K, V]
   val  ListMap       = collection.immutable.ListMap
-  
+
+  // ===========================================================================
+  def resourceContent(target: String):      String  = target.pipe(scala.io.Source.fromResource(_)).mkString
+  def resourceLines  (target: String): List[String] = target.pipe(scala.io.Source.fromResource(_)).getLines().toList
+
+  def resourceFilePath(target: String): String = com.google.common.io.Resources.getResource(target).getPath // eg /home/tony/[...]/core/bin/core/scala-2.13/test-classes/test.json
+
   // ===========================================================================
   def noop   [A](actual: A)             : Unit = compare(actual, actual)
   def compare[A](actual: A, expected: A): Unit = { Predef.assert(actual == expected, message = s"\n\texpected: |${expected}|\n\tactual:   |${actual}|") }

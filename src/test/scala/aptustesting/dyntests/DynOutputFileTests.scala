@@ -1,57 +1,47 @@
 package aptustesting
 package dyntest
 
+import utest._
+import aptus.{FileName, FilePath}
+
 // ===========================================================================
-object DynOutputFileTests {
+object DynOutputFileTests extends TestSuite {
   import aptus.experimental.dyn._
 
   // ---------------------------------------------------------------------------
-  private val z3: Dyns = _Mult1.increment(baz)
+  private lazy val z3: Dyns = _Mult1.increment(baz)
+
+  // ---------------------------------------------------------------------------
+  private val TsvFileContent =
+    """|foo	baz
+       |bar1	2
+       |bar2	3
+       |"""
 
   // ===========================================================================
-  def main(args: Array[String]): Unit = { apply() }
-
-  // ---------------------------------------------------------------------------
-  def apply(): Unit = { _apply(); msg(getClass).p }
-
-  // ---------------------------------------------------------------------------
-  private def _apply(): Unit = {
-    "/tmp/dyn.jsono".tap { f =>
-      _Sngl1.increment(baz).write(f)
-      f.readFileContent().check(s"""{"$foo":"$bar","$baz":2}\n""")
-      f.path.file.removeFile() }
+  val tests = Tests {
+    test(writeNRead("dyn.jsono") { f => _Sngl1.increment(baz).write(f); f.readFileContent().check(s"""{"$foo":"$bar","$baz":2}\n""") })
 
     // ---------------------------------------------------------------------------
-    "/tmp/dyns.jsona".tap { f =>
-      z3.write(f)
-      f.readFileContent().check(s"""[{"$foo":"$bar1","$baz":2},{"$foo":"$bar2","$baz":3}]\n""")
-      f.path.file.removeFile() }
+    test(writeNRead("dyns.jsona") { f => z3.write(f); f.readFileContent().check(s"""[{"$foo":"$bar1","$baz":2},{"$foo":"$bar2","$baz":3}]\n""") })
 
     // ---------------------------------------------------------------------------
-    checkIo("/tmp/dyns.tsv")(z3)(
-      """|foo	baz
-         |bar1	2
-         |bar2	3
-         |"""
-        .stripMargin)
+    test(writeNRead("dyns1.tsv") { f => z3.write(f); f.readFileContent().check(TsvFileContent.stripMargin) })
 
     // ---------------------------------------------------------------------------
     // write back TSV
-    checkIo("/tmp/dyns2.tsv")(TsvFilePath      .dyns)(TsvFilePath.readFileContent())
-    checkIo("/tmp/dyns2.tsv")(TsvWithCRFilePath.dyns)(TsvFilePath.readFileContent()) }
+    test(writeNRead("dyns2.tsv"){ f => TsvFilePath      .dyns.write(f); f.readFileContent.checkCharArrays(TsvFilePath.readFileContent()) })
+    test(writeNRead("dyns3.tsv"){ f => TsvWithCRFilePath.dyns.write(f); f.readFileContent.checkCharArrays(TsvFilePath.readFileContent()) }) }
 
   // ===========================================================================
-  @deprecated def checkIo(f: String)(dyns: Dyns)(expected: String) = {
-    dyns.write(f)
+  private def writeNRead(fileName: FileName)(f: FilePath => Unit) = {
+    val parentPath = aptus.fs.tempDirPath
+    val filePath = parentPath / fileName
+    parentPath.path.mkdirs()
 
-    f
-      .readFileContent()
-      .assert(
-        _     == expected,
-        actual =>
-          "\n\tactual:   " + actual  .toCharArray.map(_.toInt).toList +
-          "\n\texpected: " + expected.toCharArray.map(_.toInt).toList + "\n")
+    f(filePath)
 
-    f.path.file.removeFile() } }
+      filePath.path.file.removeFile()
+    parentPath.path.removeEmptyDir() } }
 
 // ===========================================================================

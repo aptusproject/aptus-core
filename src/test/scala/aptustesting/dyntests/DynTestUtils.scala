@@ -12,6 +12,14 @@ object DynTestUtils {
       expected.pipe(format).swp.sectionAllOff("expected:", 2).newline) }
 
   // ---------------------------------------------------------------------------
+  def checkResultCharArray[T](value: T, expected: T)(format: T => String): Unit = {
+    assert(
+      value == expected,
+      "\n" +
+      value   .pipe(format).toCharArray.map(_.toByte).toList +
+      expected.pipe(format).toCharArray.map(_.toByte).toList) }
+
+  // ---------------------------------------------------------------------------
   def checkError[T](err: HasErrorId, superTypeOpt: Option[SuperType]): Try[T] => Try[Boolean] =
     _ .failed
       .map { _.getMessage.pipe { msg =>

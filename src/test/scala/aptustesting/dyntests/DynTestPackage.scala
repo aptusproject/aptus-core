@@ -49,13 +49,19 @@ implicit class StringSeq2D_(valuess: Seq2D[String]) { // TODO: toaptus
     def check(err: HasErrorId)                     : Unit = _check { DynTestUtils.checkError(err, superTypeOpt = None)(_).get }
     def check(err: HasErrorId, expected: SuperType): Unit = _check { DynTestUtils.checkError(err, expected.in.some)   (_).get } // TODO: a actual/expected version
 
-    def checkException(klass: Class[_] /* use tag rather */): Unit = _check(_.failed.get.getClass == klass)
+    def checkException(klass: Class[_] /* use tag rather */)                             : Unit = _check(_.failed.get.getClass == klass)
+    def checkException(klass: Class[_] /* use tag rather */, msg1: String, more: String*): Unit = _check { x =>
+      val throwable = x.failed.get
+
+      throwable.getClass == klass &&
+      (msg1 +: more).forall(msg => throwable.getMessage.contains(msg)) }
 
     // ---------------------------------------------------------------------------
     private def _check(pred: Try[T] => Boolean): Unit = { assert(pred(value), value) } }
 
   // ===========================================================================
   implicit class AnythingTests_[T](value: T) {
+    def noop(f: T => T)           = { f(value).check(value ) }
     def check(expected: T)        = { assert(value == expected, value -> expected) }
     def check(pred: T => Boolean) = { assert(pred(value), value) } }
 
@@ -96,7 +102,7 @@ implicit class StringSeq2D_(valuess: Seq2D[String]) { // TODO: toaptus
   trait TestsTrait[T] {
     val value : T
     val format: T => String
-    def check(expected: T): Unit =
-      DynTestUtils.checkResult(value, expected)(format) } }
+    def check          (expected: T): Unit = DynTestUtils.checkResult(value, expected)(format)
+    def checkCharArrays(expected: T): Unit = DynTestUtils.checkResultCharArray(value, expected)(format) } }
 
 // ===========================================================================

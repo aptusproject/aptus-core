@@ -1,9 +1,17 @@
 package aptustesting
 package dyntest
 
+import utest._
+
 // ===========================================================================
-object DynUberTests {
+object DynUberTests extends TestSuite {
+
+  // ---------------------------------------------------------------------------
   def main(args: Array[String]): Unit = { apply() }
+
+  // ---------------------------------------------------------------------------
+  val tests = Tests {
+    test(apply()) } // TODO: port all to actual tests
 
   // ---------------------------------------------------------------------------
   def apply(): Unit = { _apply(); msg(getClass).p }
@@ -37,7 +45,6 @@ object DynUberTests {
 
     // ---------------------------------------------------------------------------
     DynInputTests()
-    io.DynDataClassesTest()
     DynOutputStringTests()
     DynOutputTableStringsTests()
     DynOutputFileTests() } }

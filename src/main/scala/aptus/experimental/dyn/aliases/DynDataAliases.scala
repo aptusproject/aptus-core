@@ -4,7 +4,7 @@ package dyn
 package aliases
 
 // ===========================================================================
-private[dyn] trait DynDataAliases {
+/*private[aptus] */trait DynDataAliases {
   type Dyn  = data.sngl.Dyn
   type Dyns = data.mult.list.Dyns
   type Dynz = data.mult.iter.Dynz
@@ -14,26 +14,26 @@ private[dyn] trait DynDataAliases {
   val Dynz = data.mult.iter.Dynz
 
   // ---------------------------------------------------------------------------
-  type Valew = domain.valew.Valew
-  val  Valew = domain.valew.Valew
+  private[aptus] type Valew = domain.valew.Valew
+  private[aptus] val  Valew = domain.valew.Valew
 
-  private[dyn] type NakedValue = Any // NOT           Valew
-  private[dyn] type NakedValew = Any // NakedValue or Valew
+  private[aptus] type NakedValue = Any // NOT           Valew
+  private[aptus] type NakedValew = Any // NakedValue or Valew
 
   // ---------------------------------------------------------------------------
-  private[dyn] type Entry = domain.Entry
-  private[dyn] val  Entry = domain.Entry
+  private[aptus] type Entry = domain.Entry
+  private[aptus] val  Entry = domain.Entry
 
-  private[dyn] type Entries = domain.Entries
-  private[dyn] val  Entries = domain.Entries
+  private[aptus] type Entries = domain.Entries
+  private[aptus] val  Entries = domain.Entries
 
-  private[dyn] type EntryList = List[Entry]
+  private[aptus] type EntryList = List[Entry]
 
   // ---------------------------------------------------------------------------
   // sometimes these makes things clearer (eg in constrast with Dyn{s,z})
-  private[dyn] type Sngl = data.sngl.Dyn
-  private[dyn] val  Sngl = data.sngl.Dyn
+  private[aptus] type Sngl = data.sngl.Dyn
+  private[aptus] val  Sngl = data.sngl.Dyn
 
-  private[dyn] type Sngls = CloseabledIterator[Sngl] /* TODO: create actual wrapper? */ }
+  private[aptus] type Sngls = CloseabledIterator[Sngl] /* TODO: create actual wrapper? */ }
 
 // ===========================================================================

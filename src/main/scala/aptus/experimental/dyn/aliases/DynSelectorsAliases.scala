@@ -6,8 +6,8 @@ package aliases
 // ===========================================================================
 trait DynSelectorsAliases extends aptus.aptdata.meta.selectors.SelectorsTrait {
   // TODO: make public?
-  private[dyn] type TargetSelector = aptdata.meta.selectors.TargetSelector
-  private[dyn] val  TargetSelector = aptdata.meta.selectors.TargetSelector
+  private[aptus] type TargetSelector = aptdata.meta.selectors.TargetSelector
+  private[aptus] val  TargetSelector = aptdata.meta.selectors.TargetSelector
 
   // ---------------------------------------------------------------------------
   // keep those public
@@ -23,7 +23,7 @@ trait DynSelectorsAliases extends aptus.aptdata.meta.selectors.SelectorsTrait {
   val Path   = aptdata.meta.selectors.Path
 
   // ---------------------------------------------------------------------------
-  type             Sel = domain.Sel.Sel
-  private[dyn] val Sel = domain.Sel }
+  private[aptus] type Sel = domain.Sel.Sel
+  private[aptus] val  Sel = domain.Sel }
 
 // ===========================================================================

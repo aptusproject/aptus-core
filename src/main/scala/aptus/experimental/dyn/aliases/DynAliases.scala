@@ -4,11 +4,10 @@ package dyn
 package aliases
 
 // ===========================================================================
-private[dyn] trait DynAliases
+private[aptus] trait DynAliases
     extends DynDataAliases
        with DynSelectorsAliases
        with DynErrorAliases {
-
   type Schema = aptus.aptdata.meta.schema.Cls
   val  Schema = aptus.aptdata.meta.schema.Cls
 

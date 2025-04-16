@@ -6,6 +6,8 @@ package meta
 package object basic {
   type pseudosealed = aptus.pseudosealed
 
+  type EnumStringValue = String /* eg "Red" for color enum */
+
   // ---------------------------------------------------------------------------
   trait ClassTagRelated {
       type T
@@ -23,22 +25,6 @@ package object basic {
     // ---------------------------------------------------------------------------
     private[basic] type CT  [T]     = scala.reflect.ClassTag[T]
     private[basic] def  ctag[T: CT] = scala.reflect.classTag[T]
-
-  // ===========================================================================
-  // enums
-
-  type EnumStringValue = String /* eg "Red" for color enum */
-
-  // ---------------------------------------------------------------------------
-  /** a simple wrapper for enum values */
-  case class EnumValue(stringValue: EnumStringValue) extends AnyVal {
-      override def toString: String = stringValue /* used by convert(myEnum).toStr */ }
-
-    // ---------------------------------------------------------------------------
-    object EnumValue {
-      def enumValueOrdering: Ordering[EnumValue] = Ordering.by(_.stringValue)
-
-      def valid(values: Seq[EnumValue]): Boolean = !(values.isEmpty || values.distinct != values) }
 
   // ===========================================================================
   // inferring

@@ -22,12 +22,10 @@ package object aptus
        with AptusOrderings      /* eg aptus.seqOrdering */
        with AptusZippers        /* eg aptus.zip(...) */
        with AptusBinaryUtils    /* eg aptus.byteBuffer(), ... */
-
-       /* for aptus.listMap(...), see scala-version specific files */
+       with AptusListMaps       /* aptus.listMap(...) */
 
        with AptusAnnotations    /* eg @aptus.nonovrd, @aptus.ordermatters, ... */
 
-       with AptusScalaVersionSpecific /*    aptus.listMap & WTT */
        with AptusAliases              /* eg aptus.FilePath, aptus.Size, ... */
        with AptusCommonAliases        /* eg aptus.Regex, aptus.Charset, ... */
        with AptusFormattingTraits     /* eg aptus.HasFormatDefault, ... */

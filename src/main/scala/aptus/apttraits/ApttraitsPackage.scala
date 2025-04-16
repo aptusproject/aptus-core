@@ -58,4 +58,9 @@ package apttraits { // not sure why not letting me put those in the package obje
     def byteBuffer(value: String)           : ByteBuffer = java.nio.ByteBuffer.wrap(value.getBytes)
     def byteBuffer(bytes: Array[Byte])      : ByteBuffer = java.nio.ByteBuffer.wrap(bytes) } }
 
+  // ---------------------------------------------------------------------------
+  trait AptusListMaps {
+    def listMap[K, V](values: Seq[(K, V)])          : ListMap[K, V] = collection.immutable.ListMap.from(values)
+    def listMap[K, V](value1: (K, V), more: (K, V)*): ListMap[K, V] = listMap[K, V](value1 +: more) }
+
 // ===========================================================================

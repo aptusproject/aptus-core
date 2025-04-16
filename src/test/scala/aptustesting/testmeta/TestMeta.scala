@@ -13,7 +13,7 @@ object TestMeta {
     case class PersonAlt(first: String, last: String, phones: Seq[String], addresses: Seq[Address])
 
   // ---------------------------------------------------------------------------
-  val PersonGalliaClass: Cls =
+  val PersonSchema: Cls =
     cls(
       "name"      .string,
       "age"       .int,
@@ -52,6 +52,26 @@ object TestMeta {
       // ---------------------------------------------------------------------------
       case class MyComplexSubData(
           mySubString: String,
-          mySubInt   : Int) }
+          mySubInt   : Int)
+
+  // ---------------------------------------------------------------------------
+  lazy val MyComplexDataSchema: Cls =
+      cls(
+        "b"               	.boolean  ,
+        "myString"        	.string   ,
+        "myOptInt"        	.int_     ,
+        "myDoubles"       	.doubles  ,
+        "myOptBooleans"   	.booleans_,
+        "myObj"           	.cls  (MyComplexSubDataSchema),
+        "myOptObj"        	.cls_ (MyComplexSubDataSchema),
+        "myObjs"          	.clss (MyComplexSubDataSchema),
+        "myOptObjs"       	.clss_(MyComplexSubDataSchema),
+        "myClosing"       	.boolean)
+
+    // ---------------------------------------------------------------------------
+    lazy val MyComplexSubDataSchema: Cls =
+      cls(
+        "mySubString".string,
+        "mySubInt"   .int) }
 
 // ===========================================================================

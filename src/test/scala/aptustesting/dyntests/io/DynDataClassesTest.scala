@@ -3,17 +3,24 @@ package dyntest
 package io
 
 import aptus.CloseabledIterator
+import aptustesting.testmeta.TestMeta.MyComplexData
 import utest._
 
 // ===========================================================================
 object DynDataClassesTest extends TestSuite {
-  import testmeta.TestMeta.Person
+  import testmeta.TestMeta.{Person, MyComplexDataSchema}
   import testdata.TestData.{johnStatic, johnDynamic, johnDynamics}
 
   import aptus.experimental.dyn._ // for .toDynamic
 
   // ---------------------------------------------------------------------------
   val tests = Tests {
+    test("schema") {
+      val myComplexDataCls = aptus.aptdata.meta.schema.cls[MyComplexData]
+      test(myComplexDataCls.check(MyComplexDataSchema))
+      test(aptustesting.resourceContent("ClsExample.json").pipe(aptus.aptdata.meta.bax.clsFromString).check(myComplexDataCls)) }
+
+    // ---------------------------------------------------------------------------
     test("singles") {
       test( johnStatic.toDynamic       .check(johnDynamic))
       test(johnDynamic.toStatic[Person].check(johnStatic))

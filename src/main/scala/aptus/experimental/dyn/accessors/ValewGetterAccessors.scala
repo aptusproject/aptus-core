@@ -77,10 +77,10 @@ private[dyn] trait ValewGetterAccessors {
   def byteBuffers_(key: Key): Ons[ByteBuffer] = get(key).map(_.byteBuffers)
 
   // ===========================================================================
-  def objs (key: Key): Nes[Dyn] = ???
-  def obj_ (key: Key): Opt[Dyn] = ???
-  def obj  (key: Key): One[Dyn] = ???
-  def objs_(key: Key): Ons[Dyn] = ???
+  def obj  (key: Key): One[Dyn] = getOrElse(key, error).dyn
+  def obj_ (key: Key): Opt[Dyn] = get      (key).map (_.dyn)
+  def objs (key: Key): Nes[Dyn] = getOrElse(key, error).dyns.values // t250416161852 -
+  def objs_(key: Key): Ons[Dyn] = get      (key).map (_.dyns.values)
 
   // ===========================================================================
   // 2D

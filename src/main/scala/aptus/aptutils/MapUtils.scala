@@ -36,7 +36,7 @@ object MapUtils {
 
   // ---------------------------------------------------------------------------
   def groupByWithListMap[T, K, V](f: T => K, g: T => V)(values: Iterator[T]): immutable.ListMap[K, Seq[V]] = {
-      var m = immutable.ListMap.empty[K, cross.MutList[V]]
+      var m = immutable.ListMap.empty[K, mutable.ArrayDeque[V]]
 
       for (elem <- values) {
         val key = f(elem)
@@ -44,67 +44,67 @@ object MapUtils {
           m.get(key) match {
             case Some(x) => x
             case None =>
-              val x = cross.MutList[V]()
+              val x = mutable.ArrayDeque[V]()
               m = m + (key -> x) // -------------> seems like '+=' doesn't append? TODO: t210115142355 - investigate
               x }
         bldr += g(elem) }
 
       val b = immutable.ListMap.newBuilder[K, Seq[V]]
       for ((k, v) <- m)
-        b += ((k, cross.mutList(v)))
+        b += ((k, v.toList))
 
       b.result }
 
   // ---------------------------------------------------------------------------
   def groupByKey[K, V](entries: Iterator[(K, V)]): immutable.Map[K, Seq[V]] = {
-      val m = mutable.Map.empty[K, cross.MutList[V]]
+      val m = mutable.Map.empty[K, mutable.ArrayDeque[V]]
 
       for (elem <- entries) {
         val key = elem._1
-        val bldr = m.getOrElseUpdate(key, cross.MutList[V]())
+        val bldr = m.getOrElseUpdate(key, mutable.ArrayDeque[V]())
         bldr += elem._2 }
 
       val b = immutable.Map.newBuilder[K, Seq[V]]
       for ((k, v) <- m)
-        b += ((k, cross.mutList(v)))
+        b += ((k, v.toList))
 
       b.result }
 
     // ---------------------------------------------------------------------------
     def groupByKeyWithListMap[K, V](entries: IterableOnce[(K, V)]): ListMap[K, Seq[V]] = {
-      var m = immutable.ListMap.empty[K, cross.MutList[V]]
+      var m = immutable.ListMap.empty[K, mutable.ArrayDeque[V]]
 
       entries
         .iterator
         .foreach { elem =>
           val key = elem._1
           val bldr =
-            m.get(key) match { //m.getOrElseUpdate(key, cross.MutList[V]())
+            m.get(key) match { //m.getOrElseUpdate(key, mutable.ArrayDeque[V]())
               case Some(x) => x
               case None =>
-                val x = cross.MutList[V]()
+                val x = mutable.ArrayDeque[V]()
                 m = m + (key -> x) // -------------> seems like '+=' doesn't append? TODO: t210115142355 - investigate
                 x }
           bldr += elem._2 }
 
       val b = immutable.ListMap.newBuilder[K, Seq[V]]
       for ((k, v) <- m)
-        b += ((k, cross.mutList(v)))
+        b += ((k, v.toList))
 
       b.result }
 
     // ---------------------------------------------------------------------------
     def groupByKeyWithTreeMap[K, V](entries: Iterator[(K, V)])(implicit ord: Ordering[K]): immutable.TreeMap[K, Seq[V]] = {
-      val m = mutable.TreeMap.empty[K, cross.MutList[V]]
+      val m = mutable.TreeMap.empty[K, mutable.ArrayDeque[V]]
 
       for (elem <- entries) {
         val key = elem._1
-        val bldr = m.getOrElseUpdate(key, cross.MutList[V]())
+        val bldr = m.getOrElseUpdate(key, mutable.ArrayDeque[V]())
         bldr += elem._2 }
 
       val b = immutable.TreeMap.newBuilder[K, Seq[V]]
       for ((k, v) <- m)
-        b += ((k, cross.mutList(v)))
+        b += ((k, v.toList))
 
       b.result }
 
@@ -112,8 +112,8 @@ object MapUtils {
     def groupByAdjacency[A, B](coll: Seq[A])(f: A => B): Seq[(B, Seq[A])] = {
       var previous: B = null.asInstanceOf[B]
 
-      val mut1 = cross.MutList[A]()
-      val mut2 = cross.MutList[(B, Seq[A])]()
+      val mut1 = mutable.ArrayDeque[A]()
+      val mut2 = mutable.ArrayDeque[(B, Seq[A])]()
 
       coll
         .map { value =>

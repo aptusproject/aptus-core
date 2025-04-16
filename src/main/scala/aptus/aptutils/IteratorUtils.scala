@@ -1,13 +1,15 @@
 package aptus
 package aptutils
 
+import collection.mutable.ArrayDeque
+
 // ===========================================================================
 object IteratorUtils {
 
   def groupByPreSortedKey[K, V](itr: Iterator[(K, V)]): Iterator[(K, List[V])] = {
     var previousKeyOpt: Option[K] = None
     
-    var currentGroup = cross.MutList[V]()
+    var currentGroup = ArrayDeque[V]()
     
     itr
       .flatMap { current =>          
@@ -17,7 +19,7 @@ object IteratorUtils {
           if (previousKeyOpt.exists(_ != currentKey)) { // new key
             val entry = previousKeyOpt.get -> currentGroup.toList
             
-            currentGroup = cross.MutList[V]()
+            currentGroup = ArrayDeque[V]()
            
             Some(entry)             
           }
@@ -28,7 +30,7 @@ object IteratorUtils {
         previousKeyOpt = Some(currentKey)
         
         tmp } ++
-      previousKeyOpt.map(_ -> cross.mutList(currentGroup)).iterator }
+      previousKeyOpt.map(_ -> currentGroup.toList).iterator }
 
   // ===========================================================================
   def zipSameSize[A, B](itr: Iterator[A], that: Iterator[B]): Iterator[(A, B)] =

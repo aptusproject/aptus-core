@@ -39,6 +39,9 @@ with aspects.DynzSchemaInferrer2 {
     override def equals(that: Any): Boolean = Error.CantCompareDynz.thro
 
     // ---------------------------------------------------------------------------
+    def toStatic[DC <: Product: aptreflect.lowlevel.ReflectionTypesAbstraction.WTT]: CloseabledIterator[DC] = _toStatic[DC]
+
+    // ---------------------------------------------------------------------------
     // TODO: choose
     def asList: Dyns = values.consumeAll().dyns
     def asDyns: Dyns = values.consumeAll().dyns

@@ -38,6 +38,9 @@ def doubles          : Seq[Double] = ???//  TODO: t241203151505 exoMap(_.double(
     override final protected[dyn]      def valuesIterator      : Sngls = CloseabledIterator.fromSeq(values)
 
     // ---------------------------------------------------------------------------
+    def toStatic[DC <: Product: aptreflect.lowlevel.ReflectionTypesAbstraction.WTT]: List[DC] = _toStatic[DC].consumeAll()
+
+    // ---------------------------------------------------------------------------
     // TODO: choose
     def asIterator: Dynz = valuesIterator.dynz
     def asDynz    : Dynz = valuesIterator.dynz

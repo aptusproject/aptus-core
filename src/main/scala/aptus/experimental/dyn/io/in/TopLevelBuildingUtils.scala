@@ -6,7 +6,7 @@ package in
 
 // ===========================================================================
 trait TopLevelBuildingUtils {
-  def fromDataClass[DC <: Product: WTT](value: DC): Dyn = ??? // TODO - t241204140907a - see b counterpart (dyn -> dc)
+  def fromDataClass[DC <: Product: aptreflect.lowlevel.ReflectionTypesAbstraction.WTT](value: DC): Dyn = value.toDynamic
 
   // ---------------------------------------------------------------------------
   def single      (string: String /* eg path or JSON string */): Dyn  = io.in.DynIn.single   (string)

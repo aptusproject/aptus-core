@@ -40,13 +40,16 @@ case class Dyn private[Dyn] (
     /** mostly to convert doubles to int when applicable ("JSON number tax" - see gallia) - overkill in aptus (vs gallia) */
     def fromJson: Dyn = inferSchema.pipe { y => aillag.data.json.GsonToGalliaData.convertRecursively(y)(self) }
 
-    def toDataClass[DC <: Product: WTT]: DC = ??? // TODO - t241204140907b - see a counterpart (dc -> dyn)
+    // ---------------------------------------------------------------------------
+    def toStatic[DC <: Product: aptreflect.lowlevel.ReflectionTypesAbstraction.WTT]: DC = {
+      val (schema, dynamicToStatic) = aptreflect.dynamic.DynDynamicToStatic.toStatic[DC]
+      dynamicToStatic.instantiateStaticRecursively(schema)(self).asInstanceOf[DC] }
 
     // ---------------------------------------------------------------------------
     def asList    : Dyns = List(this).dyns
     def asIterator: Dynz = List(this).dynz }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   object Dyn
     extends aspects.DynBuilding
        with aspects.DynFluentBuilding

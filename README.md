@@ -7,6 +7,25 @@
 when performance isn't most important. It also helps you code defensively when representing errors in types isn't important (think `assert`).
 
 <!-- =========================================================================== -->
+# Introduction
+For a good introduction to the library, see my talk from the Functional Scala 2024 conference: [video](https://drive.google.com/file/d/11uPPinjlpWQmpv220iyKgwdpgwbSSbRD) (not posted on YT yet)
+
+In particular the talk discusses the next exciting development for Aptus: bringing quick and simple dynamic data manipulations to the library, for instance:
+
+```scala
+ import aptus.dyn._
+
+ "/path/to/my.tsv" // eg: name,age,occupation,pets
+  .dyns
+    .rename   ("occupation" ~> "job")
+    .increment("age")
+    .remove   ("pets")
+  .write("/path/to/my.jsonl") // one JSON doc per line
+```
+
+Not mentioned in the talk: the ability to go to/from case classes - it wasn't implemented  back then; __coming soon__: ability to interact with Python via _ScalaPy_ (think pandas)
+
+<!-- =========================================================================== -->
 ## SBT
 <a name="211006113932"></a>
 `libraryDependencies += "io.github.aptusproject" %% "aptus-core" % "0.7.0"`

@@ -3,11 +3,8 @@ package aptdata
 
 // ===========================================================================
 trait AptusGalliaDataAdaptor
-  extends AptusDataTraits          // Date, BigDec, Fld, Info, _Optional, TypeMatching, ...
-     with AptusGalliaCommonAliases // Obj & Objs
+    extends AptusDataTraits { // Date, BigDec, Fld, Info, _Optional, TypeMatching, ...
 
-// ===========================================================================
-trait AptusGalliaCommonAliases {
   private[aptus] type Obj = sngl.Dyn
   private[aptus] val  Obj = sngl.Dyn
 

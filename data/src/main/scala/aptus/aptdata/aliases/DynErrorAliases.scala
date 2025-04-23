@@ -5,6 +5,8 @@ package aliases
 // ===========================================================================
 trait DynErrorAliases {
   private[aptdata] val  Error = domain.errors.Error
+
+  // ---------------------------------------------------------------------------
   private[aptdata] type DataEntityErrorFormatter  = domain.errors.DataEntityErrorFormatter
   private[aptdata] val  DataEntityErrorFormatter  = domain.errors.DataEntityErrorFormatter
 

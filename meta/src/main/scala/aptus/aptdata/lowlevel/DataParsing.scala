@@ -19,6 +19,6 @@ object DataParsing {
     value
       .stripPrefixGuaranteed(DataFormatting.Base64StringPrefix)
       .unBase64
-      .pype(java.nio.ByteBuffer.wrap) }
+      .pipe(java.nio.ByteBuffer.wrap) }
 
 // ===========================================================================

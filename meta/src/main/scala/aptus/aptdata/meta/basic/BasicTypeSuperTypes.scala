@@ -25,6 +25,7 @@ package basic
       extends BasicType
       with    HasParseString
       with    HasFieldHasType {
+
     final override def has: Fld => Boolean =
       _.info.subInfo1.valueType == this }
 

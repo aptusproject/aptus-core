@@ -52,6 +52,6 @@ object BasicTypeValueTransformer {
   private def numberToLong(n: Number): Long =
     n .doubleValue
       .assert(aptus.aptdata.lowlevel.DataValueTransforming.doubleFitsLong)
-      .pype(d => d.toLong.ensuring(_.toDouble == d)) }
+      .pipe(d => d.toLong.ensuring(_.toDouble == d)) }
 
 // ===========================================================================

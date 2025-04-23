@@ -14,12 +14,12 @@ package basic
   // ---------------------------------------------------------------------------
   @pseudosealed trait HasParseAnyToDouble { self: HasParseDouble =>; type T
       final def parseAnyToDouble: Any => T =
-        _.asInstanceOf[Double].pype(parseDouble) }
+        _.asInstanceOf[Double].pipe(parseDouble) }
 
     // ---------------------------------------------------------------------------
     @pseudosealed trait HasParseAny { self: HasParseString =>; type T
       final def parseAny: Any => T =
-        _.asInstanceOf[String].pype(parseString) }
+        _.asInstanceOf[String].pipe(parseString) }
 
   // ---------------------------------------------------------------------------
   @pseudosealed trait HasFormatString { type T
@@ -28,12 +28,18 @@ package basic
 // ---------------------------------------------------------------------------
 @pseudosealed trait HasFieldHasType { def has: Fld => Boolean }
 
+// ---------------------------------------------------------------------------
+@pseudosealed trait HasTypeNode { def node: TypeNode }
+
+// ---------------------------------------------------------------------------
+@pseudosealed trait HasFullyQualifiedName { def fullName: FullyQualifiedName }
+
 // ===========================================================================
 @pseudosealed trait HasPair { x: HasParseString =>
   type T
   def pair: (String => T, Long => T)
   final override def parseString =
-    pair.pype { case (ifString, ifLong) =>
+    pair.pipe { case (ifString, ifLong) =>
       (s: String) =>
         if (!s.forall(_.isDigit)) ifString(s)
         else                      ifLong  (s.toLong) } }

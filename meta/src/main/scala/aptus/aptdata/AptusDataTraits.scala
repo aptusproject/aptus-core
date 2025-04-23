@@ -2,11 +2,11 @@ package aptus
 package aptdata
 
 // ===========================================================================
-trait AptusGalliaMetaAdaptor
+trait AptusDataTraits
   extends AptusDataScalaAliases    // Date, BigDec, ...
-     with AptusGalliaSchemaAliases   // Fld, Info, ...
-     with AptusGalliasBooleanAliases // _Optional, ...
-     with AptusGalliaAnnotations     // TypeMatching, ...
+     with AptusDataSchemaAliases   // Fld, Info, ...
+     with AptusDataBooleanAliases // _Optional, ...
+     with AptusDataAnnotations     // TypeMatching, ...
 
   // ===========================================================================
   trait AptusDataScalaAliases {
@@ -20,7 +20,7 @@ trait AptusGalliaMetaAdaptor
     private[aptus] type Instant    = java.time.Instant }
 
   // ===========================================================================
-  trait AptusGalliaSchemaAliases {
+  trait AptusDataSchemaAliases {
     type Cls       = meta.schema.Cls
     type Fld       = meta.schema.Fld
     type Info      = meta.schema.Info
@@ -35,19 +35,23 @@ trait AptusGalliaMetaAdaptor
     val SubInfo = meta.schema.SubInfo
 
     // ---------------------------------------------------------------------------
+    type Container = meta.schema.Container
+    val  Container = meta.schema.Container
+
+    // ---------------------------------------------------------------------------
     type ValueType = meta.schema.ValueType
 
     type BasicType = meta.basic.BasicType
     val  BasicType = meta.basic.BasicType }
 
 // ===========================================================================
-trait AptusGalliaAnnotations {
+trait AptusDataAnnotations {
   private[aptus] class        TypeMatching(val message: String = "") extends scala.annotation.StaticAnnotation
   private[aptus] class PartialTypeMatching(val message: String = "") extends scala.annotation.StaticAnnotation
   private[aptus] class NumberAbstraction  (val message: String = "") extends scala.annotation.StaticAnnotation }
 
 // ===========================================================================
-trait AptusGalliasBooleanAliases {
+trait AptusDataBooleanAliases {
   private[aptus] type Multiple = Boolean
   private[aptus] type Optional = Boolean
 

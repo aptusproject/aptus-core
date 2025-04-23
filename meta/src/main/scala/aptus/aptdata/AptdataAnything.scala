@@ -1,18 +1,6 @@
 package aptus
 
 // ===========================================================================
-//package object aptdata
-//    extends AptdataAnything
-//       with AptusGalliaMetaAdaptor {
-//
-//  // ---------------------------------------------------------------------------
-//  implicit class AptusDataChaining_[A](value: A) {
-//    @inline def pype[B](f: A => B): B = f(value) } // TODO: t250122123254 - why
-//
-//  // ---------------------------------------------------------------------------
-//  private[aptdata] type AnyValue = Any }
-
-// ===========================================================================
 package aptdata {
 
   trait AptdataAnything {

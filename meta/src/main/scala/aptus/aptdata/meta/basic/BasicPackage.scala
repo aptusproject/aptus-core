@@ -6,9 +6,15 @@ package meta
 package object basic {
   type pseudosealed = aptus.pseudosealed
 
-  type EnumStringValue = String /* eg "Red" for color enum */
+  // ---------------------------------------------------------------------------
+  type TypeNode = aptreflect.nodes.TypeNode
+  val  TypeNode = aptreflect.nodes.TypeNode
 
   // ---------------------------------------------------------------------------
+  type FullyQualifiedName = aptreflect.names.FullyQualifiedName
+  val  FullyQualifiedName = aptreflect.names.FullyQualifiedName
+
+  // ===========================================================================
   trait ClassTagRelated {
       type T
 

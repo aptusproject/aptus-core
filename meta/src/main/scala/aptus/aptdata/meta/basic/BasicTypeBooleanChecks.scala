@@ -5,7 +5,11 @@ package basic
 
 // ===========================================================================
 trait BasicTypeBooleanChecks { self: BasicType =>
-  def isBoundedNumber: Boolean = self.isInstanceOf[BoundedNumber] // used by inferring
+  def isNumericalType  : Boolean = self.isInstanceOf[NumericalType  ]
+  def isUnboundedNumber: Boolean = self.isInstanceOf[UnboundedNumber]
+  def isBoundedNumber  : Boolean = self.isInstanceOf[BoundedNumber  ] // used by inferring
+  def isIntegerLikeType: Boolean = self.isInstanceOf[IntegerLikeType]
+  def isRealLikeType   : Boolean = self.isInstanceOf[RealLikeType   ]
 
   // ---------------------------------------------------------------------------
   // codegened (see 241121238317)
@@ -27,6 +31,8 @@ trait BasicTypeBooleanChecks { self: BasicType =>
   def isDateTime: Boolean = self == BasicType._DateTime
   def isInstant : Boolean = self == BasicType._Instant
 
-  def isBinary  : Boolean = self == BasicType._Binary }
+  def isBinary  : Boolean = self == BasicType._Binary
+
+  def isEnm     : Boolean = self.isInstanceOf[BasicType._Enm] }
 
 // ===========================================================================

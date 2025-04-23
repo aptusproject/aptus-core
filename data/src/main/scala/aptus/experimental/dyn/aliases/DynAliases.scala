@@ -12,10 +12,6 @@ private[aptus] trait DynAliases
   val  Schema = aptus.aptdata.meta.schema.Cls
 
   // ---------------------------------------------------------------------------
-  type BasicType = aptus.aptdata.meta.basic.BasicType
-  val  BasicType = aptus.aptdata.meta.basic.BasicType
-
-  // ---------------------------------------------------------------------------
   private[dyn] type ValueF = Valew => NakedValue
 
   // ===========================================================================

@@ -4,6 +4,7 @@ package dyn
 package ops
 package mult
 
+import aptus.aptdata.static.DynDynamicToStatic
 import common.HasDataEntityErrorFormatter
 
 // ===========================================================================
@@ -19,7 +20,7 @@ trait MultipleTrait[Mult <: HasIteratorRelated[Mult]]
 
   // ---------------------------------------------------------------------------
   final protected def _toStatic[DC <: Product: aptreflect.lowlevel.ReflectionTypesAbstraction.WTT]: CloseabledIterator[DC] = {
-    val (schema, dynamicToStatic) = aptreflect.dynamic.DynDynamicToStatic.toStatic[DC]
+    val (schema, dynamicToStatic) = DynDynamicToStatic.toStatic[DC]
     exoMap { dynamicToStatic.instantiateStaticRecursively(schema)(_).asInstanceOf[DC] } }
 
   // ---------------------------------------------------------------------------

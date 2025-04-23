@@ -9,13 +9,8 @@ trait AillagPackageTrait {
   type AnyValue = Any
   type Key      = aptdata.meta.schema.Key
 
-  // ---------------------------------------------------------------------------
-  private[aillag] type Container = aptdata.meta.schema.Container
-  private[aillag] val  Container = aptdata.meta.schema.Container
-
   // ===========================================================================
   // enums
-  type EnumStringValue = aptdata.meta.basic.EnumStringValue
 
   type EnumValue = aptdata.meta.basic.EnumValue
   val  EnumValue = aptdata.meta.basic.EnumValue

@@ -5,6 +5,7 @@ package data
 package sngl
 
 import aptus.aptdata.ops.OpsBorrowedFromGallia
+import aptus.aptdata.static.DynDynamicToStatic
 import dyn.{Dyn => _Self}
 import dyn.ops._
 import dyn.ops.common._
@@ -42,7 +43,7 @@ case class Dyn private[Dyn] (
 
     // ---------------------------------------------------------------------------
     def toStatic[DC <: Product: aptreflect.lowlevel.ReflectionTypesAbstraction.WTT]: DC = {
-      val (schema, dynamicToStatic) = aptreflect.dynamic.DynDynamicToStatic.toStatic[DC]
+      val (schema, dynamicToStatic) = DynDynamicToStatic.toStatic[DC]
       dynamicToStatic.instantiateStaticRecursively(schema)(self).asInstanceOf[DC] }
 
     // ---------------------------------------------------------------------------

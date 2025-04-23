@@ -10,14 +10,6 @@ private[dyn] trait DynScalaAliases {
 
   type RealMatrixCommons = org.apache.commons.math3.linear.RealMatrix
 
-  // ---------------------------------------------------------------------------
-  private[dyn] type ListMap[K, V] = collection.immutable.ListMap[K, V]
-
-  private[dyn] type BigDec     = BigDecimal
-  private[dyn] type ByteBuffer = java.nio.ByteBuffer
-
-  private[dyn] type Date     = java.time.LocalDate
-  private[dyn] type DateTime = java.time.LocalDateTime
-  private[dyn] type Instant  = java.time.Instant }
+  private[dyn] type ListMap[K, V] = collection.immutable.ListMap[K, V] }
 
 // ===========================================================================

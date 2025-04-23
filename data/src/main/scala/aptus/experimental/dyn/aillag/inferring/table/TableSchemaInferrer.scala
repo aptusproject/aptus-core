@@ -4,6 +4,7 @@ package inferring
 package table
 
 import aptus.{Seq_, Map_}
+import aptus.aptdata.meta.schema.AptusMetaContainer_
 import io.CellConf
 
 // ===========================================================================

@@ -5,7 +5,6 @@ package ops
 package common
 
 import domain.{IntegerLike, RealLike}
-import aptus.aptdata.PartialTypeMatching
 
 // ===========================================================================
 trait CommonMoreTransforms[Data] {

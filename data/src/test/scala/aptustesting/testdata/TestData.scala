@@ -1,8 +1,8 @@
 package aptustesting
 package testdata
 
-import aptus.experimental.dyn.{Dyn, Dyns}
-import aptus.experimental.dyn.Dyn.dyn
+import aptus.dyn.{Dyn, Dyns}
+import aptus.dyn.Dyn.dyn
 
 // ===========================================================================
 object TestData {

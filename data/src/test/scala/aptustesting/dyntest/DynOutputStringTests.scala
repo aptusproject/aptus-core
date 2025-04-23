@@ -5,7 +5,7 @@ package dyntest
 // ===========================================================================
 object DynOutputStringTests {
   import aptus.dyn._
-  import aptus.experimental.dyn.data.json
+  import aptus.aptdata.json
 
   // ===========================================================================
   private val expected1 =

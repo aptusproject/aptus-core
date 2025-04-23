@@ -5,7 +5,8 @@ import aptus.aptreflect.nodes.{TypeLeaf, TypeNode}
 // ===========================================================================
 package object aptdata
     extends AptdataAnything
-       with AptusDataTraits {
+       with AptusDataTraits
+       with DynPackage {
 
   /* indirection so TypeNode doesn't directly refer to Dyn */
   implicit class AptusDataTypeNode_(protected val diss: TypeNode) extends AptusDataTypeNode

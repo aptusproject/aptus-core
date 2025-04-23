@@ -28,7 +28,7 @@ object DynInputTests {
         dyn(foo -> "BAR", baz -> "1" /* no type inferrence by default - see a241125114008 */) }
 
     // ===========================================================================
-    val expected: aptus.experimental.dyn.ops.ConvertOps[Dyns] = _Mult1.upperCase(foo).convert(baz)
+    val expected: aptus.aptdata.ops.ConvertOps[Dyns] = _Mult1.upperCase(foo).convert(baz)
 
     // ---------------------------------------------------------------------------
     JsonArrayFilePath

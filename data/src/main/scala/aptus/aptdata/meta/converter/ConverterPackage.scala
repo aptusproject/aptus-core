@@ -2,15 +2,10 @@ package aptus
 package aptdata
 package meta
 
-import experimental.dyn.aillag.data.json.GsonParsing
+import aptdata.aillag.data.json.GsonParsing
 
 // ===========================================================================
 package object converter {
-
-  private[converter] type Dyn = experimental.dyn.data.sngl.Dyn
-  private[converter] val  Dyn = experimental.dyn.data.sngl.Dyn
-
-  // ---------------------------------------------------------------------------
   private[converter] type EnumValue = aptus.aptdata.meta.basic.EnumValue
   private[converter] val  EnumValue = aptus.aptdata.meta.basic.EnumValue
 

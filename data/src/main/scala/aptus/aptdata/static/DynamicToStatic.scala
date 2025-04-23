@@ -3,8 +3,6 @@ package aptdata
 package static
 
 import aptreflect.Instantiator
-import aptus.experimental.dyn.Dyns
-import aptus.aptdata.meta.selectors.Key
 
 // ===========================================================================
 class DynamicToStatic[$SingleEntity](

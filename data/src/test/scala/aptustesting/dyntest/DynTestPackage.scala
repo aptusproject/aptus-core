@@ -16,8 +16,8 @@ package object dyntest
   // ---------------------------------------------------------------------------
   type NakedValue = Any
 
-  type Valew      = aptus.experimental.dyn.domain.valew.Valew
-  val  Valew      = aptus.experimental.dyn.domain.valew.Valew
+  type Valew      = aptus.aptdata.domain.valew.Valew
+  val  Valew      = aptus.aptdata.domain.valew.Valew
 
   // ===========================================================================
   implicit class StringSeq2D_(valuess: Seq2D[String]) { // TODO: toaptus

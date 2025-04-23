@@ -5,7 +5,7 @@ import utils.CommonsMatrixUtils._
 
 // ===========================================================================
 object DynTensorsTest {
-  import aptus.experimental.dyn.Dyn .dyn
+  import aptus.aptdata.Dyn.dyn
 
   // ===========================================================================
   private val matrix = "matrix"

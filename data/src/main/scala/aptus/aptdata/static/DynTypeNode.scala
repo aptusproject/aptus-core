@@ -3,7 +3,6 @@ package aptdata
 package static
 
 import aptreflect.nodes.{TypeNode, TypeLeaf, TypeField}
-import experimental.dyn.Dyn
 
 // ===========================================================================
 object DynTypeNode {

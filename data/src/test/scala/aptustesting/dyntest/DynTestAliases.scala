@@ -1,7 +1,7 @@
 package aptustesting
 package dyntest
 
-import aptus.experimental.dyn.domain
+import aptus.aptdata.domain
 
 // ===========================================================================
 trait DynTestAliases {

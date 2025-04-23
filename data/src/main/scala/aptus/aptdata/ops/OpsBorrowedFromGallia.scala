@@ -2,9 +2,6 @@ package aptus
 package aptdata
 package ops
 
-import aptus.experimental.dyn
-import aptus.experimental.dyn._
-
 // ===========================================================================
 trait OpsBorrowedFromGallia extends AptusGalliaDataAdaptor { self: Dyn =>
   private type Keyz   = Seq[Key]
@@ -13,10 +10,6 @@ trait OpsBorrowedFromGallia extends AptusGalliaDataAdaptor { self: Dyn =>
 
   // ---------------------------------------------------------------------------
   private implicit class Path_(u: Path) { def value: Path = u }
-
-  // ===========================================================================
-  private[OpsBorrowedFromGallia] implicit class DynAnything_[A](protected val value: A) {
-      private[OpsBorrowedFromGallia] def pype[B](f: A => B)   : B =   f(value) }
 
   // ===========================================================================
   // borrowed from gallia (TODO: t241130165320 - refactor)
@@ -30,7 +23,7 @@ trait OpsBorrowedFromGallia extends AptusGalliaDataAdaptor { self: Dyn =>
                                             def nest(targets: Keyz, nestingKey: Key): Obj =
                                               (retainOpt(targets), removeOpt(targets)) match {
                                                 case (None        , _         ) => self
-                                                case (Some(target), None      ) => dyn.data.sngl.Dyn.dyn(nestingKey -> target)
+                                                case (Some(target), None      ) => aptdata.sngl.Dyn.dyn(nestingKey -> target)
                                                 case (Some(target), Some(rest)) =>
                                                   attemptKey(nestingKey)
                                                     .map {
@@ -55,13 +48,13 @@ trait OpsBorrowedFromGallia extends AptusGalliaDataAdaptor { self: Dyn =>
                                           // ===========================================================================
                                           // from AtomsHelper
 
-                                          protected def _reorderKeysRecursively(f: Seq[SKey] => Seq[SKey])(o: dyn.data.sngl.DynDataWithGetter): Obj =
+                                          protected def _reorderKeysRecursively(f: Seq[SKey] => Seq[SKey])(o: aptdata.sngl.DynDataWithGetter): Obj =
                                             __reorderKeysRecursively(_tmp(f))(o)
 
                                           // ---------------------------------------------------------------------------
-                                          protected def __reorderKeysRecursively(f: Seq[Key] => Seq[Key])(o: dyn.data.sngl.DynDataWithGetter): Obj =
+                                          protected def __reorderKeysRecursively(f: Seq[Key] => Seq[Key])(o: aptdata.sngl.DynDataWithGetter): Obj =
                                             o .keys
-                                              .pype(f)
+                                              .pipe(f)
                                               .map { key =>
                                                 key ->
                                                   (o.__forceKeyScl3Hack(key) match { // TODO: t210115095838 - optimization: pass nesting info from meta rather
@@ -70,7 +63,7 @@ trait OpsBorrowedFromGallia extends AptusGalliaDataAdaptor { self: Dyn =>
                                                       //[error] -- Error: /home/tony/scl/aptus/aptus-core/src/main/scala/gallia/ops/GalliaBorrowedOps.scala:67:53
                                                       //[error] 67 |                                                  (o.forceKey(key) match {
                                                       //[error]    |                                                     ^
-                                                      //[error]    |Cannot resolve reference to type (o : aptus.experimental.dyn.data.sngl.DynDataWithGetter).NakedValue.
+                                                      //[error]    |Cannot resolve reference to type (o : aptus.aptdata.sngl.DynDataWithGetter).NakedValue.
                                                       //[error]    |The classfile defining the type might be missing from the classpath.
 
                                                     case x: Obj    => __reorderKeysRecursively(f)(x)
@@ -87,7 +80,7 @@ trait OpsBorrowedFromGallia extends AptusGalliaDataAdaptor { self: Dyn =>
     (keys: Seq[Key]) =>
       keys
         .map(_.name)
-        .pype(f)
+        .pipe(f)
         .map(Key._fromString) }
 
 // ===========================================================================

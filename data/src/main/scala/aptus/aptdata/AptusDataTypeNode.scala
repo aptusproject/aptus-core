@@ -3,7 +3,6 @@ package aptdata
 
 import aptreflect.nodes.{TypeLeaf, TypeNode}
 import aptus.aptdata.static.DynTypeNode
-import experimental.dyn.Dyn
 
 // ===========================================================================
 trait AptusDataTypeNode extends meta.AptusMetaTypeNode {

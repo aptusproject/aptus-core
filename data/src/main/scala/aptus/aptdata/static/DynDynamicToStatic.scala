@@ -6,9 +6,7 @@ import aptreflect.lowlevel.ReflectionTypesAbstraction.{WTT, WeakTypeTag_}
 
 // ===========================================================================
 object DynDynamicToStatic {
-  import experimental.dyn.Dyn
 
-  // ---------------------------------------------------------------------------
   private[aptus] def toStatic[T <: Product : WTT]: (Cls, DynamicToStatic[Dyn]) = {
     val wtt = implicitly[WTT[T]]
 

@@ -29,7 +29,7 @@ object DynMultipleTest {
     // union/append/prepend
 
     {
-      def _tmp[T <: aptus.experimental.dyn.ops.mult.MultipleOpsTrait[T]]
+      def _tmp[T <: aptus.aptdata.ops.mult.MultipleOpsTrait[T]]
           (x: Dyns, y: Dyns)
           (f: Dyns => T)
           (g: T => Dyns) = {

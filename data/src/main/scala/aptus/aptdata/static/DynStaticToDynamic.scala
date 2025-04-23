@@ -2,11 +2,9 @@ package aptus
 package aptdata
 package static
 
-import aptdata.meta.schema._
 import aptreflect.nodes.TypeNode
 import aptreflect.lowlevel.ReflectionTypesAbstraction.{WTT, WeakTypeTag_}
-import experimental.dyn.{Dyn, Dyns}
-import experimental.dyn.domain.Entry
+import meta.schema.AnyValue
 
 // ===========================================================================
 object DynStaticToDynamic extends DynStaticToDynamic

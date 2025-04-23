@@ -10,7 +10,7 @@ import dyn.data.mult.list.{Dyns => _Self}
 import common.CommonOutputter
 
 // ===========================================================================
-/** MUST fit in memory (unlike `Dynz`) */
+/** MUST fit in memory (unlike `Dynz`); order matters (250423153434), can be empty (a250423153435) */
 case class Dyns private[Dyns] (
       protected[dyn] val values: Seq[Dyn])
     extends ops.mult.HasAllMultiple[_Self]

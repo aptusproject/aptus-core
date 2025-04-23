@@ -1,10 +1,12 @@
 package aptus
 package experimental
 
-import aptus.aptdata.static.DynStaticToDynamic
-
 // ===========================================================================
-package object dyn
+package object dyn extends DynPackage
+
+// ---------------------------------------------------------------------------
+package dyn {
+  trait DynPackage
     extends dyn.DynAnything
 
        // ---------------------------------------------------------------------------
@@ -14,15 +16,13 @@ package object dyn
        // ---------------------------------------------------------------------------
        with aptdata.AptdataAnything // pipe & tap
        with aptdata.AptusDataTraits // Date, BigDec, Fld, Info, _Optional, TypeMatching, ...
+       with aptdata.static.DynStaticToDynamic  /* eg Person("Bob", 30).toDynamic */
 
        // ---------------------------------------------------------------------------
        with dyn.aliases.DynAliases                 /* eg Dyn, Key, ... */
        with dyn.aliases.DynScalaAliases            /* eg Seq2D */
        with dyn.io.in.TopLevelBuildingUtils        /* eg dyn.single("""{"name": ..}"""") */
        with dyn.io.in.TupleBasedBuildingExtensions /* eg ("name": "Alice", "age" -> 30).dyn */
-
-       // ---------------------------------------------------------------------------
-       with DynStaticToDynamic  /* eg Person("Bob", 30).toDynamic */
      /* no AptusMinExtensions (since already under aptus) */ {
 
   private[dyn] implicit def _symbol2String(value: Symbol): String = value.name
@@ -93,7 +93,7 @@ package object dyn
   // ===========================================================================
   private[dyn] implicit class DynIterator_(values: CloseabledIterator[Dyn]) {
     private[dyn] def dyns: Dyns = data.mult.list.Dyns.build(values.toList)
-    private[dyn] def dynz: Dynz = data.mult.iter.Dynz.build(values) } }
+    private[dyn] def dynz: Dynz = data.mult.iter.Dynz.build(values) } } }
 
 // ===========================================================================
 

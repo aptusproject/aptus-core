@@ -11,7 +11,7 @@ import dyn.ops._
 import dyn.ops.common._
 
 // ===========================================================================
-// no duplicate keys, order matters
+// no duplicate keys (a250423153423), order matters (250423153424), can be empty (a250423153425)
 case class Dyn private[Dyn] (
       protected[dyn] val data: List[Entry])
     extends AllCommons[_Self]

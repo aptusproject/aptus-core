@@ -11,7 +11,8 @@ import common.CommonOutputter
 
 // ===========================================================================
 /** a241128152444 - does not HAVE to fit in memory (unlike `Dyns`), but more limited in terms of operations
- * unlike gallia's counterpart, one cannot just "fork" Dynz directly: must "checkpoint" it manually */
+ * unlike gallia's counterpart, one cannot just "fork" Dynz directly: must "checkpoint" it manually.
+ * can be empty (a250423153435)*/
 case class Dynz(
       protected[dyn] val values: CloseabledIterator[Dyn])
     extends ops.mult.HasAllMultiple[_Self]

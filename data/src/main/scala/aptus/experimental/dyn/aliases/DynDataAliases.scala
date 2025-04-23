@@ -4,14 +4,14 @@ package dyn
 package aliases
 
 // ===========================================================================
-/*private[aptus] */trait DynDataAliases {
-  type Dyn  = data.sngl.Dyn
-  type Dyns = data.mult.list.Dyns
-  type Dynz = data.mult.iter.Dynz
+trait DynDataAliases {
+  @publik type Dyn  = data.sngl.Dyn
+  @publik type Dyns = data.mult.list.Dyns
+  @publik type Dynz = data.mult.iter.Dynz
 
-  val Dyn  = data.sngl.Dyn
-  val Dyns = data.mult.list.Dyns
-  val Dynz = data.mult.iter.Dynz
+  @publik val Dyn  = data.sngl.Dyn
+  @publik val Dyns = data.mult.list.Dyns
+  @publik val Dynz = data.mult.iter.Dynz
 
   // ---------------------------------------------------------------------------
   private[aptus] type Valew = domain.valew.Valew

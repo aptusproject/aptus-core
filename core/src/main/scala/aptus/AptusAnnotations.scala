@@ -10,6 +10,9 @@ trait AptusAnnotations { import scala.annotation.StaticAnnotation
   /** in cases where should be sealed but can't because we refactored some code to another file for clarity */
   class pseudosealed(val message: String = "") extends StaticAnnotation
 
+  /** to convey something is intended to be public */
+  class publik(val message: String = "") extends StaticAnnotation
+
   /** to convey something is final conceptually in the corner case of multiple inheritance */
   class finl(val message: String = "") extends StaticAnnotation
 

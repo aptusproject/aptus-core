@@ -2,15 +2,14 @@ package aptus
 package aptdata
 
 // ===========================================================================
-trait AptusGalliaDataAdaptor
-  extends AptusGalliaScalaAliases    // Date, BigDec, ...
-     with AptusGalliaCommonAliases   // Obj & Objs
+trait AptusGalliaMetaAdaptor
+  extends AptusDataScalaAliases    // Date, BigDec, ...
      with AptusGalliaSchemaAliases   // Fld, Info, ...
      with AptusGalliasBooleanAliases // _Optional, ...
      with AptusGalliaAnnotations     // TypeMatching, ...
 
   // ===========================================================================
-  trait AptusGalliaScalaAliases {
+  trait AptusDataScalaAliases {
     private[aptus] type BigDec     = BigDecimal
     private[aptus] val  BigDec     = BigDecimal
 
@@ -46,14 +45,6 @@ trait AptusGalliaAnnotations {
   private[aptus] class        TypeMatching(val message: String = "") extends scala.annotation.StaticAnnotation
   private[aptus] class PartialTypeMatching(val message: String = "") extends scala.annotation.StaticAnnotation
   private[aptus] class NumberAbstraction  (val message: String = "") extends scala.annotation.StaticAnnotation }
-
-// ===========================================================================
-trait AptusGalliaCommonAliases {
-  private[aptus] type Obj = aptus.experimental.dyn.data.sngl.Dyn
-  private[aptus] val  Obj = aptus.experimental.dyn.data.sngl.Dyn
-
-  private[aptus] type Objs = aptus.experimental.dyn.data.mult.list.Dyns
-  private[aptus] val  Objs = aptus.experimental.dyn.data.mult.list.Dyns }
 
 // ===========================================================================
 trait AptusGalliasBooleanAliases {

@@ -44,6 +44,27 @@ package object schema
   // ---------------------------------------------------------------------------
   case class FldPair(field1: Fld, field2: Fld) {
     override def toString: String = formatDefault
-      def formatDefault: String = Seq(field1.formatDefault, field2.formatDefault).section } }
+      def formatDefault: String = Seq(field1.formatDefault, field2.formatDefault).section }
+
+  // ===========================================================================
+  implicit class MetaContainer_(val diss: Container) extends MetaContainer
+
+    // ---------------------------------------------------------------------------
+    trait MetaContainer { val diss: Container
+
+      def info(valueType: ValueType): Info =
+        diss match {
+          case Container._One => Info.one(valueType)
+          case Container._Opt => Info.opt(valueType)
+          case Container._Nes => Info.nes(valueType)
+          case Container._Pes => Info.pes(valueType) }
+
+      // ---------------------------------------------------------------------------
+      def info1(valueType: ValueType): Info1 =
+        diss match {
+          case Container._One => Info1.one(valueType)
+          case Container._Opt => Info1.opt(valueType)
+          case Container._Nes => Info1.nes(valueType)
+          case Container._Pes => Info1.pes(valueType) } } }
 
 // ===========================================================================

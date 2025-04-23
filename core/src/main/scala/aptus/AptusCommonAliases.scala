@@ -3,7 +3,7 @@ package aptus
 // ===========================================================================
 private[aptus] trait AptusCommonAliases
     extends AptusCommonsTimeAliases {
-  private[aptus] type ListMap[K, V] = scala.collection.immutable.ListMap[K, V]
+                 type ListMap[K, V] = scala.collection.immutable.ListMap[K, V]
 
   // ---------------------------------------------------------------------------
   private[aptus] type Charset  = java.nio.charset.Charset

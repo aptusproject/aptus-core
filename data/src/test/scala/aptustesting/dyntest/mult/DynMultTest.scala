@@ -4,9 +4,7 @@ package mult
 
 // ===========================================================================
 object DynMultipleTest {
-  import aptus.experimental.dyn._
-  import Dyn .dyn
-  import Dyns.dyns
+  import aptus.dyn._
 
   // ===========================================================================
   def main(args: Array[String]): Unit = { apply() }
@@ -31,7 +29,7 @@ object DynMultipleTest {
     // union/append/prepend
 
     {
-      def _tmp[T <: ops.mult.MultipleOpsTrait[T]]
+      def _tmp[T <: aptus.experimental.dyn.ops.mult.MultipleOpsTrait[T]]
           (x: Dyns, y: Dyns)
           (f: Dyns => T)
           (g: T => Dyns) = {
@@ -70,9 +68,6 @@ object DynMultipleTest {
     _Mult1.append(dyn(baz -> 3)).filter(_.int(baz) < 3)    .check(_Mult1)
 
     _Mult1.append(dyn(baz -> 3)).filter(_.containsKey(foo)).check(_Mult1)
-    _Mult1.append(dyn(baz -> 3)).filter(_.int(baz) < 3)    .check(_Mult1)
-
-  }
-}
+    _Mult1.append(dyn(baz -> 3)).filter(_.int(baz) < 3)    .check(_Mult1) } }
 
 // ===========================================================================

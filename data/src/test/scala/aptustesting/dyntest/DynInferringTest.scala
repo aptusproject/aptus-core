@@ -3,8 +3,7 @@ package dyntest
 
 // ===========================================================================
 object DynInferringTest {
-  import aptus.experimental.dyn._
-  import Dyn .dyn
+  import aptus.dyn._
 
   // ---------------------------------------------------------------------------
   import aptus.aptdata.meta.schema._
@@ -36,11 +35,13 @@ object DynInferringTest {
 
     Try { _Mult1.append(dyn(foo -> 3)).inferSchema }
       // for now we error out (see task t241129144211)
-      .checkException(classOf[aillag.inferring.SchemaInferrerUtils.IncompatibleInfoException])
+      .checkException(classOf[aptus.experimental.dyn.aillag.inferring.SchemaInferrerUtils.IncompatibleInfoException])
 
     // ===========================================================================
     // from JSON:
 
+    single            (JsonObjectFilePath).check(_Sngl1r) // 1.0
+    fromJsonObjectFile(JsonObjectFilePath).check(_Sngl1r) // 1.0
     JsonObjectFilePath.dyn         .check(_Sngl1r) // 1.0
     JsonObjectFilePath.dyn.fromJson.check(_Sngl1a) // 1.0 -> 1
     _Sngl1r               .fromJson.check(_Sngl1a) // 1.0 -> 1

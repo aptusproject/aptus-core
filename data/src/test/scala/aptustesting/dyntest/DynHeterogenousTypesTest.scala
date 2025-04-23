@@ -3,8 +3,7 @@ package dyntest
 
 // ===========================================================================
 object DynHeterogenousTypesTest {
-  import aptus.experimental.dyn._
-  import Dyn.dyn
+  import aptus.dyn._
 
   // ===========================================================================
   def main(args: Array[String]): Unit = { apply(); msg(getClass).p }

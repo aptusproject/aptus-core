@@ -4,9 +4,7 @@ package dyntest
 
 // ===========================================================================
 object DynTest {
-  import aptus.experimental.dyn._
-  import Dyn .dyn
-  import Dyns.dyns
+  import aptus.dyn._
 
   // ===========================================================================
   def main(args: Array[String]): Unit = { apply(); msg(getClass).p }

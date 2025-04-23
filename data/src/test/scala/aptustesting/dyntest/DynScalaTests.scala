@@ -3,7 +3,7 @@ package dyntest
 
 // ===========================================================================
 object DynScalaTest { // TODO: move those to aptus test
-  import aptus.experimental.dyn._
+  import aptus.dyn._
   import aptus.listMap
 
   // ===========================================================================

@@ -3,7 +3,7 @@ package dyntest
 
 // ===========================================================================
 object DynAccessorsTest {
-  import aptus.experimental.dyn._
+  import aptus.dyn._
 
   // ===========================================================================
   def main(args: Array[String]): Unit = { apply(); msg(getClass).p }

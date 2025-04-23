@@ -3,9 +3,7 @@ package dyntest
 
 // ===========================================================================
 object DynTransformDerivedTest {
-  import aptus.experimental.dyn._
-  import Dyn .dyn
-  import Dyns.dyns
+  import aptus.dyn._
   import Error._
 
   // ===========================================================================
@@ -69,8 +67,6 @@ _Sngl1 .convert(baz).toDouble.transformIntegerLike(selectors.TargetSelectorShort
     // ===========================================================================
     _Sngl1.remove(baz).transformSole(_.string.toUpperCase).check(dyn(foo -> BAR))
     //FIXME: t241204111738 - have to retain original multiple-ness -
-if (_f) _Sngl1.remove(baz).transformSoleString (_.toUpperCase).check(dyn(foo -> BAR))
-  }
-}
+if (_f) _Sngl1.remove(baz).transformSoleString (_.toUpperCase).check(dyn(foo -> BAR)) } }
 
 // ===========================================================================

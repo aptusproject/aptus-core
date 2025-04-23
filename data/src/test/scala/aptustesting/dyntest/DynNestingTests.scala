@@ -3,9 +3,7 @@ package dyntest
 
 // ===========================================================================
 object DynNestingTest {
-  import aptus.experimental.dyn._
-  import Dyn .dyn
-  import Dyns.dyns
+  import aptus.dyn._
 
   // ===========================================================================
   private val f1 = "f1"
@@ -24,8 +22,6 @@ object DynNestingTest {
     // ---------------------------------------------------------------------------
     dyn(f1 -> foo , f2 -> foo , g -> 1)
         .nest(f1).under(F)
-      .check(dyn(f2 -> foo, g -> 1, F -> dyn(f1 -> foo)))
-  }
-}
+      .check(dyn(f2 -> foo, g -> 1, F -> dyn(f1 -> foo))) } }
 
 // ===========================================================================

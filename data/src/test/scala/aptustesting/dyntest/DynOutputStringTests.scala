@@ -1,10 +1,11 @@
 package aptustesting
 package dyntest
 
+
 // ===========================================================================
 object DynOutputStringTests {
-  import aptus.experimental.dyn._
-  import Dyn.dyn
+  import aptus.dyn._
+  import aptus.experimental.dyn.data.json
 
   // ===========================================================================
   private val expected1 =
@@ -53,9 +54,9 @@ object DynOutputStringTests {
 
     // ---------------------------------------------------------------------------
     // TODO: t241205093939 - simplify
-    data.json.customJsonFormatters +
+    json.customJsonFormatters +
         (classOf[java.nio.file.Path] ->
-          new data.json.CustomJsonFormatter {
+          new json.CustomJsonFormatter {
             def format(value: Any): String =
               value.asInstanceOf[java.nio.file.Path].toFile.getAbsolutePath })
 

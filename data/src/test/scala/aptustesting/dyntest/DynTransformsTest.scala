@@ -3,9 +3,7 @@ package dyntest
 
 // ===========================================================================
 object DynTransformsTest {
-  import aptus.experimental.dyn._
-  import Dyn .dyn
-  import Dyns.dyns
+  import aptus.dyn._
   import Error._
 
   // ===========================================================================
@@ -86,7 +84,6 @@ object DynTransformsTest {
 		_Sngl1.transform(foo ~> FOO).using(_.string.toUpperCase).check(dyn(FOO -> BAR, baz -> 1))
 
     // ---------------------------------------------------------------------------
-    _Sngl1.transformString(foo).using(_.toUpperCase)
-  } }
+    _Sngl1.transformString(foo).using(_.toUpperCase) } }
 
 // ===========================================================================

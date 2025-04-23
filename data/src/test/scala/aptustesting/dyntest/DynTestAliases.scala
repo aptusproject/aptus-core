@@ -1,13 +1,15 @@
 package aptustesting
 package dyntest
 
+import aptus.experimental.dyn.domain
+
 // ===========================================================================
-trait DynTestAliases { import aptus.experimental.dyn._
+trait DynTestAliases {
   type Try[T] = util.Try[T]
   val  Try    = util.Try
 
   // ---------------------------------------------------------------------------
-   val  Error      = domain.errors.Error
+  val  Error      = domain.errors.Error
 
   type HasErrorId = domain.errors.HasErrorId
 
@@ -19,9 +21,9 @@ trait DynTestAliases { import aptus.experimental.dyn._
   val     RealLike = domain.   RealLike
 
   // ---------------------------------------------------------------------------
-  val _Int = BasicType._Int
+  type SuperType = domain.SuperType
 
   // ---------------------------------------------------------------------------
-  type SuperType = domain.SuperType }
+  val _Int = aptus.aptdata.meta.basic.BasicType._Int }
 
 // ===========================================================================

@@ -4,9 +4,6 @@ package mult
 
 // ===========================================================================
 object DynsTest {
-  import aptus.experimental.dyn._
-  import Dyn.{Empty, Dummy, Dummy2, dummy, dyn}
-  import Dyns.dyns
   def main(args: Array[String]): Unit = { apply() }
 
   // ---------------------------------------------------------------------------

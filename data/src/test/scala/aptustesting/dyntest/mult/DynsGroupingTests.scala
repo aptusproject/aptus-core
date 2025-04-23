@@ -4,9 +4,7 @@ package mult
 
 // ===========================================================================
 object DynsGroupingTest {
-  import aptus.experimental.dyn._
-  import Dyn.{Empty, Dummy, Dummy2, dummy, dyn}
-  import Dyns.dyns
+  import aptus.dyn._
 
   // ===========================================================================
   private val GroupingInput: Dyns  = z9.append(dyn(foo -> "bar1", baz -> 3))
@@ -30,8 +28,6 @@ object DynsGroupingTest {
   // ---------------------------------------------------------------------------
   private def _apply(): Unit = {
     GroupingInput.groupBy(foo)        .check(Output1)
-    GroupingInput.group  (baz).by(foo).check(Output2)
-  }
-}
+    GroupingInput.group  (baz).by(foo).check(Output2) } }
 
 // ===========================================================================

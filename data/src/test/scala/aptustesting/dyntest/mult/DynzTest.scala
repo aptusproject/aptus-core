@@ -4,7 +4,6 @@ package mult
 
 // ===========================================================================
 object DynzTest {
-  import aptus.experimental.dyn._
   def main(args: Array[String]): Unit = { apply() }
 
   // ---------------------------------------------------------------------------

@@ -3,8 +3,8 @@ package dyntest
 
 // ===========================================================================
 object DynVeryBasicTest {
-  import aptus.experimental.dyn._
-  import Dyn._
+  import aptus.dyn._
+  import Dyn.{Dummy, Dummy2, Empty}
 
   // ---------------------------------------------------------------------------
   private val expected1 = dyn("value" -> "dummy", "value2" -> "dummy2")
@@ -80,7 +80,6 @@ object DynVeryBasicTest {
       yy.reorderKeysRecursively(_.reverse).check(dyn(qux -> true, p -> xx))
 
       yy                                          .equivalent(yy).checkTrue()
-      yy.reorderKeysRecursively(_.reverse).pipe(yy.equivalent)   .checkTrue() }
-  } }
+      yy.reorderKeysRecursively(_.reverse).pipe(yy.equivalent)   .checkTrue() } } }
 
 // ===========================================================================

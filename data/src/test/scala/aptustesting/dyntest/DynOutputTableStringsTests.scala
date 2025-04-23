@@ -3,7 +3,7 @@ package dyntest
 
 // ===========================================================================
 object DynOutputTableStringsTests {
-  import aptus.experimental.dyn._
+  import aptus.dyn._
   import Dyn.dyn
 
   // ===========================================================================
@@ -46,9 +46,6 @@ object DynOutputTableStringsTests {
     _Multiple01.dynz.formatRows(foo, baz)(_.missingValue("NA")).consumeAll().joinln.newline.check(HeaderRows12nl)
 
     // ===========================================================================
-    _Multiple01.dynz.formatTableLike.check(Rows12.newline)
-  }
-
-}
+    _Multiple01.dynz.formatTableLike.check(Rows12.newline) } }
 
 // ===========================================================================

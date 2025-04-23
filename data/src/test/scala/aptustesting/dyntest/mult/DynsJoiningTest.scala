@@ -4,9 +4,7 @@ package mult
 
 // ===========================================================================
 object DynsJoiningTest {
-  import aptus.experimental.dyn._
-  import Dyn .dyn
-  import Dyns.dyns
+  import aptus.dyn._
 
   // ===========================================================================
   private val bar1_T = dyn(foo -> bar1, qux -> T)
@@ -39,11 +37,9 @@ object DynsJoiningTest {
   // ---------------------------------------------------------------------------
   private def _apply(): Unit = {
     _Mult1.join(that1, via = foo).check(expectedJoin)
-    _Mult1.join(that1)           .check(expectedJoin) //costly, favor providing join key whenever possible
+    _Mult1.join(that1)           .check(expectedJoin) /* costly, favor providing join key whenever possible */
 
     _Mult1.bringAll(that2, via = foo).check(expectedBringAll)
-    _Mult1.bringAll(that2)           .check(expectedBringAll) //costly, favor providing join key whenever possible
-  }
-}
+    _Mult1.bringAll(that2)           .check(expectedBringAll) /* costly, favor providing join key whenever possible */ } }
 
 // ===========================================================================

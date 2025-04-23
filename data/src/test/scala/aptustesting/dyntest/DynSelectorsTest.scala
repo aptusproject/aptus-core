@@ -3,8 +3,7 @@ package dyntest
 
 // ===========================================================================
 object DynSelectorsTests {
-  import aptus.experimental.dyn._
-  import Dyn .dyn
+  import aptus.dyn._
   import Error.TransformGuaranteeFailure
 
   // ---------------------------------------------------------------------------

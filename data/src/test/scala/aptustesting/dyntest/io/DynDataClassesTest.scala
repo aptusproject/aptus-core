@@ -11,7 +11,7 @@ object DynDataClassesTest extends TestSuite {
   import testmeta.TestMeta.{Person, MyComplexDataSchema}
   import testdata.TestData.{johnStatic, johnDynamic, johnDynamics}
 
-  import aptus.experimental.dyn._ // for .toDynamic
+  import aptus.dyn._ // for .toDynamic & fromDataClass
 
   // ---------------------------------------------------------------------------
   val tests = Tests {

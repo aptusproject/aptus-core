@@ -3,15 +3,7 @@ package dyntest
 
 // ===========================================================================
 object DynMoreTests {
-  import aptus.experimental.dyn._
-  import Dyn .dyn
-  import Dyns.dyns
-
-  // ===========================================================================
-  private val f1 = "f1"
-  private val f2 = "f2"
-  private val F  = "F"
-  private val g  = "g"
+  import aptus.dyn._
 
   // ===========================================================================
   def main(args: Array[String]): Unit = { apply() }
@@ -58,8 +50,6 @@ object DynMoreTests {
 
       // dyn("p" -> dyn(foo -> "bar")).rename("p" |> foo -> "FOO")
       in.transform   ("p").using(_.dyn.rename(foo).to("FOO")).check(res)
-      in.transformDyn("p")      (_    .rename(foo).to("FOO")).check(res)
-    }
-}}
+      in.transformDyn("p")      (_    .rename(foo).to("FOO")).check(res) } } }
 
 // ===========================================================================

@@ -8,7 +8,7 @@ package object dyntest
        with DynTestAliases
        with aptus.apttraits.AptusChaining
        with aptus.apttraits.AptusMinExtensions {
-  import aptus.experimental.dyn._
+  import aptus.dyn._
 
   val _t = true
   val _f = false
@@ -16,8 +16,8 @@ package object dyntest
   // ---------------------------------------------------------------------------
   type NakedValue = Any
 
-  type Valew      = domain.valew.Valew
-  val  Valew      = domain.valew.Valew
+  type Valew      = aptus.experimental.dyn.domain.valew.Valew
+  val  Valew      = aptus.experimental.dyn.domain.valew.Valew
 
   // ===========================================================================
   implicit class StringSeq2D_(valuess: Seq2D[String]) { // TODO: toaptus

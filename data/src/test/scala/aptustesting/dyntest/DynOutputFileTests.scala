@@ -6,7 +6,7 @@ import aptus.{FileName, FilePath}
 
 // ===========================================================================
 object DynOutputFileTests extends TestSuite {
-  import aptus.experimental.dyn._
+  import aptus.dyn._
 
   // ---------------------------------------------------------------------------
   private lazy val z3: Dyns = _Mult1.increment(baz)

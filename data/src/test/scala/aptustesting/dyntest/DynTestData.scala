@@ -1,10 +1,7 @@
 package aptustesting
 package dyntest
 
-//TODO: better imports for dyn in dyntest
-import aptus.experimental.dyn._
-import Dyn .dyn
-import Dyns.dyns
+import aptus.dyn._
 
 // ===========================================================================
 trait DynTestData {

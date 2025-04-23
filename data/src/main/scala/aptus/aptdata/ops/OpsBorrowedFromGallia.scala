@@ -6,13 +6,17 @@ import aptus.experimental.dyn
 import aptus.experimental.dyn._
 
 // ===========================================================================
-trait OpsBorrowedFromGallia { self: Dyn =>
+trait OpsBorrowedFromGallia extends AptusGalliaDataAdaptor { self: Dyn =>
   private type Keyz   = Seq[Key]
   private type KPathW = Path
           type NakedValue = Any
 
   // ---------------------------------------------------------------------------
   private implicit class Path_(u: Path) { def value: Path = u }
+
+  // ===========================================================================
+  private[OpsBorrowedFromGallia] implicit class DynAnything_[A](protected val value: A) {
+      private[OpsBorrowedFromGallia] def pype[B](f: A => B)   : B =   f(value) }
 
   // ===========================================================================
   // borrowed from gallia (TODO: t241130165320 - refactor)

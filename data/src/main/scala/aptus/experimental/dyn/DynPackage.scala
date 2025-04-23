@@ -1,6 +1,8 @@
 package aptus
 package experimental
 
+import aptus.aptdata.static.DynStaticToDynamic
+
 // ===========================================================================
 package object dyn
     extends dyn.DynAnything
@@ -10,33 +12,38 @@ package object dyn
        with apttraits.AptusDummyImplicitShorthand
 
        // ---------------------------------------------------------------------------
-       with dyn.aliases.DynAliases                 /* eg BasicType */
-       with dyn.aliases.DynScalaAliases            /* eg Instant */
+       with aptdata.AptdataAnything // pipe & tap
+       with aptdata.AptusDataTraits // Date, BigDec, Fld, Info, _Optional, TypeMatching, ...
+
+       // ---------------------------------------------------------------------------
+       with dyn.aliases.DynAliases                 /* eg Dyn, Key, ... */
+       with dyn.aliases.DynScalaAliases            /* eg Seq2D */
        with dyn.io.in.TopLevelBuildingUtils        /* eg dyn.single("""{"name": ..}"""") */
        with dyn.io.in.TupleBasedBuildingExtensions /* eg ("name": "Alice", "age" -> 30).dyn */
 
        // ---------------------------------------------------------------------------
-       with aptreflect.dynamic.DynStaticToDynamic  /* eg Person("Bob", 30).toDynamic */
+       with DynStaticToDynamic  /* eg Person("Bob", 30).toDynamic */
      /* no AptusMinExtensions (since already under aptus) */ {
 
   private[dyn] implicit def _symbol2String(value: Symbol): String = value.name
   private[dyn] implicit def _string2Symbol(value: String): Symbol = Symbol(value)
 
   // ===========================================================================
-  trait HasTargetSelector { @abstrct protected def target: TargetSelector }
+  private[dyn] trait HasTargetSelector {
+      @abstrct protected def target: TargetSelector }
 
-  // ---------------------------------------------------------------------------
-  object selectors {
-      val TargetSelectorShorthands = aptdata.meta.selectors.TargetSelectorShorthands
-      val TargetSelector           = aptdata.meta.selectors.TargetSelector }
-
-  // ---------------------------------------------------------------------------
-  trait ValewGetter {
-    @abstrct       protected[dyn] def get      (key: Key)               : Option[Valew]
-    @nonovrd final protected      def getOrElse(key: Key, alt: => Valew):        Valew = get(key).getOrElse(alt) }
+    // ---------------------------------------------------------------------------
+    private[dyn] trait ValewGetter {
+      @abstrct       protected[dyn] def get      (key: Key)               : Option[Valew]
+      @nonovrd final protected      def getOrElse(key: Key, alt: => Valew):        Valew = get(key).getOrElse(alt) }
 
   // ===========================================================================
-  val _group = "_group"
+  @publik val _group = "_group"
+
+  // ===========================================================================
+  object selectors {
+    val TargetSelectorShorthands = aptdata.meta.selectors.TargetSelectorShorthands
+    val TargetSelector           = aptdata.meta.selectors.TargetSelector }
 
   // ===========================================================================
   object shorthands extends shorthands
@@ -62,7 +69,7 @@ package object dyn
       def ~~>(s: Key): Ren  = Ren(u, s); def ||>(s: Key): Path = Path(Seq(u), s) /* if need to avoid conflict with Gallia's */  }
 
   // ===========================================================================
-  implicit class String__(val u: String) extends io.in.DynIoStringExtensions
+  @publik implicit class DynIoStringExtensions_(val u: String) extends io.in.DynIoStringExtensions
 
   // ---------------------------------------------------------------------------
                implicit class EntriesSeq_ (values:  Seq[(SKey, NakedValue)]) {              def dyn: Dyn = Dyn.build(values.map(Entry._fromString)) }
@@ -71,19 +78,20 @@ package object dyn
 
   // ---------------------------------------------------------------------------
   // will remove after (t241130165320 - refactor code borrowed from gallia)
-  implicit class EntriesSeq2GalliaTmp_(values:  Seq[(Key, NakedValue)])  { def galliaDyn: Dyn = Dyn.build(values.map(Entry._fromKey))  }
+  private [aptus] implicit class EntriesSeq2GalliaTmp_(values:  Seq[(Key, NakedValue)])  {
+    def galliaDyn: Dyn = Dyn.build(values.map(Entry._fromKey))  }
 
   // ---------------------------------------------------------------------------
-  private[dyn] implicit class Seq___ (values: Seq [Dyn]) {
+  private[dyn] implicit class DynSeq_(values: Seq [Dyn]) {
     private[dyn] def dyns: Dyns = data.mult.list.Dyns.build(values)
     private[dyn] def dynz: Dynz = data.mult.iter.Dynz.build(CloseabledIterator.fromSeq(values)) }
 
   // ---------------------------------------------------------------------------
-  private[dyn] implicit class View___(values: collection.View[Dyn]) {
+  private[dyn] implicit class DynView_(values: collection.View[Dyn]) {
     private[dyn] def dyns: Dyns = data.mult.list.Dyns.build(values.toList) }
 
   // ===========================================================================
-  private[dyn] implicit class Iterator__(values: CloseabledIterator[Dyn]) {
+  private[dyn] implicit class DynIterator_(values: CloseabledIterator[Dyn]) {
     private[dyn] def dyns: Dyns = data.mult.list.Dyns.build(values.toList)
     private[dyn] def dynz: Dynz = data.mult.iter.Dynz.build(values) } }
 

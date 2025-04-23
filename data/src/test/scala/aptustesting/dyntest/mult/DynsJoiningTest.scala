@@ -5,7 +5,7 @@ package mult
 // ===========================================================================
 object DynsJoiningTest {
   import aptus.experimental.dyn._
-  import Dyn.{Empty, Dummy, Dummy2, dummy, dyn}
+  import Dyn .dyn
   import Dyns.dyns
 
   // ===========================================================================

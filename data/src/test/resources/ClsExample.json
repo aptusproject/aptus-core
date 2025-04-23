@@ -1,0 +1,232 @@
+{
+  "fields": [
+    {
+      "key": "b",
+      "info": {
+        "optional": false,
+        "union": [
+          {
+            "multiple": false,
+            "valueType": "_Boolean"
+          }
+        ]
+      }
+    },
+    {
+      "key": "myString",
+      "info": {
+        "optional": false,
+        "union": [
+          {
+            "multiple": false,
+            "valueType": "_String"
+          }
+        ]
+      }
+    },
+    {
+      "key": "myOptInt",
+      "info": {
+        "optional": true,
+        "union": [
+          {
+            "multiple": false,
+            "valueType": "_Int"
+          }
+        ]
+      }
+    },
+    {
+      "key": "myDoubles",
+      "info": {
+        "optional": false,
+        "union": [
+          {
+            "multiple": true,
+            "valueType": "_Double"
+          }
+        ]
+      }
+    },
+    {
+      "key": "myOptBooleans",
+      "info": {
+        "optional": true,
+        "union": [
+          {
+            "multiple": true,
+            "valueType": "_Boolean"
+          }
+        ]
+      }
+    },
+    {
+      "key": "myObj",
+      "info": {
+        "optional": false,
+        "union": [
+          {
+            "multiple": false,
+            "valueType": {
+              "fields": [
+                {
+                  "key": "mySubString",
+                  "info": {
+                    "optional": false,
+                    "union": [
+                      {
+                        "multiple": false,
+                        "valueType": "_String"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "mySubInt",
+                  "info": {
+                    "optional": false,
+                    "union": [
+                      {
+                        "multiple": false,
+                        "valueType": "_Int"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "myOptObj",
+      "info": {
+        "optional": true,
+        "union": [
+          {
+            "multiple": false,
+            "valueType": {
+              "fields": [
+                {
+                  "key": "mySubString",
+                  "info": {
+                    "optional": false,
+                    "union": [
+                      {
+                        "multiple": false,
+                        "valueType": "_String"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "mySubInt",
+                  "info": {
+                    "optional": false,
+                    "union": [
+                      {
+                        "multiple": false,
+                        "valueType": "_Int"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "myObjs",
+      "info": {
+        "optional": false,
+        "union": [
+          {
+            "multiple": true,
+            "valueType": {
+              "fields": [
+                {
+                  "key": "mySubString",
+                  "info": {
+                    "optional": false,
+                    "union": [
+                      {
+                        "multiple": false,
+                        "valueType": "_String"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "mySubInt",
+                  "info": {
+                    "optional": false,
+                    "union": [
+                      {
+                        "multiple": false,
+                        "valueType": "_Int"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "myOptObjs",
+      "info": {
+        "optional": true,
+        "union": [
+          {
+            "multiple": true,
+            "valueType": {
+              "fields": [
+                {
+                  "key": "mySubString",
+                  "info": {
+                    "optional": false,
+                    "union": [
+                      {
+                        "multiple": false,
+                        "valueType": "_String"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "mySubInt",
+                  "info": {
+                    "optional": false,
+                    "union": [
+                      {
+                        "multiple": false,
+                        "valueType": "_Int"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "myClosing",
+      "info": {
+        "optional": false,
+        "union": [
+          {
+            "multiple": false,
+            "valueType": "_Boolean"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -7,7 +7,7 @@ import utest._
 import aptus.aptdata.meta.basic.EnumValue
 import aptus.aptreflect.nodes.{TypeNode, TypeField, TypeNodeBuiltIns}
 import aptus.aptreflect.lowlevel.ReflectionTypesAbstraction.{WTT, WeakTypeTag_}
-import aptus.aptreflect.dynamic.DynamicTypeNode_ // for .formatPrettyJson (TypeNode)
+import aptus.aptdata.AptusDataTypeNode_ // for .formatPrettyJson (TypeNode)
 
 // ===========================================================================
 object AptusTypeNodeTest extends TestSuite {

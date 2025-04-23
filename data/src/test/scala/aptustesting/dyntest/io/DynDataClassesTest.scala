@@ -18,7 +18,7 @@ object DynDataClassesTest extends TestSuite {
     test("schema") {
       val myComplexDataCls = aptus.aptdata.meta.schema.cls[MyComplexData]
       test(myComplexDataCls.check(MyComplexDataSchema))
-      test(aptustesting.resourceContent("ClsExample.json").pipe(aptus.aptdata.meta.bax.clsFromString).check(myComplexDataCls)) }
+      test(aptustesting.resourceContent("ClsExample.json").pipe(aptus.aptdata.meta.converter.clsFromString).check(myComplexDataCls)) }
 
     // ---------------------------------------------------------------------------
     test("singles") {

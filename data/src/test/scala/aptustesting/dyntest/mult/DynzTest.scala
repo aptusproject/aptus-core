@@ -13,9 +13,6 @@ object DynzTest {
   // ---------------------------------------------------------------------------
   private def _apply(): Unit = {
     Try {
-    _Mult1.asDynz.increment(foo).asDyns }.check(Error.TransformSpecificType, IntegerLike)
-    
-  }
-}
+    _Mult1.asDynz.increment(foo).asDyns }.check(Error.TransformSpecificType, IntegerLike) } }
 
 // ===========================================================================

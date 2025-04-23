@@ -63,8 +63,8 @@ assert(1 == xy)
       listMap("foo" -> 1, "bar" -> 2))
 
     { // r241122115353
-      val listMap1: ListMap[String, Int] = listMap("foo" -> 1, "bar" -> 2)
-      val listMap2: ListMap[String, Int] = listMap("foo" -> 1, "bar" -> 2)
+      val listMap1: aptus.ListMap[String, Int] = listMap("foo" -> 1, "bar" -> 2)
+      val listMap2: aptus.ListMap[String, Int] = listMap("foo" -> 1, "bar" -> 2)
 
       val iterable1: Iterable[(String, Int)] = listMap1
       val iterable2: Iterable[(String, Int)] = listMap2

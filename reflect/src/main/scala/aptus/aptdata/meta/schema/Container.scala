@@ -21,22 +21,6 @@ sealed trait Container {
     def isRequired: Boolean = !isOptional
 
     // ---------------------------------------------------------------------------
-    def info(valueType: ValueType): Info =
-      this match {
-        case Container._One => Info.one(valueType)
-        case Container._Opt => Info.opt(valueType)
-        case Container._Nes => Info.nes(valueType)
-        case Container._Pes => Info.pes(valueType) }
-
-    // ---------------------------------------------------------------------------
-    def info1(valueType: ValueType): Info1 =
-      this match {
-        case Container._One => Info1.one(valueType)
-        case Container._Opt => Info1.opt(valueType)
-        case Container._Nes => Info1.nes(valueType)
-        case Container._Pes => Info1.pes(valueType) }
-
-    // ---------------------------------------------------------------------------
     def containerWrap(f: Any => Any): Any => Any =
       this match {
         case Container._One =>                                          f

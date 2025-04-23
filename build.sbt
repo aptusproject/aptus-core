@@ -23,22 +23,51 @@ ThisBuild / scmInfo              :=
     connection =     "scm:git@github.com:aptusproject/aptus-core.git"))
 ThisBuild / licenses             := Seq("Apache 2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 ThisBuild / description          := "Basic utilities for Scala."
-ThisBuild / scalaVersion         :=                         "2.13.15"
-ThisBuild / crossScalaVersions   := List("3.3.4" /* LTS */, "2.13.15")
+ThisBuild / scalaVersion         :=                         "2.13.16"
+ThisBuild / crossScalaVersions   := List("3.3.4" /* LTS */, "2.13.16")
+
+// ===========================================================================
+lazy val core = (project in file("core"))
+  .settings(
+    name   := "aptus-core", // no data/dyn code, just basic utilities
+    target := baseDirectory.value / ".." / "bin" / "code" /* TODO: t240103170440 - still leaves a reflect/target folder somehow */)
 
 // ---------------------------------------------------------------------------
-lazy val root = (project in file(".")).settings(name := "aptus-core")
+lazy val reflect = (project in file("reflect"))
+  .settings(
+    name   := "aptus-reflect", // e.g WTT/TypeNode
+    target := baseDirectory.value / ".." / "bin" / "reflect")
+  .dependsOn(core)
+
+// ---------------------------------------------------------------------------
+lazy val meta = (project in file("meta"))
+  .settings(
+    name   := "aptus-meta", // e.g Cls, Fld, ...
+    target := baseDirectory.value / ".." / "bin" / "meta")
+  .dependsOn(reflect)
+
+// ---------------------------------------------------------------------------
+lazy val data = (project in file("data"))
+  .settings(
+    name   := "aptus-data", // e.g. Dyn, ...
+    target := baseDirectory.value / ".." / "bin" / "data")
+  .dependsOn(meta)
+
+// ---------------------------------------------------------------------------
+lazy val root = (project in file("."))
+  .settings(name := "aptus-root") // TODO: t240209192100 - where is this name used?
+  .aggregate(core, reflect, meta, data)
+  .dependsOn(core, reflect, meta, data)
 
 // ===========================================================================
 // scalac options
 
-ThisBuild / scalacOptions ++= Seq("-encoding", "UTF-8") ++ //"-Yimports:java.lang,scala,scala.Predef,scala.util.chaining" -- not possible for 2.12 it seems (TODO: t210308154253 confirm)
+ThisBuild / scalacOptions ++= Seq("-encoding", "UTF-8") ++
   (scalaBinaryVersion.value match {
     case "3"    => Seq(
       "-unchecked",
       "-no-indent" /* see https://youtu.be/DzjvFx5YYik?si=9WpwITuTKbfH6NYy&t=568 from ScalaIO for rationale */)
-    case "2.13" => Seq("-Ywarn-value-discard", "-Ywarn-unused:imports,privates,locals")
-    case "2.12" => Seq("-Ywarn-value-discard", "-Ywarn-unused-import" ) })
+    case "2.13" => Seq("-Ywarn-value-discard", "-Ywarn-unused:imports,privates,locals") })
 
 // ===========================================================================    
 // dependencies
@@ -55,7 +84,7 @@ val commonsCompressVersion     = "1.26.0"
 val gsonVersion                = "2.10.1"
 val guavaVersion               = "32.0.1-jre" // careful updating this (often causes issues with Apache Spark)
 
-val uTestVersion               = "0.8.1"
+val uTestVersion               = "0.8.5"
 
 // ---------------------------------------------------------------------------
 ThisBuild / libraryDependencies ++= // hard to do anything on the JVM without those nowadays
@@ -88,8 +117,10 @@ ThisBuild / libraryDependencies ++= // hard to do anything on the JVM without th
   // ---------------------------------------------------------------------------
   (scalaBinaryVersion.value match {
     case "3"    => Seq("org.scala-lang.modules" %% "scala-parallel-collections" % parallelCollectionsVersion) // if causes issues (eg with Spark), use: .exclude("org.scala-lang.modules", "scala-parallel-collections_3")
-    case "2.13" => Seq("org.scala-lang.modules" %% "scala-parallel-collections" % parallelCollectionsVersion)
-    case "2.12" => Seq.empty })
+    case "2.13" => Seq("org.scala-lang.modules" %% "scala-parallel-collections" % parallelCollectionsVersion) }) ++
+  (scalaBinaryVersion.value match {
+    case "3"    => Seq.empty
+    case "2.13" => Seq("org.scala-lang" %  "scala-reflect" % scalaVersion.value) /* for scala.reflect.runtime.universe */ })
 
 // ===========================================================================
 // shading; guava - compatibility issues (eg https://issues.apache.org/jira/browse/HADOOP-10961)... TODO: t210121165120: shade

@@ -1,17 +1,17 @@
-/* file automatically duplicated in gallia via c250115172022 - be careful when editing */
-package aptus.experimental.dyn.aillag /* do not split this line */
+package aptus
+package aptdata
 package meta
-
-import aptus.Nes
+package schema
 
 // ===========================================================================
 @TypeMatching
-trait FldCreator { import Fld._
-  protected val _key: Key
+trait FldCreator {
   import BasicType.{_Enm => _, _}
 
+  protected val _key: Key
+
   // ---------------------------------------------------------------------------
-  //def typed[T : WTT]: Fld = Fld(_key, Info.forceFrom[T])
+  def typed[T : aptreflect.lowlevel.ReflectionTypesAbstraction.WTT]: Fld = Fld(_key, Info.forceFrom[T])
 
   // ---------------------------------------------------------------------------
   // see t210125111338 (union types)

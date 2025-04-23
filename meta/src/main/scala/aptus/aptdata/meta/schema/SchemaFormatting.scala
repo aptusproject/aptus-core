@@ -5,6 +5,9 @@ package schema
 
 // ===========================================================================
 private[meta] trait ClsFormatting extends HasFormatDefault { ignored: Cls =>
+    def formatSuccinct: String = SchemaSuccinctFormatter(self)
+
+    // ---------------------------------------------------------------------------
     override def toString = formatDefault
     override def formatDefault: String =
       fields

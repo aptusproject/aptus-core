@@ -32,7 +32,7 @@ trait SchemaValueExtraction { self: Info =>
         (value match {
             case seq: Seq[_] => _Multiple -> seq.head // first suffices since all values will share the same type (+ can't be empty) - (FIXME: t250328160857 only for gallia)
             case sgl         => _Single   -> sgl })
-          .pype { case (multiple, value /* eg 3, "foo", object, ... */) =>
+          .pipe { case (multiple, value /* eg 3, "foo", object, ... */) =>
             basic.BasicTypeMatchingSubInfos(nestingPredicate)(self)(multiple)(value) } }
 
   // ---------------------------------------------------------------------------

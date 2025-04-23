@@ -4,10 +4,12 @@ package meta
 package schema
 
 import aptreflect.lowlevel.ReflectionTypesAbstraction.{WTT, WeakTypeTag_}
-import aptreflect.nodes.utils.TypeNodeToSchemaUtils
 
 // ===========================================================================
 trait ClsCompanionTrait {
+  lazy val DummyCls: Cls = soleField(Fld.DummyFld)
+
+  // ---------------------------------------------------------------------------
   /* to do eg: meta.cls("foo" -> 3, ...) */
   def cls[T: WTT]                 : Cls = implicitly[WTT[T]].typeNode.leaf.pipe(TypeNodeToSchemaUtils.forceNestedClass)
   def cls(field1: Fld, more: Fld*): Cls = Cls((field1 +: more).toList)
@@ -18,10 +20,16 @@ trait ClsCompanionTrait {
 
 // ===========================================================================
 trait FldCompanionTrait {
+  lazy val DummyFld = string("_dummy")
+
+  // ---------------------------------------------------------------------------
   /** to do eg: "foo".string -> Fld */
   implicit class SKey_(name: String)
-    extends aptus.experimental.dyn.aillag.meta.FldCreator {
+    extends aptus.aptdata.meta.schema.FldCreator {
       protected val _key: Key = aptus.aptdata.meta.schema.Key._fromString(name) }
+
+  // ---------------------------------------------------------------------------
+  def typed[T: WTT](key: Key): Fld = implicitly[WTT[T]].typeNode.forceNonBObjInfo.pipe(Fld(key, _))
 
   // ---------------------------------------------------------------------------
   def required(key: Key, subInfo: SubInfo): Fld = Fld(key, Info.required(subInfo))
@@ -54,6 +62,9 @@ trait FldCompanionTrait {
 
 // ===========================================================================
 trait InfoCompanionTrait {
+  def forceFrom[T : WTT]: Info = implicitly[WTT[T]].typeNode.forceNonBObjInfo
+
+  // ---------------------------------------------------------------------------
   def    union(optional: Boolean, subInfo1: SubInfo, subInfo2: SubInfo, more: SubInfo*): Info = Info(optional, List(subInfo1, subInfo2) ++ more)
   def nonUnion(optional: Boolean, subInfo: SubInfo): Info = Info(optional, Seq(subInfo))
 

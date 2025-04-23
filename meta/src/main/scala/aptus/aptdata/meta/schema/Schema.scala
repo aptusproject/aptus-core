@@ -34,7 +34,7 @@ case class Cls(
           val required = !optional
            /* see t210125111338 (union types) */
           def   subInfo1: SubInfo   = forceUnionOption(union).force
-          def container1: Container = subInfo1.multiple.pype(Container.from(optional, _)) }
+          def container1: Container = subInfo1.multiple.pipe(Container.from(optional, _)) }
         object Info
           extends InfoCompanionTrait
 

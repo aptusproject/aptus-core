@@ -47,10 +47,10 @@ package object schema
       def formatDefault: String = Seq(field1.formatDefault, field2.formatDefault).section }
 
   // ===========================================================================
-  implicit class MetaContainer_(val diss: Container) extends MetaContainer
+  implicit class AptusMetaContainer_(val diss: Container) extends AptusMetaContainer
 
     // ---------------------------------------------------------------------------
-    trait MetaContainer { val diss: Container
+    trait AptusMetaContainer { val diss: Container
 
       def info(valueType: ValueType): Info =
         diss match {

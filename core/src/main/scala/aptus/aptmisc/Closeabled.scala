@@ -82,7 +82,7 @@ private[aptus] final class Closeabled[T](
       def alter[U](f: Iterator[T] => Iterator[U]): CloseabledIterator[U] = new CloseabledIterator(f(underlying), cls)
 
       // ---------------------------------------------------------------------------
-      def    foreach(f: T =>                    Unit): Closeabled[Unit] = new Closeabled(underlying.foreach(f), cls)
+      def foreach(f: T => Unit): Unit = consume(_.foreach(f))
 
       def     map[U](f: T =>                    U ): CloseabledIterator[U] = new CloseabledIterator(underlying    .map(f), cls)
       def flatMap[U](f: T => GenTraversableOnce[U]): CloseabledIterator[U] = new CloseabledIterator(underlying.flatMap(f), cls)

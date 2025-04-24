@@ -1,5 +1,6 @@
-/* file automatically duplicated in gallia via c250115172022 - be careful when editing */
-package aptus.aptdata.aillag /* do not split this line */
+package aptus
+package aptdata
+package aillag
 package data
 
 import aptus.Anything_

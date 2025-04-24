@@ -1,12 +1,11 @@
-/* file automatically duplicated in gallia via c250115172022 - be careful when editing */
-package aptus.aptdata.aillag /* do not split this line */
+package aptus
+package aptdata
+package aillag
 package data
 package json
 
 import com.google.gson.{JsonObject, JsonArray}
 import scala.jdk.CollectionConverters._
-
-import aptus.{JsonObjectString, JsonArrayString}
 
 // ===========================================================================
 class GsonParsing[$Jbo] {
@@ -35,8 +34,10 @@ class GsonParsing[$Jbo] {
   def parseArray(value: JsonArrayString): List[$Jbo] = // TODO: t201221175254 - stream rather than read all in memory
     util.Try(GsonToObj.fromArrayString(value)) match {
       case util.Failure(throwable) => aptus.illegalArgument(throwable.getMessage, value)
-      case util.Success(success)   => success.toListAndTrash
-.asInstanceOf[List[$Jbo]]
+      case util.Success(success)   =>
+        ???
+//        success.toListAndTrash // u.values.toList
+//.asInstanceOf[List[$Jbo]]
     } }
 
 // ===========================================================================

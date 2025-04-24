@@ -3,7 +3,6 @@ package aptdata
 package static
 
 import aptus.Anything_
-import aptus.aptdata.meta.schema.AnyValue
 
 // ===========================================================================
 class StaticToDynamic[$SingleEntity](

@@ -26,6 +26,9 @@ package aptdata {
   private[aptdata] implicit def _symbol2String(value: Symbol): String = value.name
   private[aptdata] implicit def _string2Symbol(value: String): Symbol = Symbol(value)
 
+  // ---------------------------------------------------------------------------
+  private[aptdata] type AnyValue = Any
+
   // ===========================================================================
   /* indirection so TypeNode doesn't directly refer to Dyn */
   implicit class AptusDataTypeNode_(protected val diss: TypeNode) extends AptusDataTypeNode

@@ -3,7 +3,7 @@ package aptdata
 package ops
 
 // ===========================================================================
-trait OpsBorrowedFromGallia extends AptusGalliaDataAdaptor { self: Dyn =>
+trait OpsBorrowedFromGallia { self: Dyn =>
   private type Keyz   = Seq[Key]
   private type KPathW = Path
           type NakedValue = Any
@@ -20,15 +20,15 @@ trait OpsBorrowedFromGallia extends AptusGalliaDataAdaptor { self: Dyn =>
 
                                             // ---------------------------------------------------------------------------
                                             /* req: nesting key can't be an array */
-                                            def nest(targets: Keyz, nestingKey: Key): Obj =
+                                            def nest(targets: Keyz, nestingKey: Key): Dyn =
                                               (retainOpt(targets), removeOpt(targets)) match {
                                                 case (None        , _         ) => self
                                                 case (Some(target), None      ) => aptdata.sngl.Dyn.dyn(nestingKey -> target)
                                                 case (Some(target), Some(rest)) =>
                                                   attemptKey(nestingKey)
                                                     .map {
-                                                      case seq: Seq[_] => rest.put(nestingKey, seq.map(_.asInstanceOf[Obj].merge(target))) // note: denormalizes
-                                                      case sgl         => rest.put(nestingKey,       sgl.asInstanceOf[Obj].merge(target)) }
+                                                      case seq: Seq[_] => rest.put(nestingKey, seq.map(_.asInstanceOf[Dyn].merge(target))) // note: denormalizes
+                                                      case sgl         => rest.put(nestingKey,       sgl.asInstanceOf[Dyn].merge(target)) }
                                                     .getOrElse {          rest.put(nestingKey,                                   target ) } }
 
 
@@ -48,11 +48,11 @@ trait OpsBorrowedFromGallia extends AptusGalliaDataAdaptor { self: Dyn =>
                                           // ===========================================================================
                                           // from AtomsHelper
 
-                                          protected def _reorderKeysRecursively(f: Seq[SKey] => Seq[SKey])(o: aptdata.sngl.DynDataWithGetter): Obj =
+                                          protected def _reorderKeysRecursively(f: Seq[SKey] => Seq[SKey])(o: aptdata.sngl.DynDataWithGetter): Dyn =
                                             __reorderKeysRecursively(_tmp(f))(o)
 
                                           // ---------------------------------------------------------------------------
-                                          protected def __reorderKeysRecursively(f: Seq[Key] => Seq[Key])(o: aptdata.sngl.DynDataWithGetter): Obj =
+                                          protected def __reorderKeysRecursively(f: Seq[Key] => Seq[Key])(o: aptdata.sngl.DynDataWithGetter): Dyn =
                                             o .keys
                                               .pipe(f)
                                               .map { key =>
@@ -66,10 +66,10 @@ trait OpsBorrowedFromGallia extends AptusGalliaDataAdaptor { self: Dyn =>
                                                       //[error]    |Cannot resolve reference to type (o : aptus.aptdata.sngl.DynDataWithGetter).NakedValue.
                                                       //[error]    |The classfile defining the type might be missing from the classpath.
 
-                                                    case x: Obj    => __reorderKeysRecursively(f)(x)
+                                                    case x: Dyn    => __reorderKeysRecursively(f)(x)
                                                     case x: Seq[_] =>
                                                       x.map {
-                                                        case y: Obj    => __reorderKeysRecursively(f)(y)
+                                                        case y: Dyn    => __reorderKeysRecursively(f)(y)
                                                         case y: Seq[_] => ???//TODO: can't happen throw illegal
                                                         case y         => y }
                                                     case x => x }) }

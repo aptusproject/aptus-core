@@ -1,5 +1,6 @@
-/* file automatically duplicated in gallia via c250115172022 - be careful when editing */
-package aptus.aptdata.aillag /* do not split this line */
+package aptus
+package aptdata
+package aillag
 package io
 
 import aptus.{Anything_, String_}
@@ -9,10 +10,10 @@ import aptus.aptdata.meta.basic.UnparameterizedBasicType
 
 // ===========================================================================
 case class CellConf(
-    nullValues: Seq[String] = Seq(DefaultNullValue),
+    nullValues: Seq[String] = Seq(CellConf.DefaultNullValue),
 
     /** order matters, acts dumb if more than one such separator within the same value */
-    arraySeparators: Seq[String] = Seq(DefaultArraySeparator)) {
+    arraySeparators: Seq[String] = Seq(CellConf.DefaultArraySeparator)) {
 
   private val noNulls : Boolean = nullValues     .isEmpty
   private val noArrays: Boolean = arraySeparators.isEmpty
@@ -38,7 +39,7 @@ case class CellConf(
       values
         .map(TypeGuessing.apply)
         .distinct
-        .pipe(aptus.aptdata.meta.basic.combine)
+        .pipe(meta.basic.combine)
 
   // ===========================================================================
   def valueSet(value: String): Set[String] =
@@ -48,7 +49,7 @@ case class CellConf(
   // ===========================================================================
   def transformBasicValue(tipe: BasicType)(value: String): AnyValue =
     tipe match {
-      case _: BasicType._Enm           => _Enm.parseString(value)
+      case _: BasicType._Enm           => meta.basic.BasicType._Enm.parseString(value)
       case    BasicType._Boolean       => inferring.table.BooleanDetector.forceBoolean(value)
       case x: UnparameterizedBasicType => x.parseString(value) }
 
@@ -66,6 +67,11 @@ case class CellConf(
 }
 
 // ===========================================================================
-object CellConf { val Default = CellConf() }
+object CellConf {
+  val Default = CellConf()
+
+  // ---------------------------------------------------------------------------
+  val DefaultNullValue      = ""
+  val DefaultArraySeparator = "," }
 
 // ===========================================================================

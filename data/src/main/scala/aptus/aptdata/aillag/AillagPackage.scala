@@ -3,34 +3,36 @@ package aptdata
 
 // ===========================================================================
 /** aillag = gallia backward */
-package object aillag
-    extends aptus.aptdata.AptusGalliaDataAdaptor
-       with aptus.apttraits.AptusChaining
-       with AillagPackageTrait {
+package object aillag {
 
-  // ===========================================================================
+  // ---------------------------------------------------------------------------
   val ObjToGson = new data.json.ObjToGson[Dyns, Dyn](
       data.json.ObjToGson2.apply,
-      _.consumeSelfClosing)
+      _.valuesIterator/*consumeSelfClosing*/)
 
     // ---------------------------------------------------------------------------
     val GsonToObj = new data.json.GsonToObj[Dyns, Dyn](
-      Dyn.fromIterable,
-      Dyns.from)
+      //Dyn.fromIterable,
+      _   .map(Entry.fromGallia)
+          .pipe(aptdata.sngl.Dyn.byPass) /* TODO: t250123135755 - confirm can always safely bypass */,
+
+      //Dyns.from
+      Dyns.build /* because List vs Seq */)
 
   // ---------------------------------------------------------------------------
   val GsonParsing = new data.json.GsonParsing[Dyn]()
 
   // ===========================================================================
   val GsonToAptusData = new data.json.GsonToGalliaData[Dyn](
-      _ unknownKeys _,
+      //_ unknownKeys _,
+      (u, o) => o.keys.diff(u.akeys).toSet,
       _  attemptKey _,
 
       x => Dyn.build(x.map(Entry.fromGallia)))
 
     // ---------------------------------------------------------------------------
     val TableToAptusData = new data.TableToGalliaData[Dyn](
-      unknownKeys = _ unknownKeys _,
+      (u, o) => o.keys.diff(u.akeys).toSet,
        attemptKey = _  attemptKey _,
 
       instantiateSingle = x => Dyn.build(x.map(Entry.buildn)))
@@ -42,7 +44,7 @@ package object aillag
 
     // ---------------------------------------------------------------------------
     val TableSchemaInferrer = new inferring.table.TableSchemaInferrer[Dyns, Dyn](
-      consumeSelfClosing = _.consumeSelfClosing,
+      consumeSelfClosing = _.valuesIterator,//_.consumeSelfClosing,
       string             = _ string _) }
 
 // ===========================================================================

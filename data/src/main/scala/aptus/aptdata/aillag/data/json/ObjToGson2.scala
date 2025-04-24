@@ -1,12 +1,11 @@
-package aptus.aptdata.aillag
+package aptus
+package aptdata
+package aillag
 package data
 package json
 
 import org.apache.commons.math3.linear.RealMatrix
-
-import aptus.aptdata.lowlevel.DataFormatting
-import aptus.aptdata.sngl.Dyn
-import aptus.aptdata.mult.list.Dyns
+import aptdata.lowlevel.DataFormatting
 
 // ===========================================================================
 private[aptdata] object ObjToGson2 {
@@ -16,7 +15,7 @@ private[aptdata] object ObjToGson2 {
   private lazy val GsonInstance = new com.google.gson.GsonBuilder().create()
 
   // ---------------------------------------------------------------------------
-  def apply(o: Obj): JsonObject = // TODO: t201230140315 - hopefully there's a more efficient way (no access to "members"?)...
+  def apply(o: Dyn): JsonObject = // TODO: t201230140315 - hopefully there's a more efficient way (no access to "members"?)...
       new JsonObject()
         .tap { mut =>
           o .entries

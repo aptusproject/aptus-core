@@ -18,8 +18,6 @@ package object schema
   type SKey = String
   type Keys = Seq[Key]
 
-  type AnyValue = Any
-
   type Multiple = Boolean
   type Optional = Boolean
 

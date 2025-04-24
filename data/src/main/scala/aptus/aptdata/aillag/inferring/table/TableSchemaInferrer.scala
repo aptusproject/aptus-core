@@ -1,9 +1,10 @@
-/* file automatically duplicated in gallia via c250115172022 - be careful when editing */
-package aptus.aptdata.aillag /* do not split this line */
+package aptus
+package aptdata
+package aillag
 package inferring
 package table
 
-import aptus.{CloseabledIterator, Map_, Seq_}
+import aptus.{Map_, Seq_}
 import aptus.aptdata.meta.schema.AptusMetaContainer_
 import io.CellConf
 

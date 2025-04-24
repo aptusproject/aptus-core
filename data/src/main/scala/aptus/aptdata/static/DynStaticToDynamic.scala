@@ -4,7 +4,6 @@ package static
 
 import aptreflect.nodes.TypeNode
 import aptreflect.lowlevel.ReflectionTypesAbstraction.{WTT, WeakTypeTag_}
-import meta.schema.AnyValue
 
 // ===========================================================================
 object DynStaticToDynamic extends DynStaticToDynamic

@@ -22,8 +22,8 @@ object DynMoreTests {
       val nc   = SubInfo.sngl(Cls.cls(Fld.one(qux, _._String)))
       val info = Info.union(false, int, str, nc)
 
-      val nestingPredicate1: PartialFunction[AnyValue, Boolean] = _.isInstanceOf[Dyn]
-      val nestingPredicate2: PartialFunction[AnyValue, Boolean] = { case _: Dyn => true }
+      val nestingPredicate1: PartialFunction[Any, Boolean] = _.isInstanceOf[Dyn]
+      val nestingPredicate2: PartialFunction[Any, Boolean] = { case _: Dyn => true }
 
         3  .pipe(info._valueExtractionWithMatching(nestingPredicate1)).check(List(int))
         3.3.pipe(info._valueExtractionWithMatching(nestingPredicate1)).check(Nil)

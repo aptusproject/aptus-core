@@ -1,7 +1,7 @@
-package aptus.aptdata.aillag
+package aptus
+package aptdata
+package aillag
 package data
-
-import aptus.CloseabledIterator
 
 // ===========================================================================
 package object json {

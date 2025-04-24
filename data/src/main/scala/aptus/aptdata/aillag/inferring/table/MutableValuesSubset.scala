@@ -20,7 +20,7 @@ class MutableValuesSubset(keys: Seq[Key], max: Int) {
         subsets += key -> mutable.Set[String]() } }
 
   // ===========================================================================
-  def addValues(key: Key, values: Set[String]) = {
+  def addValues(key: Key, values: Set[String]): Unit = {
     val _values = subsets(key)
 
     if (_values.size <= max) {

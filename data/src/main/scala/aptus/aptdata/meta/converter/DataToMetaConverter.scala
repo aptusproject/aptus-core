@@ -30,12 +30,13 @@ object DataToMetaConverter { // 201222111331
               (value.forceKey(Symbol(_valueType)).pipe(valueType)))
 
           // ---------------------------------------------------------------------------
-          private def valueType(value: Any) = (value match { // see 210118133408
+          private def valueType(value: Any) = value match { // see 210118133408
               case s: String => BasicType.withName(s)
               case o: Dyn    =>
                 o.string_("_type") match {
+                  case None         => dynToCls(o)
                   case Some("_Enm") => enm(o)
-                  case None         => dynToCls(o) } })
+                  case Some(x)      => illegalArgument(s"E250424092053:${x}") } }
 
             // ---------------------------------------------------------------------------
             private def enm(value: Dyn): BasicType =

@@ -2,7 +2,7 @@ package aptus
 package aptdata
 package sngl
 
-import ops.common.{HasDataEntityErrorFormatter, CanInferSchema}
+import ops.common.HasDataEntityErrorFormatter
 
 // ===========================================================================
 trait DynEntryMapping {

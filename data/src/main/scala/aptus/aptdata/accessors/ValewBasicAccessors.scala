@@ -30,7 +30,7 @@ private[aptdata] trait ValewBasicAccessors { val naked: NakedValue
     // ---------------------------------------------------------------------------
     private def _typedx[T](origin: NakedValue)(f: Valew => Seq[T])(value: NakedValue): Seq[T] =
       value match {
-        case s: T           => s.in.seq
+        case s: T           => s.in.seq // FIXME: t241204111738
         case x: Iterable[_] => x.flatMap(_typedx(origin)(f)).toSeq
         case _              => e.throwString /* TODO */ (origin) }
 

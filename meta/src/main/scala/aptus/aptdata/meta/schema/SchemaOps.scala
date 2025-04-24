@@ -128,7 +128,9 @@ private[aptus] trait SubInfoOps { self: SubInfo =>
   def toSingle  : Self = copy(multiple = false)
 
   // ---------------------------------------------------------------------------
-  def isEnmMatching(multiple: Multiple): Boolean = this.isInstanceOf[BasicType._Enm] && self.multiple == multiple }
+  def isEnmMatching(multiple: Multiple): Boolean =
+    self.multiple == multiple &&
+    basicTypeOpt.exists(_.isInstanceOf[BasicType._Enm]) }
 
 // ===========================================================================
 private[aptus] trait Info1Ops { self: Info1 =>

@@ -66,7 +66,7 @@ private[aptdata] object TableFormatting {
    *
    * note that table may not have the same number of columns for each row */
   def _formatTableLikeCells(missingValue: String)(values: CloseabledIterator[Dyn]): CloseabledIterator[List[Cell]] = {
-    var encountered = collection.mutable.LinkedHashSet[Key]()
+    val encountered = collection.mutable.LinkedHashSet[Key]()
 
     // ---------------------------------------------------------------------------
     // TODO: possible optimizations:

@@ -5,20 +5,24 @@ package data
 import aptus.Anything_
 
 // ===========================================================================
-object TableToGalliaData {
+class TableToGalliaData[$Jbo](
+   unknownKeys: (Cls, $Jbo)      => Set[Key],
+    attemptKey:      ($Jbo, Key) => Option[AnyValue],
 
-  def convert(conf: io.CellConf /* TODO: a lighter version */)(c: Cls)(o: Obj): Obj = {
-      c.unknownKeys(o).assert(_.isEmpty) // necessary for union types (see 220615165554)
+   instantiateSingle: Seq[(Key, AnyValue)] => $Jbo) {
+
+  def convert(conf: io.CellConf /* TODO: a lighter version */)(c: Cls)(o: $Jbo): $Jbo = {
+      unknownKeys(c, o).assert(_.isEmpty) // necessary for union types (see 220615165554)
 
       c .fields
         .flatMap { field =>
-          o .attemptKey(field.key)
+          attemptKey(o, field.key)
             .flatMap {
               _ .asInstanceOf[String]
                 .in.noneIf(conf.isNull)
                 .map(processStringField(conf)(field))
                 .map(field.key -> _) } }
-        .pipe(gallia.obj) }
+        .pipe(instantiateSingle) }
 
     // ---------------------------------------------------------------------------
     private def processStringField(conf: io.CellConf)(field: Fld)(value: String): AnyValue =

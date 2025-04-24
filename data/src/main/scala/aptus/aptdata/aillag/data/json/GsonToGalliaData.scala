@@ -10,26 +10,28 @@ import aptus.aptdata.meta.basic.BasicTypeValueTransformer
 
 // ===========================================================================
 /** parsing is more efficient when we know the schema already */
-object GsonToGalliaData {
-  type InfoLike = Info // TODO: t250115161608
+class GsonToGalliaData[$Jbo](
+    unknownKeys: (Cls, $Jbo)      => Set[Key],
+     attemptKey:      ($Jbo, Key) => Option[AnyValue],
 
-  // ---------------------------------------------------------------------------
-  def parseRecursively(c: Cls, jsonString: String): Obj =
+     instantiateSingle: Seq[(Key, AnyValue)] => $Jbo) {
+  
+  def parseRecursively(c: Cls, jsonString: String): $Jbo =
     jsonString
       .pipe(GsonParsing.parseObject)
-      .pipe(GsonToGalliaData.convertRecursively(c))
+      .pipe(x => convertRecursively(c)(???))
 
   // ---------------------------------------------------------------------------
-  def convertRecursively(c: Cls)(o: Obj): Obj = {
-      c.unknownKeys(o).assert(_.isEmpty) // necessary for union types (see 220615165554)
+  def convertRecursively(c: Cls)(o: $Jbo): $Jbo = {
+      unknownKeys(c, o).assert(_.isEmpty) // necessary for union types (see 220615165554)
 
       c .fields
         .flatMap { field =>
-          o .attemptKey(field.key)
+          attemptKey(o, field.key)
             .map { value =>
               field.key ->
                 processField(field.info)(value) } }
-      .pipe(gallia.obj) }
+      .pipe(instantiateSingle) }
 
   // ===========================================================================
   def parseGsonJsonElement(info: Info)(value: String): AnyValue =
@@ -42,8 +44,8 @@ object GsonToGalliaData {
 
       // ---------------------------------------------------------------------------
       nestedGalliaClass => multiple =>
-        if (!multiple) value.asInstanceOf[    Obj  ].pipe(convertRecursively(nestedGalliaClass))
-        else           value.asInstanceOf[Seq[Obj ]].map (convertRecursively(nestedGalliaClass)) } {
+        if (!multiple) value.asInstanceOf[    $Jbo  ].pipe(convertRecursively(nestedGalliaClass))
+        else           value.asInstanceOf[Seq[$Jbo ]].map (convertRecursively(nestedGalliaClass)) } {
 
       // ---------------------------------------------------------------------------
       bsc => multiple =>

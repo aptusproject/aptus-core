@@ -37,7 +37,7 @@ case class Dyn private[Dyn] (
 
     // ---------------------------------------------------------------------------
     /** mostly to convert doubles to int when applicable ("JSON number tax" - see gallia) - overkill in aptus (vs gallia) */
-    def fromJson: Dyn = inferSchema.pipe { y => aillag.data.json.GsonToGalliaData.convertRecursively(y)(self) }
+    def fromJson: Dyn = inferSchema.pipe { c => aillag.GsonToAptusData.convertRecursively(c)(self) }
 
     // ---------------------------------------------------------------------------
     def toStatic[DC <: Product: aptreflect.lowlevel.ReflectionTypesAbstraction.WTT]: DC = {

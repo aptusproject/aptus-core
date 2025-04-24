@@ -9,7 +9,7 @@ import aptus.aptdata.sngl.Dyn
 import aptus.aptdata.mult.list.Dyns
 
 // ===========================================================================
-private object ObjToGson2 {
+private[aptdata] object ObjToGson2 {
   import com.google.gson._
 
   // ---------------------------------------------------------------------------

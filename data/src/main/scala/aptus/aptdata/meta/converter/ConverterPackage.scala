@@ -17,13 +17,13 @@ package object converter {
   def clsFromFile(schemaFilePath: FilePath): Cls =
     schemaFilePath
       .readFileContent()
-      .pipe(GsonParsing.parseObject) // TODO: support more than just JSON
+      .pipe(aillag.GsonParsing.parseObject) // TODO: support more than just JSON
       .pipe(DataToMetaConverter.dynToCls)
 
   // ---------------------------------------------------------------------------
   def clsFromString(value: JsonObjectString): Cls =
     value
-      .pipe(GsonParsing.parseObject) // TODO: support more than just JSON
+      .pipe(aillag.GsonParsing.parseObject) // TODO: support more than just JSON
       .pipe(DataToMetaConverter.dynToCls)
 
   // ===========================================================================

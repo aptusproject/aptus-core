@@ -5,54 +5,53 @@ package in
 
 // ===========================================================================
 object DynInUtils {
-  private val fromJson = aillag.data.json.GsonToObj
 
-  // ===========================================================================
+  // ---------------------------------------------------------------------------
   def jsono(value: InputFilePath): Dyn =
       value
         .readFileContent()
-        .pipe(fromJson.fromObjectString)
+        .pipe(aillag.GsonToObj.fromObjectString)
 
     // ---------------------------------------------------------------------------
     def jsonO(value: JsonObjectString): Dyn =
-      fromJson.fromObjectString(value)
+      aillag.GsonToObj.fromObjectString(value)
 
   // ===========================================================================
   def jsonas(value: InputFilePath): Dyns =
     value
       .readFileContent() // TODO: stream JSON array - t241022104721
-      .pipe(fromJson.fromArrayString)
+      .pipe(aillag.GsonToObj.fromArrayString)
 
   // ---------------------------------------------------------------------------
   def jsonaz(value: InputFilePath): Dynz =
     value
       .readFileContent() // TODO: stream JSON array - t241022104721
-      .pipe(fromJson.fromArrayString)
+      .pipe(aillag.GsonToObj.fromArrayString)
       .asIterator
 
   // ===========================================================================
   def jsonAs(value: JsonArrayString): Dyns =
     value
-      .pipe(fromJson.fromArrayString)
+      .pipe(aillag.GsonToObj.fromArrayString)
 
   // ---------------------------------------------------------------------------
   def jsonAz(value: JsonArrayString): Dynz =
     value
-      .pipe(fromJson.fromArrayString)
+      .pipe(aillag.GsonToObj.fromArrayString)
       .asIterator
 
   // ===========================================================================
   def jsonls(value: InputFilePath): Dyns =
       value
         .streamFileLines2() // for CloseabledIterator
-        .map (fromJson.fromObjectString)
+        .map (aillag.GsonToObj.fromObjectString)
         .dyns
 
     // ---------------------------------------------------------------------------
     def jsonlz(value: InputFilePath): Dynz =
       value
         .streamFileLines2() // for CloseabledIterator
-        .map (fromJson.fromObjectString)
+        .map (aillag.GsonToObj.fromObjectString)
         .dynz
 
   // ===========================================================================
@@ -61,14 +60,14 @@ object DynInUtils {
 
     // ---------------------------------------------------------------------------
     private def _tsv(s: InputFilePath): CloseabledIterator[Dyn] = {
-      val cells = s .streamFileTsv2() // for CloseabledIterator
-      val first: Seq[Key] = cells.next().map(Key._fromString)
+      val rows = s.streamFileTsv2() // for CloseabledIterator
+      val first: Seq[Key] = rows.next().map(Key._fromString)
 
-      cells
-        .map { x =>
+      rows
+        .map { row =>
           first
-            .zipSameSize(x) // TODO: more permissive flag?
-.map(Entry.buildn)
+            .zipSameSize(row) // TODO: more permissive flag?
+            .map(Entry.buildn)
         .dyn } } }
 
 // ===========================================================================

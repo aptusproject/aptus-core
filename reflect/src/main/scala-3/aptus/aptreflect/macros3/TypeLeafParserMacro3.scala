@@ -4,7 +4,7 @@ package macros3
 
 import nodes.{TypeNode, TypeLeaf, TypeField}
 import names.FullyQualifiedName
-import aptus.aptdata.meta.basic.EnumValue.EnumStringValue
+import aptdata.meta.basic.EnumValue.EnumStringValue
 
 // ===========================================================================
 private object TypeLeafParserMacro3 {
@@ -38,15 +38,14 @@ private object TypeLeafParserMacro3 {
       else                                                         None
 
     // ---------------------------------------------------------------------------
-    val dataClass: Boolean =
-      /**/  isCaseClass(typeSymbol)(baseClassNames) &&
-      /**/ !baseClassNames.exists(names.FullNameBuiltIns.isScalaAnyVal) && // TODO: no Flag? no is*?
-      /**/  enumeratumValueNamesOpt.isEmpty &&
-      /**/ !fullName.startsWithScalaPackage &&
-      /**/ !fullName.startsWithGalliaPackage /* exclude eg EnumValue, BObj, ... */
+    val caseClass: Boolean = isCaseClass(typeSymbol)(baseClassNames)
 
     // ---------------------------------------------------------------------------
-    TypeLeaf(
+    val dataClass: Boolean =
+      isDataClass(caseClass, baseClassNames, enumeratumValueNamesOpt, fullName)
+
+    // ---------------------------------------------------------------------------
+    nodes.TypeLeaf(
       fullName    = fullName,
 
       dataClass   = dataClass,

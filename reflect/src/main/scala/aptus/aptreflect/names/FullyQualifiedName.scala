@@ -44,6 +44,9 @@ case class FullyQualifiedName(items: Seq[String]) {
   // ===========================================================================
   def startsWithScalaPackage : Boolean = firstItem == FullNameBuiltIns.ScalaPackageName
   def startsWithJavaPackage  : Boolean = firstItem == FullNameBuiltIns. JavaPackageName
+
+  // ---------------------------------------------------------------------------
+  def startsWithAptusPackage : Boolean = firstItem == FullNameBuiltIns.AptusPackageName
   def startsWithGalliaPackage: Boolean = firstItem == FullNameBuiltIns.GalliaPackageName }
 
 // ===========================================================================

@@ -9,6 +9,9 @@ object FullNameBuiltIns {
   private[aptreflect] lazy val ScalaPackageName        = "scala"    .intern()
   private[aptreflect] lazy val JavaPackageName         = "java"     .intern()
   private[aptreflect] lazy val JavaLangPackageName     = "java.lang".intern()
+
+  // ---------------------------------------------------------------------------
+  private[aptreflect] lazy val AptusPackageName        = "aptus"    .intern()
   private[aptreflect] lazy val GalliaPackageName       = "gallia"   .intern()
 
   // ---------------------------------------------------------------------------

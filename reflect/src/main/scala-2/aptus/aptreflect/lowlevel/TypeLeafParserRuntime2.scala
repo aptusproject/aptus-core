@@ -3,6 +3,7 @@ package aptreflect
 package lowlevel
 
 import names.FullyQualifiedName
+import aptdata.meta.basic.EnumValue.EnumStringValue
 
 // ===========================================================================
 /*private 250404180740 */object TypeLeafParserRuntime2 extends ReflectionTypesAbstraction {
@@ -23,7 +24,7 @@ import names.FullyQualifiedName
     val baseClassNames: List[FullNameString] = tpe.baseClasses.map(_.fullName)
 
     // ---------------------------------------------------------------------------
-    val enumeratumValueNamesOpt =
+    val enumeratumValueNamesOpt: Option[Seq[EnumStringValue]] =
       if (FullyQualifiedName.containsEnumEntry(baseClassNames)) Some(ReflectUtils.enumValueNames(tpe))
       else                                                      None
 
@@ -34,11 +35,7 @@ import names.FullyQualifiedName
 
     // ---------------------------------------------------------------------------
     val dataClass: Boolean =
-      /**/  caseClass &&
-      /**/ !baseClassNames.exists(names.FullNameBuiltIns.isScalaAnyVal) &&
-      /**/  enumeratumValueNamesOpt.isEmpty &&
-      /**/ !fullName.startsWithScalaPackage &&
-      /**/ !fullName.startsWithGalliaPackage /* exclude eg EnumValue, BObj, ... */
+      isDataClass(caseClass, baseClassNames, enumeratumValueNamesOpt, fullName)
 
     // ---------------------------------------------------------------------------
     nodes.TypeLeaf(

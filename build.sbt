@@ -50,7 +50,8 @@ lazy val meta = (project in file("meta"))
 lazy val data = (project in file("data"))
   .settings(
     name   := "aptus-data", // e.g. Dyn, ...
-    target := baseDirectory.value / ".." / "bin" / "data")
+    target := baseDirectory.value / ".." / "bin" / "data",
+    libraryDependencies += "com.beachape" %% "enumeratum" % enumeratumVersion)
   .dependsOn(meta)
 
 // ---------------------------------------------------------------------------
@@ -72,19 +73,21 @@ ThisBuild / scalacOptions ++= Seq("-encoding", "UTF-8") ++
 // ===========================================================================    
 // dependencies
 
-val compatVersion              = "2.11.0"
-val parallelCollectionsVersion = "1.0.4"
+lazy val parallelCollectionsVersion = "1.0.4"
 
 // ---------------------------------------------------------------------------
-val commonsLangVersion         = "3.14.0"
-val commonsMathVersion         = "3.6.1"
-val commonsIoVersion           = "2.15.1"
-val commonsCsvVersion          = "1.10.0"
-val commonsCompressVersion     = "1.26.0"
-val gsonVersion                = "2.10.1"
-val guavaVersion               = "32.0.1-jre" // careful updating this (often causes issues with Apache Spark)
+lazy val commonsLangVersion         = "3.14.0"
+lazy val commonsMathVersion         = "3.6.1"
+lazy val commonsIoVersion           = "2.15.1"
+lazy val commonsCsvVersion          = "1.10.0"
+lazy val commonsCompressVersion     = "1.26.0"
 
-val uTestVersion               = "0.8.5"
+lazy val  gsonVersion               = "2.10.1"
+lazy val guavaVersion               = "32.0.1-jre" // careful updating this (often causes issues with Apache Spark)
+
+lazy val enumeratumVersion          = "1.7.6" // only for aptus-data
+
+lazy val uTestVersion               = "0.8.5"
 
 // ---------------------------------------------------------------------------
 ThisBuild / libraryDependencies ++= // hard to do anything on the JVM without those nowadays
@@ -110,10 +113,8 @@ ThisBuild / libraryDependencies ++= // hard to do anything on the JVM without th
 
     // ---------------------------------------------------------------------------
     // JSON
-    "com.google.code.gson" % "gson" % gsonVersion, // TODO: t230623160248 - switch to ujson rather
-    
-    // ---------------------------------------------------------------------------    
-    "org.scala-lang.modules" %% "scala-collection-compat" % compatVersion) ++
+    "com.google.code.gson" % "gson" % gsonVersion) ++ // TODO: t230623160248 - switch to ujson rather
+    //
   // ---------------------------------------------------------------------------
   (scalaBinaryVersion.value match {
     case "3"    => Seq("org.scala-lang.modules" %% "scala-parallel-collections" % parallelCollectionsVersion) // if causes issues (eg with Spark), use: .exclude("org.scala-lang.modules", "scala-parallel-collections_3")

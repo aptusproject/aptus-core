@@ -22,7 +22,7 @@ case class Dyns private[Dyns] (
        with CanConvertFromTable {
 
 /** mostly to convert doubles to int when applicable ("JSON number tax")  - overkill in aptus (vs gallia) */
-def fromJson: Dyns = inferSchema.pipe { c => endoMap { o => aillag.GsonToAptusData.convertRecursively(c)(o) } }
+def fromJson: Dyns = inferSchema.pipe { c => endoMap { o => io.AptusGsonToAptusData.convertRecursively(c)(o) } }
 
 // TODO: t241203213031 - all the missing accessors
 
@@ -61,8 +61,8 @@ def doubles          : Seq[Double] = ???//  TODO: t241203151505 exoMap(_.double(
     // ===========================================================================
     override final def write(s: OutputFilePath): OutputFilePath = io.out.DynOut.write(this)(s)
 
-    override final def formatCompactJson: String = aillag.ObjToGson.formatCompact2(this)
-    override final def  formatPrettyJson: String = aillag.ObjToGson.formatPretty2 (this)
+    override final def formatCompactJson: String = io.AptusObjToGson.formatCompact2(this)
+    override final def  formatPrettyJson: String = io.AptusObjToGson.formatPretty2 (this)
 
     //TODO: csv
     def formatTsv  : String = io.out.DynOut2.formatTable(this)(sep = "\t")

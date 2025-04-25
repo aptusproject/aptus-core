@@ -3,7 +3,7 @@ package aptdata
 package mult
 package list
 
-import aillag.io.CellConf
+import io.table.CellConf
 
 // ===========================================================================
 trait CanConvertFromTable { self: Dyns =>
@@ -16,11 +16,11 @@ trait CanConvertFromTable { self: Dyns =>
     val conf = new CellConf()
     val tableActualSchema: Cls = inferTableSchema(conf)(keys)
 
-    endoMap(aillag.TableToAptusData.convert(conf)(tableActualSchema)) }
+    endoMap(io.AptusTableToAptusData.convert(conf)(tableActualSchema)) }
 
   // ===========================================================================
   /** expects only strings in data */
   private[aptdata] def inferTableSchema(conf: CellConf)(keys: Keys): aptdata.meta.schema.Cls =
-    aillag.TableSchemaInferrer.fullInferring(conf, keys)(self) }
+    io.AptusTableSchemaInferrer.fullInferring(conf, keys)(self) }
 
 // ===========================================================================

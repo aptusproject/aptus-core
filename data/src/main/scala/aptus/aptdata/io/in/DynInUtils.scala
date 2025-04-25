@@ -10,48 +10,48 @@ object DynInUtils {
   def jsono(value: InputFilePath): Dyn =
       value
         .readFileContent()
-        .pipe(aillag.GsonToObj.fromObjectString)
+        .pipe(io.AptusGsonToObj.fromObjectString)
 
     // ---------------------------------------------------------------------------
     def jsonO(value: JsonObjectString): Dyn =
-      aillag.GsonToObj.fromObjectString(value)
+      io.AptusGsonToObj.fromObjectString(value)
 
   // ===========================================================================
   def jsonas(value: InputFilePath): Dyns =
     value
       .readFileContent() // TODO: stream JSON array - t241022104721
-      .pipe(aillag.GsonToObj.fromArrayString)
+      .pipe(io.AptusGsonToObj.fromArrayString)
 
   // ---------------------------------------------------------------------------
   def jsonaz(value: InputFilePath): Dynz =
     value
       .readFileContent() // TODO: stream JSON array - t241022104721
-      .pipe(aillag.GsonToObj.fromArrayString)
+      .pipe(io.AptusGsonToObj.fromArrayString)
       .asIterator
 
   // ===========================================================================
   def jsonAs(value: JsonArrayString): Dyns =
     value
-      .pipe(aillag.GsonToObj.fromArrayString)
+      .pipe(io.AptusGsonToObj.fromArrayString)
 
   // ---------------------------------------------------------------------------
   def jsonAz(value: JsonArrayString): Dynz =
     value
-      .pipe(aillag.GsonToObj.fromArrayString)
+      .pipe(io.AptusGsonToObj.fromArrayString)
       .asIterator
 
   // ===========================================================================
   def jsonls(value: InputFilePath): Dyns =
       value
         .streamFileLines2() // for CloseabledIterator
-        .map (aillag.GsonToObj.fromObjectString)
+        .map (io.AptusGsonToObj.fromObjectString)
         .dyns
 
     // ---------------------------------------------------------------------------
     def jsonlz(value: InputFilePath): Dynz =
       value
         .streamFileLines2() // for CloseabledIterator
-        .map (aillag.GsonToObj.fromObjectString)
+        .map (io.AptusGsonToObj.fromObjectString)
         .dynz
 
   // ===========================================================================

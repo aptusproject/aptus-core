@@ -35,7 +35,7 @@ object DynInferringTest {
 
     Try { _Mult1.append(dyn(foo -> 3)).inferSchema }
       // for now we error out (see task t241129144211)
-      .checkException(classOf[aptus.aptdata.aillag.inferring.SchemaInferrerUtils.IncompatibleInfoException])
+      .checkException(classOf[aptus.aptdata.io.inferring.SchemaInferrerUtils.IncompatibleInfoException])
 
     // ===========================================================================
     // from JSON:

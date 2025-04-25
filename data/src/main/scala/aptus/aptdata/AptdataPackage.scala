@@ -12,7 +12,7 @@ package aptdata {
        with apttraits.AptusDummyImplicitShorthand
 
        // ---------------------------------------------------------------------------
-       with AptdataAnything // pipe & tap
+       with AptdataChaining // pipe & tap
        with AptusDataTraits // Date, BigDec, Fld, Info, _Optional, TypeMatching, ...
        with static.DynStaticToDynamic  /* eg Person("Bob", 30).toDynamic */
 

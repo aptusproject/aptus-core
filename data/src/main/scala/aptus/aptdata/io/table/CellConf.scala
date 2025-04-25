@@ -1,12 +1,10 @@
 package aptus
 package aptdata
-package aillag
 package io
+package table
 
-import aptus.{Anything_, String_}
-import inferring.table.TypeGuessing
-
-import aptus.aptdata.meta.basic.UnparameterizedBasicType
+import meta.basic.UnparameterizedBasicType
+import io.inferring.table.TypeGuessing
 
 // ===========================================================================
 case class CellConf(
@@ -63,8 +61,7 @@ case class CellConf(
       case Some(sep) => value.splitBy(sep)
       case None =>
         arraySeparators.foldLeft(Seq(value)) { (curr, sep) =>
-          curr.flatMap(_.splitBy(sep)) } /* hopefully only one sep per value */ }
-}
+          curr.flatMap(_.splitBy(sep)) } /* hopefully only one sep per value */ } }
 
 // ===========================================================================
 object CellConf {

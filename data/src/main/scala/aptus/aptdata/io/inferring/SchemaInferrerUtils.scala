@@ -1,6 +1,6 @@
 package aptus
 package aptdata
-package aillag
+package io
 package inferring
 
 import aptus.{Anything_, Seq_, Tuple2_, Option_}

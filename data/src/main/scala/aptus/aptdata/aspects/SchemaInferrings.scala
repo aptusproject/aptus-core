@@ -9,14 +9,14 @@ trait DynSchemaInferrer
       extends ops.common.CanInferSchema[DynData] {
         self: DynData =>
     @nonovrd final           def inferSchema                : Schema = inferSchema(this)
-    override final protected def inferSchema(value: DynData): Schema = aillag.SchemaInferrer.klass(this) }
+    override final protected def inferSchema(value: DynData): Schema = io.AptusSchemaInferrer.klass(this) }
 
   // ---------------------------------------------------------------------------
 trait DynsSchemaInferrer
       extends ops.common.CanInferSchema[Dyns] {
         self: Dyns =>
     @nonovrd final           def inferSchema: Schema = inferSchema(this)
-    override final protected def inferSchema(value: Dyns): Schema = aillag.SchemaInferrer.klass(values) }
+    override final protected def inferSchema(value: Dyns): Schema = io.AptusSchemaInferrer.klass(values) }
 
 // ===========================================================================
 trait DynzSchemaInferrer2
@@ -24,7 +24,7 @@ trait DynzSchemaInferrer2
        {
         self: Dynz =>
 /** unlike `Dyns`, this is not idempotent */
-def inferSchemaAndConsumeEntirely(): Schema = aillag.SchemaInferrer.klass(values)
+def inferSchemaAndConsumeEntirely(): Schema = io.AptusSchemaInferrer.klass(values)
   }
 
 // ===========================================================================

@@ -1,7 +1,7 @@
 package aptus
 package aptdata
-package aillag
-package data
+package io
+package table
 
 import aptus.Anything_
 
@@ -12,7 +12,7 @@ class TableToGalliaData[$Single](
 
    instantiateSingle: Seq[(Key, AnyValue)] => $Single) {
 
-  def convert(conf: io.CellConf /* TODO: a lighter version */)(c: Cls)(o: $Single): $Single = {
+  def convert(conf: CellConf /* TODO: a lighter version */)(c: Cls)(o: $Single): $Single = {
       unknownKeys(c, o).assert(_.isEmpty) // necessary for union types (see 220615165554)
 
       c .fields
@@ -26,7 +26,7 @@ class TableToGalliaData[$Single](
         .pipe(instantiateSingle) }
 
     // ---------------------------------------------------------------------------
-    private def processStringField(conf: io.CellConf)(field: Fld)(value: String): AnyValue =
+    private def processStringField(conf: CellConf)(field: Fld)(value: String): AnyValue =
       field
         .info.valueExtractionWithFailures { _ => aptus.illegalState() } { // TODO: support a form of nesting directly? eg nested JSON documents?
           bsc => multiple =>

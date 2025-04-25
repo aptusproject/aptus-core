@@ -3,7 +3,7 @@ package aptdata
 
 // ===========================================================================
 package object lowlevel
-  extends AptdataAnything
+  extends AptdataChaining
      with AptusDataTraits
 
 // ===========================================================================

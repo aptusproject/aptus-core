@@ -1,12 +1,12 @@
 package aptus
 package aptdata
-package aillag
+package io
 package inferring
 package table
 
 import aptus.{Map_, Seq_}
 import aptus.aptdata.meta.schema.AptusMetaContainer_
-import io.CellConf
+import io.table.CellConf
 
 // ===========================================================================
 class TableSchemaInferrer[$Multiple, $Single](

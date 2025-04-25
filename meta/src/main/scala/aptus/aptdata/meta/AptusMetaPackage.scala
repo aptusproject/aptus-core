@@ -5,7 +5,7 @@ import aptus.aptreflect.nodes.TypeNode
 
 // ===========================================================================
 package object meta
-    extends AptdataAnything
+    extends AptdataChaining
        with AptusDataTraits {
 
   private[aptdata] type AnyValue = Any

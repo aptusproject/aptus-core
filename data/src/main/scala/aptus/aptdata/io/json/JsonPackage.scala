@@ -1,7 +1,6 @@
 package aptus
 package aptdata
-package aillag
-package data
+package io
 
 // ===========================================================================
 package object json {
@@ -14,6 +13,12 @@ package object json {
   // ---------------------------------------------------------------------------
   def jsonArray(elements: CloseabledIterator[JsonElement]): JsonArray =
       new JsonArray(/*elements.size; FIXME: t210315113950 - causes issues with EMR: look into more*/)
-        .tap { array => elements.foreach(array.add) } }
+        .tap { array => elements.foreach(array.add) }
+
+  // ===========================================================================
+  /* low-tech solution */
+  val customJsonFormatters: collection.mutable.Map[Class[_], CustomJsonFormatter] =
+    collection.mutable.Map(
+      classOf[java.io.File] -> JavaIoFileJsonFormatter) }
 
 // ===========================================================================

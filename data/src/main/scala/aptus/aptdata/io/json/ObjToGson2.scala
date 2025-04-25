@@ -1,7 +1,6 @@
 package aptus
 package aptdata
-package aillag
-package data
+package io
 package json
 
 import org.apache.commons.math3.linear.RealMatrix
@@ -65,7 +64,7 @@ private[aptdata] object ObjToGson2 {
           case x: Seq[_] => x.map(element).pipe(jsonArray)
 
           // ---------------------------------------------------------------------------
-          case x => x.getClass.pipe(aptus.aptdata.json.customJsonFormatters.get)
+          case x => x.getClass.pipe(aptus.aptdata.io.json.customJsonFormatters.get)
             match {
               case Some(customFormatter) => customFormatter.format(x)
               case None                  => x.toString /* fall back on toString (avoid if possible */ } }) }

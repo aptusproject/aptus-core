@@ -1,7 +1,6 @@
 package aptus
 package aptdata
-package aillag
-package data
+package io
 package json
 
 import aptus.Anything_
@@ -59,7 +58,7 @@ class GsonToGalliaData[$Single](
     (nesting, multiple) match { // spilling for instance does not support union types
       case (false, false) => GsonParser.stringToPrimitiveValueAny (value) /*     Vle  */
       case (false, true ) => GsonParser.stringToPrimitiveValueAnys(value) /* Seq[Vle] */
-      case (true , false) => GsonToObj .fromObjectString          (value) /*     Obj  */
-      case (true , true ) => GsonToObj .fromArrayString           (value) /* Seq[Obj] */ } }
+      case (true , false) => AptusGsonToObj .fromObjectString          (value) /*     Obj  */
+      case (true , true ) => AptusGsonToObj .fromArrayString           (value) /* Seq[Obj] */ } }
 
 // ===========================================================================

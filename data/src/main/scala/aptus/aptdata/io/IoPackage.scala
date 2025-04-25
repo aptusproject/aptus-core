@@ -38,7 +38,7 @@ package object io {
   val AptusSchemaInferrer =
       new io.inferring.SchemaInferrer[Dyn](
         entries    = _.galliaPairs,
-        nestingOpt = aptus.optionallyCast[Dyn])
+        nestingOpt = aptus.castIfTypeMatching[Dyn])
 
     // ---------------------------------------------------------------------------
     val AptusTableSchemaInferrer =

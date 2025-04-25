@@ -23,6 +23,7 @@ package object aptus
        with AptusZippers        /* eg aptus.zip(...) */
        with AptusBinaryUtils    /* eg aptus.byteBuffer(), ... */
        with AptusListMaps       /* aptus.listMap(...) */
+       with AptusMiscTopLevel   /* aptus.castIfTypeMatching[Int] */
 
        with AptusAnnotations    /* eg @aptus.nonovrd, @aptus.ordermatters, ... */
 

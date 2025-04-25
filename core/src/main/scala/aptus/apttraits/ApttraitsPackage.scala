@@ -63,4 +63,10 @@ package apttraits { // not sure why not letting me put those in the package obje
     def listMap[K, V](values: Seq[(K, V)])          : ListMap[K, V] = collection.immutable.ListMap.from(values)
     def listMap[K, V](value1: (K, V), more: (K, V)*): ListMap[K, V] = listMap[K, V](value1 +: more) }
 
+  // ---------------------------------------------------------------------------
+  trait AptusMiscTopLevel {
+    // convenient since can't pattern match on generic type
+    // note: ClassTag is typically JIT-optimized (TBC)
+    def castIfTypeMatching[T](value: Any)(implicit ct: scala.reflect.ClassTag[T]): Option[T] = ct.unapply(value) }
+
 // ===========================================================================

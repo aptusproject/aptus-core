@@ -3,7 +3,7 @@ package aptutils
 
 import org.apache.commons.csv.CSVFormat
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 // ===========================================================================
 object StringUtils {

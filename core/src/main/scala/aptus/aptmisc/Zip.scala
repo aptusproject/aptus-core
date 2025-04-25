@@ -2,7 +2,7 @@ package aptus
 package aptmisc
 
 import scala.util.chaining._
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import java.util.zip._
 
 // ===========================================================================

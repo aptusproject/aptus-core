@@ -2,7 +2,7 @@ package aptus
 package aptutils
 
 import java.io._
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 // ===========================================================================
 object UrlUtils { // TODO: or use commons-io (IOUtils.toString(new java.net.URL(str)))?

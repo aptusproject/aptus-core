@@ -7,9 +7,11 @@ trait DynData {
   protected val data: List[Entry]
 
   // ---------------------------------------------------------------------------
-  def  keys  :  Keys   = data.map(_.key)
+  def  keys  :  Seq[Key]   = data.map(_.key)
   def skeys  : SKeys   = keys.map(_.name)
   def  keySet:  KeySet = keys.toSet
+
+  def  keyz  :  Keyz   = data.map(_.key).pipe(Keyz.apply)
 
   // ---------------------------------------------------------------------------
   def values        : Seq     [NakedValue] = data.map(_.valew)

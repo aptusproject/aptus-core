@@ -5,6 +5,9 @@ package in
 
 // ===========================================================================
 trait TopLevelBuildingUtils {
+  private[aptdata] def _build(x: Seq[(Key, AnyValue)]) = x.map(Entry.buildn).pipe(Dyn.build)
+
+  // ---------------------------------------------------------------------------
   def fromDataClass[DC <: Product: aptreflect.lowlevel.ReflectionTypesAbstraction.WTT](value: DC): Dyn = value.toDynamic
 
   // ---------------------------------------------------------------------------

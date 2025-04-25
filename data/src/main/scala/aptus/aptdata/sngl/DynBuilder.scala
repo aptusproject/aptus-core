@@ -13,8 +13,8 @@ private[aptdata] object DynBuilder { // 241120103136
     if (values.isEmpty) Dyn.Empty
     else {
       if (!byPassUniquenessCheck) { // optimization
-        val      allKeys: Keys = values.map(_.key).toList
-        val distinctKeys: Keys = allKeys.distinct
+        val      allKeys: Seq[Key] = values.map(_.key).toList
+        val distinctKeys: Seq[Key] = allKeys.distinct
 
         if (allKeys.size != distinctKeys.size) {
           Error.DuplicateKeys(allKeys, distinctKeys).thro } }

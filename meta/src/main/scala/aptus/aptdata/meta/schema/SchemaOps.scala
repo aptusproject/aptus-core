@@ -8,15 +8,14 @@ private[aptus] trait ClsOps { self: Cls => // TODO: use lenses for transformatio
   private val spr = self /* just for highligh usage of super (Items) */
 
   // ===========================================================================
-  @deprecated("until homogenize keys across aptus/gallia") lazy val keys: Seq[BKey] = bkeys
-
   lazy val akeys: Seq[ Key] = spr.exoMap(_.key)
   lazy val bkeys: Seq[BKey] = spr.exoMap(_.key.und)
   lazy val skeys: Seq[SKey] = spr.exoMap(_.key.name)
 
-  // ---------------------------------------------------------------------------
-  @deprecated("until homogenize keys across aptus/gallia") lazy val keySet: Set[BKey] = bkeySet
+  lazy val  keyz:  Keyz =  Keyz(akeys)
+  lazy val bkeyz: BKeyz = BKeyz(bkeys)
 
+  // ---------------------------------------------------------------------------
   lazy val akeySet: Set[ Key] = fields.map(_.key)     .toSet
   lazy val bkeySet: Set[BKey] = fields.map(_.key.und) .toSet
 	lazy val skeySet: Set[SKey] = fields.map(_.key.name).toSet
@@ -28,12 +27,13 @@ private[aptus] trait ClsOps { self: Cls => // TODO: use lenses for transformatio
     def keyByIndex(index: Index): Key   = keyVector.apply  (index)
 
   // ---------------------------------------------------------------------------
-  def intersectKeys(that: Cls): Keys = intersectKeys(that.bkeys)
-  def diffKeys     (that: Cls): Keys = diffKeys     (that.bkeys)
+  def intersectKeys (that: Cls): Keyz = self.akeys.intersect(that.akeys)
+  def diffKeys      (that: Cls): Keyz = self.akeys.diff     (that.akeys)
+  def complementKeys(that: Cls): Keyz =                      that.akeys .diff(self.akeys)
 
-  def intersectKeys (values: Seq[BKey]): Keys = bkeys .intersect(values).map(Key.apply)
-  def diffKeys      (values: Seq[BKey]): Keys = bkeys .diff     (values).map(Key.apply)
-  def complementKeys(values: Seq[BKey]): Keys = values.diff     (bkeys) .map(Key.apply)
+  def intersectKeys (that: BKeyz): Keyz = self.bkeys .intersect(that.values).map(Key.apply(_))
+  def diffKeys      (that: BKeyz): Keyz = self.bkeys .diff     (that.values).map(Key.apply(_))
+  def complementKeys(that: BKeyz): Keyz =                       that.values .diff(self.bkeys)map(Key.apply(_))
 
   // ---------------------------------------------------------------------------
   def field_(key: Key): Option[Item] = spr. findValue(_.key == key)

@@ -39,7 +39,7 @@ object CanNotForceKey extends ErrorCompanion(id = "E241126104802", stateError = 
 
   // ---------------------------------------------------------------------------
   object DuplicateKeys extends ErrorCompanion(id = "E241120111033")
-    case class DuplicateKeys(allKeys: Keys, distinctKeys: Keys)
+    case class DuplicateKeys(allKeys: Seq[Key], distinctKeys: Seq[Key])
       extends ErrorData { val companion = DuplicateKeys
         val msg: String =
           s"duplicate keys: ${

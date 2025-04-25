@@ -17,6 +17,6 @@ trait DynReordering {
 
   // ---------------------------------------------------------------------------
   def reorderKeys           (f: SKeysFunction): _Self = f(skeys).map { key => key -> forceKey(key) }.dyn // worth keeping?
-  def reorderKeysRecursively(f: SKeysFunction): _Self = _reorderKeysRecursively(f)(o = this) }
+  def reorderKeysRecursively(f: SKeysFunction): _Self = _reorderKeysRecursively(_.skeys.pipe(f).pipe(Keyz._fromStrings))(o = this) }
 
 // ===========================================================================

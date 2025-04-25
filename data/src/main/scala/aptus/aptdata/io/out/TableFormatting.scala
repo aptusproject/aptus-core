@@ -47,12 +47,12 @@ private[aptdata] object TableFormatting {
       val Default: Self = TableLikeCtx() }
 
   // ===========================================================================
-  def _formatRows(ctx: TableCtx)(keys: Keys)(values: CloseabledIterator[Dyn]): CloseabledIterator[FormattedRow] =
-      keys.in.someIf(_ => ctx.includeHeader).map(_.mkString(ctx.separator)).toList.pipe(CloseabledIterator.fromSeq) union
+  def _formatRows(ctx: TableCtx)(keys: Keyz)(values: CloseabledIterator[Dyn]): CloseabledIterator[FormattedRow] =
+      keys.in.someIf(_ => ctx.includeHeader).map(_.values.mkString(ctx.separator)).toList.pipe(CloseabledIterator.fromSeq) union
       _formatCells(ctx.missingValue)(keys)(values).map(_.mkString(ctx.separator))
 
     // ---------------------------------------------------------------------------
-    def _formatCells(missingValue: String)(keys: Keys)(values: CloseabledIterator[Dyn]): CloseabledIterator[Seq[Cell]] =
+    def _formatCells(missingValue: String)(keys: Keyz)(values: CloseabledIterator[Dyn]): CloseabledIterator[Seq[Cell]] =
       values
         .map { row =>
           keys

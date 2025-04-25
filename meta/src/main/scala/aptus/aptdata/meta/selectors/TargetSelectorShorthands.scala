@@ -22,7 +22,7 @@ def selection(f: SKeysSelection): TargetSelector = TargetSelector.SelectMultiple
   def allKeys: TargetSelector = selection(x => x)
 
   // ---------------------------------------------------------------------------
-  def allKeysBut(key1: Key, more: Key*): TargetSelector = allKeysBut(key1 +: more)
-  def allKeysBut(keys: Keys)           : TargetSelector = keyPredicate(!keys.contains(_)) }
+  def allKeysBut(key1: Key, more: Key*): TargetSelector = allKeysBut(Keyz(key1 +: more))
+  def allKeysBut(keys: Keyz)           : TargetSelector = keyPredicate(keys.notContainsKey(_)) }
 
 // ===========================================================================

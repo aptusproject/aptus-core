@@ -21,6 +21,9 @@ trait DynSelectorsAliases extends aptus.aptdata.meta.selectors.SelectorsTrait {
   val Rens   = aptdata.meta.selectors.Rens
   val Path   = aptdata.meta.selectors.Path
 
+  type Keyz   = aptdata.meta.selectors.Keyz
+  val  Keyz   = aptdata.meta.selectors.Keyz
+
   // ---------------------------------------------------------------------------
   private[aptus] type Sel = domain.Sel.Sel
   private[aptus] val  Sel = domain.Sel }

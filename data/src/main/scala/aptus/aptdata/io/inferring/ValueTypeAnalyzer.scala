@@ -9,7 +9,7 @@ import scala.{Any => AnySingleValue}
 // ===========================================================================
 object ValueTypeAnalyzer {
 
-  def apply(value: AnySingleValue): ValueType =
+  def apply(value: AnySingleValue): BasicType =
     value match {
       case _: String     => _String
       case x: Double     => // 201119115427

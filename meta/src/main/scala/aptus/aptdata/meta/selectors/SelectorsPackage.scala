@@ -9,7 +9,6 @@ package object selectors extends SelectorsTrait
   package selectors {
 
     trait SelectorsTrait {
-      private[aptus] type Keys   = Seq[Key]
       private[aptus] type KeySet = Set[Key]
 
       private[aptus] type BKey    = Symbol

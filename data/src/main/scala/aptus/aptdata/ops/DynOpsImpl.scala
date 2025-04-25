@@ -45,6 +45,11 @@ final def replace          (key: Ren): _Replace = new _Replace(???, guaranteed =
   final override def add(entries: List[Entry]): Dyn = Dyn.build(data ++ entries)
 
   // ===========================================================================
+  final def put(key: Key, value: NakedValue) : Dyn =
+      if (containsKey(key)) replace(key).withValue(value)
+      else                      add(key,           value)
+
+  // ===========================================================================
   final override def nest(nestee: Key): NestOps[Dyn] =
     new SglNestOps {
       protected val _sngl        = sngl

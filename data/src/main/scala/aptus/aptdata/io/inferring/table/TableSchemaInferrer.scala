@@ -14,9 +14,9 @@ class TableSchemaInferrer[$Multiple, $Single](
     consumeSelfClosing: $Multiple => CloseabledIterator[$Single]) {
 
   // ---------------------------------------------------------------------------
-  def fullInferring(conf: CellConf, keys: Seq[Key])(z: $Multiple): Cls =
+  def fullInferring(conf: CellConf, keys: Keyz)(z: $Multiple): Cls =
       infoLookup(conf)(
-            keySet  = keys.toSet,
+            keySet  = keys.values.toSet,
             mutable = new MutableValuesSubset(keys, max = 3 /* enough for boolean detection at least */))(
           z)
         .pipe { lookup =>

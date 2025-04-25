@@ -9,7 +9,7 @@ import scala.collection.mutable
 import aptus.{Seq_, String_}
 
 // ===========================================================================
-class MutableValuesSubset(keys: Seq[Key], max: Int) {
+class MutableValuesSubset(keys: Keyz, max: Int) {
 
   private val subsets = mutable.Map[Key, mutable.Set[String]]()
   init()
@@ -17,6 +17,7 @@ class MutableValuesSubset(keys: Seq[Key], max: Int) {
   // ---------------------------------------------------------------------------
   private def init() = {
     keys
+      .values
       .foreach { key =>
         subsets += key -> mutable.Set[String]() } }
 

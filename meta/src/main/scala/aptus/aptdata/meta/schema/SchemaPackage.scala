@@ -10,13 +10,18 @@ package object schema
      with schema.FldCompanionTrait /* eg: val  field: Fld = "name".string */ {
 
   // ---------------------------------------------------------------------------
-  type Key = selectors.Key
-  val  Key = selectors.Key
+  type Key  = selectors.Key
+  val  Key  = selectors.Key
+
+  type Keyz = selectors.Keyz
+  val  Keyz = selectors.Keyz
+
+  type BKeyz = selectors.BKeyz
+  val  BKeyz = selectors.BKeyz
 
   // ---------------------------------------------------------------------------
   type BKey = Symbol
   type SKey = String
-  type Keys = Seq[Key]
 
   type Multiple = Boolean
   type Optional = Boolean

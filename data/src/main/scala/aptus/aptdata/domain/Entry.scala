@@ -9,7 +9,8 @@ case class Entries private (values: Seq[Entry])
     val const = Entries.apply
 
     // ---------------------------------------------------------------------------
-    def keys: Keys = values.map(_.key) }
+    def keys: Seq[Key] = values.map(_.key)
+    def keyz:     Keyz = values.map(_.key) }
 
   // ---------------------------------------------------------------------------
   object Entries {

@@ -9,10 +9,10 @@ import io.table.CellConf
 trait CanConvertFromTable { self: Dyns =>
   def convertFromTableCostly                   : Dyns =  convertFromTable(keysCostly.map(_.name))
   def convertFromTable(key1: SKey, more: SKey*): Dyns =  convertFromTable(key1 +: more)
-  def convertFromTable(keys: Seq[SKey])        : Dyns = _convertFromTable(keys.map(Key._fromString))
+  def convertFromTable(keys: Keyz)             : Dyns = _convertFromTable(keys)
 
   // ---------------------------------------------------------------------------
-  private def _convertFromTable(keys: Keys): Dyns = {
+  private def _convertFromTable(keys: Keyz): Dyns = {
     val conf = new CellConf()
     val tableActualSchema: Cls = inferTableSchema(conf)(keys)
 
@@ -20,7 +20,7 @@ trait CanConvertFromTable { self: Dyns =>
 
   // ===========================================================================
   /** expects only strings in data */
-  private[aptdata] def inferTableSchema(conf: CellConf)(keys: Keys): aptdata.meta.schema.Cls =
+  private[aptdata] def inferTableSchema(conf: CellConf)(keys: Keyz): aptdata.meta.schema.Cls =
     io.AptusTableSchemaInferrer.fullInferring(conf, keys)(self) }
 
 // ===========================================================================

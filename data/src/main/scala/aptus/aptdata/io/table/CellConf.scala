@@ -68,7 +68,7 @@ object CellConf {
   val Default = CellConf()
 
   // ---------------------------------------------------------------------------
-  val DefaultNullValue      = ""
-  val DefaultArraySeparator = "," }
+  lazy val DefaultNullValue      = ""
+  lazy val DefaultArraySeparator = "," }
 
 // ===========================================================================

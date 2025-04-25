@@ -15,7 +15,7 @@ class GsonToGalliaData[$Single](
     unknownKeys: ($Single, Cls) => Set[Key],
      attemptKey: ($Single, Key) => Option[AnyValue],
 
-     instantiateSingle: Seq[(Key, AnyValue)] => $Single) {
+     instantiate: Seq[(Key, AnyValue)] => $Single) {
 
   // ---------------------------------------------------------------------------
   def parseRecursively(c: Cls, jsonString: String): $Single =
@@ -33,7 +33,7 @@ class GsonToGalliaData[$Single](
             .map { value =>
               field.key ->
                 processField(field.info)(value) } }
-      .pipe(instantiateSingle) }
+      .pipe(instantiate) }
 
   // ===========================================================================
   def parseGsonJsonElement(info: Info)(value: String): AnyValue =
@@ -57,9 +57,9 @@ class GsonToGalliaData[$Single](
   // ===========================================================================
   private def parseJsonString(nesting: Boolean, multiple: Boolean)(value: JsonString): AnyValue =
     (nesting, multiple) match { // spilling for instance does not support union types
-      case (false, false) => GsonParser.stringToPrimitiveValueAny (value) /*     Vle  */
-      case (false, true ) => GsonParser.stringToPrimitiveValueAnys(value) /* Seq[Vle] */
-      case (true , false) => AptusGsonToObj .fromObjectString          (value) /*     Obj  */
-      case (true , true ) => AptusGsonToObj .fromArrayString           (value) /* Seq[Obj] */ } }
+      case (false, false) => GsonParser.stringToPrimitiveValueAny    (value) /*     Vle  */
+      case (false, true ) => GsonParser.stringToPrimitiveValueAnys   (value) /* Seq[Vle] */
+      case (true , false) => AptusGsonToSingleEntity.fromObjectString(value) /*     Obj  */
+      case (true , true ) => in.DynInUtils          .fromArrayString (value) /* Seq[Obj] */ } }
 
 // ===========================================================================

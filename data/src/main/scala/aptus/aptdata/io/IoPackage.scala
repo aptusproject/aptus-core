@@ -10,27 +10,24 @@ package object io {
         consumeSelfClosing = _.valuesIterator)
 
     // ---------------------------------------------------------------------------
-    lazy val AptusGsonToObj =
-      new io.json.GsonToObj[Dyns, Dyn](
-        instantiateSingle   = aptdata._build,
-        instantiateMultiple = Dyns.build)
+    lazy val AptusGsonToSingleEntity =
+      new io.json.GsonToSingleEntity[Dyns, Dyn](
+        instantiate = aptdata._build)
 
   // ===========================================================================
   lazy val AptusGsonToAptusData =
       new io.json.GsonToGalliaData[Dyn](
-        jsonObjectStringParser = AptusGsonToObj.fromObjectString,
-
+        jsonObjectStringParser = AptusGsonToSingleEntity.fromObjectString,
         unknownKeys = _ unknownKeys _,
-         attemptKey = _  attemptKey _,
-
-        instantiateSingle = aptdata._build)
+         attemptKey = _ attemptKey  _,
+        instantiate = aptdata._build)
 
     // ---------------------------------------------------------------------------
     lazy val AptusTableToAptusData =
       new io.table.TableToGalliaData[Dyn](
         unknownKeys = _ unknownKeys _,
-         attemptKey = _  attemptKey _,
-        instantiateSingle = aptdata._build)
+         attemptKey = _ attemptKey  _,
+        instantiate = aptdata._build)
 
   // ===========================================================================
   lazy val AptusSchemaInferrer =

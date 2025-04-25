@@ -5,53 +5,59 @@ package in
 
 // ===========================================================================
 object DynInUtils {
+  
+  private[aptdata] def fromArrayString(value: JsonArrayString): Dyns =
+    aptjson.GsonParser
+      .stringToJsonObjects(value)
+      .map(io.AptusGsonToSingleEntity.jsonObjectToObj)
+      .toList.pipe(Dyns.build) // TODO: from iterator
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   def jsono(value: InputFilePath): Dyn =
       value
         .readFileContent()
-        .pipe(io.AptusGsonToObj.fromObjectString)
+        .pipe(io.AptusGsonToSingleEntity.fromObjectString)
 
     // ---------------------------------------------------------------------------
     def jsonO(value: JsonObjectString): Dyn =
-      io.AptusGsonToObj.fromObjectString(value)
+      io.AptusGsonToSingleEntity.fromObjectString(value)
 
   // ===========================================================================
   def jsonas(value: InputFilePath): Dyns =
     value
       .readFileContent() // TODO: stream JSON array - t241022104721
-      .pipe(io.AptusGsonToObj.fromArrayString)
+      .pipe(fromArrayString)
 
   // ---------------------------------------------------------------------------
   def jsonaz(value: InputFilePath): Dynz =
     value
       .readFileContent() // TODO: stream JSON array - t241022104721
-      .pipe(io.AptusGsonToObj.fromArrayString)
+      .pipe(fromArrayString)
       .asIterator
 
   // ===========================================================================
   def jsonAs(value: JsonArrayString): Dyns =
     value
-      .pipe(io.AptusGsonToObj.fromArrayString)
+      .pipe(fromArrayString)
 
   // ---------------------------------------------------------------------------
   def jsonAz(value: JsonArrayString): Dynz =
     value
-      .pipe(io.AptusGsonToObj.fromArrayString)
+      .pipe(fromArrayString)
       .asIterator
 
   // ===========================================================================
   def jsonls(value: InputFilePath): Dyns =
       value
         .streamFileLines2() // for CloseabledIterator
-        .map (io.AptusGsonToObj.fromObjectString)
+        .map (io.AptusGsonToSingleEntity.fromObjectString)
         .dyns
 
     // ---------------------------------------------------------------------------
     def jsonlz(value: InputFilePath): Dynz =
       value
         .streamFileLines2() // for CloseabledIterator
-        .map (io.AptusGsonToObj.fromObjectString)
+        .map (io.AptusGsonToSingleEntity.fromObjectString)
         .dynz
 
   // ===========================================================================

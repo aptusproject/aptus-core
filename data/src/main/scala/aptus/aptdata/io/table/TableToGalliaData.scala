@@ -10,7 +10,7 @@ class TableToGalliaData[$Single](
    unknownKeys: ($Single, Cls) => Set[Key],
     attemptKey: ($Single, Key) => Option[AnyValue],
 
-   instantiateSingle: Seq[(Key, AnyValue)] => $Single) {
+   instantiate: Seq[(Key, AnyValue)] => $Single) {
 
   def convert(conf: CellConf /* TODO: a lighter version */)(c: Cls)(o: $Single): $Single = {
       unknownKeys(o, c).assert(_.isEmpty) // necessary for union types (see 220615165554)
@@ -23,7 +23,7 @@ class TableToGalliaData[$Single](
                 .in.noneIf(conf.isNull)
                 .map(processStringField(conf)(field))
                 .map(field.key -> _) } }
-        .pipe(instantiateSingle) }
+        .pipe(instantiate) }
 
     // ---------------------------------------------------------------------------
     private def processStringField(conf: CellConf)(field: Fld)(value: String): AnyValue =

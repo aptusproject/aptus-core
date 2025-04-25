@@ -11,15 +11,12 @@ import com.google.gson._
 // ===========================================================================
 /* important note: 201117103600 - JsonObject maintains its entries in a com.google.gson.internal.LinkedTreeMap
  * which despite its name maintains element order, though it requires a trick (see 201117103735) */
-class GsonToObj[$Multiple, $Single]( // TODO: t214360121145 - switch from gson to lihaoyi's ujson
-    instantiateSingle  : Seq[(Key, AnyValue)] => $Single,
-    instantiateMultiple: List[$Single] => $Multiple) {
+class GsonToSingleEntity[$Multiple, $Single]( // TODO: t214360121145 - switch from gson to lihaoyi's ujson
+    instantiate: Seq[(Key, AnyValue)] => $Single) {
+
+  def fromObjectString(value: JsonObjectString): $Single = GsonParser.stringToJsonObject (value).pipe(jsonObjectToObj)
 
   // ---------------------------------------------------------------------------
-  def fromObjectString(value: JsonObjectString): $Single  = GsonParser.stringToJsonObject (value).pipe(jsonObjectToObj)
-  def fromArrayString (value: JsonArrayString) : $Multiple = GsonParser.stringToJsonObjects(value).map (jsonObjectToObj).toList.pipe(instantiateMultiple) // TODO: from iterator
-
-  // ===========================================================================
   def jsonObjectToObj(value: JsonObject): $Single =
       value
         .entrySet()
@@ -27,7 +24,7 @@ class GsonToObj[$Multiple, $Single]( // TODO: t214360121145 - switch from gson t
         .flatMap { entry =>
           jsonRootToAnyValue(entry.getValue)
             .map(entry.getKey.pipe(aptus.aptdata.meta.schema.Key._fromString) -> _) }
-        .pipe(instantiateSingle) //TODO: catch duplicates and so on
+        .pipe(instantiate) //TODO: catch duplicates and so on
 
     // ---------------------------------------------------------------------------
     private def jsonRootToAnyValue(value: JsonElement): Option[AnyValue] =

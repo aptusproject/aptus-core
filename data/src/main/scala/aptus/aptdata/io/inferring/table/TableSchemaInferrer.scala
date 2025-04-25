@@ -10,8 +10,8 @@ import io.table.CellConf
 
 // ===========================================================================
 class TableSchemaInferrer[$Multiple, $Single](
-    consumeSelfClosing: $Multiple => CloseabledIterator[$Single],
-    string: ($Single, Key) => String) {
+    attemptKey: ($Single, Key) => Option[AnyValue],
+    consumeSelfClosing: $Multiple => CloseabledIterator[$Single]) {
 
   // ---------------------------------------------------------------------------
   def fullInferring(conf: CellConf, keys: Seq[Key])(z: $Multiple): Cls =
@@ -40,11 +40,14 @@ class TableSchemaInferrer[$Multiple, $Single](
         curr ++
           keySet
             .map { key =>
-              val value = string(o, key) // guaranteed present by 201215141231
-                .tap {
-                  conf
-                    .valueSet(_)
-                    .pipe(mutable.addValues(key, _)) }
+              val value: String =
+                (attemptKey(o, key) match {
+                    case Some(s: String) => s
+                    case _               => aptus.illegalState("guaranteed present by 201215141231") })
+                  .tap {
+                    conf
+                      .valueSet(_)
+                      .pipe(mutable.addValues(key, _)) }
 
               key -> conf.inferInfo(value) } } }
 

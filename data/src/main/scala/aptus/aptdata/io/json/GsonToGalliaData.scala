@@ -12,11 +12,12 @@ import aptus.aptdata.meta.basic.BasicTypeValueTransformer
 class GsonToGalliaData[$Single](
     jsonObjectStringParser: JsonObjectString => $Single,
 
-    unknownKeys: (Cls, $Single)      => Set[Key],
-     attemptKey:      ($Single, Key) => Option[AnyValue],
+    unknownKeys: ($Single, Cls) => Set[Key],
+     attemptKey: ($Single, Key) => Option[AnyValue],
 
      instantiateSingle: Seq[(Key, AnyValue)] => $Single) {
-  
+
+  // ---------------------------------------------------------------------------
   def parseRecursively(c: Cls, jsonString: String): $Single =
     jsonString
       .pipe(jsonObjectStringParser)
@@ -24,7 +25,7 @@ class GsonToGalliaData[$Single](
 
   // ---------------------------------------------------------------------------
   def convertRecursively(c: Cls)(o: $Single): $Single = {
-      unknownKeys(c, o).assert(_.isEmpty) // necessary for union types (see 220615165554)
+      unknownKeys(o, c).assert(_.isEmpty) // necessary for union types (see 220615165554)
 
       c .fields
         .flatMap { field =>

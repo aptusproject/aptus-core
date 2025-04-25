@@ -15,7 +15,7 @@ import aptus.apttraits._
 // ===========================================================================
 /* NOTE:
      keeping all (or most) the extension methods in the same file intentionally (for better or worse)
-     It should also be noted that because they extend AnyVal, they can't be nested (eg in traits). also see t241202114104 */
+     It should also be noted that because they extend AnyVal, the methods can't be externalized anyway (eg in traits). also see t241202114104 */
 package object aptus
     extends
             AptusExceptionUtils /* eg aptus.illegalState(...) */

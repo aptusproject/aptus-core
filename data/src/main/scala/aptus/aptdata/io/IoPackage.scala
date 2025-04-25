@@ -22,7 +22,7 @@ package object io {
       new io.json.GsonToGalliaData[Dyn](
         jsonObjectStringParser = AptusGsonToObj.fromObjectString,
 
-        unknownKeys = (c, o) => o.unknownKeys(c),
+        unknownKeys = _ unknownKeys _,
          attemptKey = _  attemptKey _,
 
         instantiateSingle = x => Dyn.build(x.map(Entry.fromGallia)))
@@ -30,7 +30,7 @@ package object io {
     // ---------------------------------------------------------------------------
     val AptusTableToAptusData =
       new io.table.TableToGalliaData[Dyn](
-        unknownKeys = (c, o) => o.unknownKeys(c),
+        unknownKeys = _ unknownKeys _,
          attemptKey = _  attemptKey _,
         instantiateSingle = x => Dyn.build(x.map(Entry.buildn)))
 
@@ -43,7 +43,7 @@ package object io {
     // ---------------------------------------------------------------------------
     val AptusTableSchemaInferrer =
       new io.inferring.table.TableSchemaInferrer[Dyns, Dyn](
-        consumeSelfClosing = _.valuesIterator,//_.consumeSelfClosing,
-        string             = _ string _) }
+        attemptKey = _  attemptKey _,
+        consumeSelfClosing = _.valuesIterator /* _.consumeSelfClosing, */) }
 
 // ===========================================================================

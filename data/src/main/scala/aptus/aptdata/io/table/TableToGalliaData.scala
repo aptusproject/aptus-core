@@ -7,13 +7,13 @@ import aptus.Anything_
 
 // ===========================================================================
 class TableToGalliaData[$Single](
-   unknownKeys: (Cls, $Single)      => Set[Key],
-    attemptKey:      ($Single, Key) => Option[AnyValue],
+   unknownKeys: ($Single, Cls) => Set[Key],
+    attemptKey: ($Single, Key) => Option[AnyValue],
 
    instantiateSingle: Seq[(Key, AnyValue)] => $Single) {
 
   def convert(conf: CellConf /* TODO: a lighter version */)(c: Cls)(o: $Single): $Single = {
-      unknownKeys(c, o).assert(_.isEmpty) // necessary for union types (see 220615165554)
+      unknownKeys(o, c).assert(_.isEmpty) // necessary for union types (see 220615165554)
 
       c .fields
         .flatMap { field =>

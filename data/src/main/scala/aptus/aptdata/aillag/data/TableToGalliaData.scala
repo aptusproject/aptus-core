@@ -6,13 +6,13 @@ package data
 import aptus.Anything_
 
 // ===========================================================================
-class TableToGalliaData[$Jbo](
-   unknownKeys: (Cls, $Jbo)      => Set[Key],
-    attemptKey:      ($Jbo, Key) => Option[AnyValue],
+class TableToGalliaData[$Single](
+   unknownKeys: (Cls, $Single)      => Set[Key],
+    attemptKey:      ($Single, Key) => Option[AnyValue],
 
-   instantiateSingle: Seq[(Key, AnyValue)] => $Jbo) {
+   instantiateSingle: Seq[(Key, AnyValue)] => $Single) {
 
-  def convert(conf: io.CellConf /* TODO: a lighter version */)(c: Cls)(o: $Jbo): $Jbo = {
+  def convert(conf: io.CellConf /* TODO: a lighter version */)(c: Cls)(o: $Single): $Single = {
       unknownKeys(c, o).assert(_.isEmpty) // necessary for union types (see 220615165554)
 
       c .fields

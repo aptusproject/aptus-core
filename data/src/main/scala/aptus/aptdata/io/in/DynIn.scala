@@ -11,8 +11,7 @@ private[aptdata] object DynIn { import DynInUtils._
       .parse(value)
       .map {
         case FileExtensionSingle.JsonObjectExtension => jsono(value)
-        case FileExtensionSingle.TsvExtension        => tsvs  (value).forceOne
-        case x =>  value.p__; ??? }
+        case FileExtensionSingle.TsvExtension        => tsvs  (value).forceOne }
       .orElse { StringContent.parse(value).map {
         case StringContent.JsonArrayString  =>  value.p__; ??? // TODO: t241029154956
         case StringContent.JsonObjectString => jsonO(value) } }
@@ -25,8 +24,7 @@ private[aptdata] object DynIn { import DynInUtils._
       .map {
         case FileExtensionMultiple.JsonLinesExtension => jsonls(value)
         case FileExtensionMultiple.JsonArrayExtension => jsonas(value)
-        case FileExtensionMultiple.TsvExtension       => tsvs(value)
-        case x =>  value.p__; ??? }
+        case FileExtensionMultiple.TsvExtension       => tsvs(value) }
       .orElse { StringContent.parse(value).map {
         case StringContent.JsonArrayString  => jsonAs(value)
         case StringContent.JsonObjectString =>  value.p__; ??? /* TODO: t241029154956 */ } }
@@ -54,7 +52,6 @@ private[aptdata] object DynIn { import DynInUtils._
     _ match {
       case FileExtensionMultiple.JsonLinesExtension => jsonlz(value) // value.p__; ???
       case FileExtensionMultiple.JsonArrayExtension => jsonaz(value)
-      case FileExtensionMultiple.TsvExtension       => tsvz(value)
-      case x =>  value.p__; ??? } }
+      case FileExtensionMultiple.TsvExtension       => tsvz(value) } }
 
 // ===========================================================================

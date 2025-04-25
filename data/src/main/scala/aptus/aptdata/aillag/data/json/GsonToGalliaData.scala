@@ -10,19 +10,21 @@ import aptus.aptdata.meta.basic.BasicTypeValueTransformer
 
 // ===========================================================================
 /** parsing is more efficient when we know the schema already */
-class GsonToGalliaData[$Jbo](
-    unknownKeys: (Cls, $Jbo)      => Set[Key],
-     attemptKey:      ($Jbo, Key) => Option[AnyValue],
+class GsonToGalliaData[$Single](
+    jsonObjectStringParser: JsonObjectString => $Single,
 
-     instantiateSingle: Seq[(Key, AnyValue)] => $Jbo) {
+    unknownKeys: (Cls, $Single)      => Set[Key],
+     attemptKey:      ($Single, Key) => Option[AnyValue],
+
+     instantiateSingle: Seq[(Key, AnyValue)] => $Single) {
   
-  def parseRecursively(c: Cls, jsonString: String): $Jbo =
+  def parseRecursively(c: Cls, jsonString: String): $Single =
     jsonString
-      .pipe(GsonParsing.parseObject)
-      .pipe(x => convertRecursively(c)(???))
+      .pipe(jsonObjectStringParser)
+      .pipe(convertRecursively(c))
 
   // ---------------------------------------------------------------------------
-  def convertRecursively(c: Cls)(o: $Jbo): $Jbo = {
+  def convertRecursively(c: Cls)(o: $Single): $Single = {
       unknownKeys(c, o).assert(_.isEmpty) // necessary for union types (see 220615165554)
 
       c .fields
@@ -44,8 +46,8 @@ class GsonToGalliaData[$Jbo](
 
       // ---------------------------------------------------------------------------
       nestedGalliaClass => multiple =>
-        if (!multiple) value.asInstanceOf[    $Jbo  ].pipe(convertRecursively(nestedGalliaClass))
-        else           value.asInstanceOf[Seq[$Jbo ]].map (convertRecursively(nestedGalliaClass)) } {
+        if (!multiple) value.asInstanceOf[    $Single  ].pipe(convertRecursively(nestedGalliaClass))
+        else           value.asInstanceOf[Seq[$Single ]].map (convertRecursively(nestedGalliaClass)) } {
 
       // ---------------------------------------------------------------------------
       bsc => multiple =>

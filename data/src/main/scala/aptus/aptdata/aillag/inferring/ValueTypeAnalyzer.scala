@@ -3,7 +3,7 @@ package aptdata
 package aillag
 package inferring
 
-import aptus.aptdata.meta.basic.BasicType.{_Enm => _, _}
+import meta.basic.BasicType._
 import scala.{Any => AnySingleValue}
 
 // ===========================================================================
@@ -35,8 +35,7 @@ object ValueTypeAnalyzer {
 
       case _: ByteBuffer => _Binary
 
-      case x: meta.basic.EnumValue => meta.basic.BasicType._Enm(Seq(x))
-      //FIXME: case x: enumeratum.EnumEntry => meta.basic.BasicType._Enm(Seq(EnumValue(x.entryName)))
-    } }
+      case x: meta.basic.EnumValue => _Enm(Seq(x))
+      case x: enumeratum.EnumEntry => _Enm(Seq(meta.basic.EnumValue(x.entryName))) } }
 
 // ===========================================================================

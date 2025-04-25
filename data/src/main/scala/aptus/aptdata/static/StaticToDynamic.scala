@@ -5,9 +5,9 @@ package static
 import aptus.Anything_
 
 // ===========================================================================
-class StaticToDynamic[$SingleEntity](
+class StaticToDynamic[$Single](
     val normalizeEntry:      BKey => AnyValue => Option[(BKey, AnyValue)],
-    val builder       : Seq[(BKey, AnyValue)] => $SingleEntity) {
+    val builder       : Seq[(BKey, AnyValue)] => $Single) {
 
   // ===========================================================================
   def apply(value: Any)(info: Info): Any = {
@@ -26,7 +26,7 @@ class StaticToDynamic[$SingleEntity](
     private def staticToObjs_(c: Cls)(value: Any): Any = value.asInstanceOf[Option[Seq   [Product]]].map(_.map(_.productIterator.pipe(valuesToObjOpt(c)).getOrElse(None)))
 
       // ---------------------------------------------------------------------------
-      private def valuesToObjOpt(c: Cls)(itr: Iterator[AnyValue]): Option[$SingleEntity] =
+      private def valuesToObjOpt(c: Cls)(itr: Iterator[AnyValue]): Option[$Single] =
         c .fields
           .map { field =>
             field.key.und ->

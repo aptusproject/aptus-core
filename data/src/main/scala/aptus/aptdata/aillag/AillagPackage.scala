@@ -7,34 +7,29 @@ package object aillag {
 
   // ---------------------------------------------------------------------------
   val ObjToGson = new data.json.ObjToGson[Dyns, Dyn](
-      data.json.ObjToGson2.apply,
-      _.valuesIterator/*consumeSelfClosing*/)
+      toGson = data.json.ObjToGson2.apply,
+      consumeSelfClosing = _.valuesIterator/*consumeSelfClosing*/)
 
     // ---------------------------------------------------------------------------
     val GsonToObj = new data.json.GsonToObj[Dyns, Dyn](
-      //Dyn.fromIterable,
-      _   .map(Entry.fromGallia)
-          .pipe(aptdata.sngl.Dyn.byPass) /* TODO: t250123135755 - confirm can always safely bypass */,
-
-      //Dyns.from
-      Dyns.build /* because List vs Seq */)
-
-  // ---------------------------------------------------------------------------
-  val GsonParsing = new data.json.GsonParsing[Dyn]()
+      instantiateSingle =
+        _   .map(Entry.fromGallia)
+            .pipe(aptdata.sngl.Dyn.byPass) /* TODO: t250123135755 - confirm can always safely bypass */,
+      instantiateMultiple = Dyns.build)
 
   // ===========================================================================
   val GsonToAptusData = new data.json.GsonToGalliaData[Dyn](
-      //_ unknownKeys _,
-      (u, o) => o.keys.diff(u.akeys).toSet,
-      _  attemptKey _,
+      jsonObjectStringParser = GsonToObj.fromObjectString,
 
-      x => Dyn.build(x.map(Entry.fromGallia)))
+      unknownKeys = (c, o) => o.unknownKeys(c),
+       attemptKey = _  attemptKey _,
+
+      instantiateSingle = x => Dyn.build(x.map(Entry.fromGallia)))
 
     // ---------------------------------------------------------------------------
     val TableToAptusData = new data.TableToGalliaData[Dyn](
-      (u, o) => o.keys.diff(u.akeys).toSet,
+      unknownKeys = (c, o) => o.unknownKeys(c),
        attemptKey = _  attemptKey _,
-
       instantiateSingle = x => Dyn.build(x.map(Entry.buildn)))
 
   // ===========================================================================

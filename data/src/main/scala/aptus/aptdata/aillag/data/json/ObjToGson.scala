@@ -8,16 +8,16 @@ import com.google.gson._
 
 // ===========================================================================
 /** formatting is less efficient when we don't know the schema (eg have to match on value for scalar vs sequences) */
-class ObjToGson[$Jbos, $Jbo]( // TODO: t214360121145 - switch from gson to lihaoyi's ujson
-    toGson            : $Jbo  => JsonObject,
-    consumeSelfClosing: $Jbos => aptus.CloseabledIterator[$Jbo]) {
+class ObjToGson[$Multiple, $Single]( // TODO: t214360121145 - switch from gson to lihaoyi's ujson
+    toGson            : $Single  => JsonObject,
+    consumeSelfClosing: $Multiple => aptus.CloseabledIterator[$Single]) {
 
   // ===========================================================================
-  def formatCompact(o: $Jbo ): JsonObjectString = toGson(o).pipe(formatCompact)
-  def formatCompact2(o: $Jbos): JsonArrayString  = consumeSelfClosing(o).map(toGson).pipe(jsonArray).pipe(formatCompact)
+  def formatCompact(o: $Single ): JsonObjectString = toGson(o).pipe(formatCompact)
+  def formatCompact2(o: $Multiple): JsonArrayString  = consumeSelfClosing(o).map(toGson).pipe(jsonArray).pipe(formatCompact)
 
-  def formatPretty (o: $Jbo ): JsonObjectString = toGson(o).pipe(formatPretty)
-  def formatPretty2 (o: $Jbos): JsonArrayString  = consumeSelfClosing(o).map(toGson).pipe(jsonArray).pipe(formatPretty)
+  def formatPretty (o: $Single ): JsonObjectString = toGson(o).pipe(formatPretty)
+  def formatPretty2 (o: $Multiple): JsonArrayString  = consumeSelfClosing(o).map(toGson).pipe(jsonArray).pipe(formatPretty)
 
   // ===========================================================================
   private def formatCompact(value: JsonObject): String = aptus.aptjson.GsonFormatter.compact(value)

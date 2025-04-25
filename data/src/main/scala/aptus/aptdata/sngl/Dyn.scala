@@ -36,6 +36,9 @@ case class Dyn private[Dyn] (
     override final def ident: Dyn = this
 
     // ---------------------------------------------------------------------------
+    def unknownKeys(c: Cls): Set[Key] = keys.diff(c.akeys).toSet
+
+    // ---------------------------------------------------------------------------
     /** mostly to convert doubles to int when applicable ("JSON number tax" - see gallia) - overkill in aptus (vs gallia) */
     def fromJson: Dyn = inferSchema.pipe { c => aillag.GsonToAptusData.convertRecursively(c)(self) }
 

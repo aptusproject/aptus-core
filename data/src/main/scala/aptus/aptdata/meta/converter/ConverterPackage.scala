@@ -2,8 +2,6 @@ package aptus
 package aptdata
 package meta
 
-import aptdata.aillag.data.json.GsonParsing
-
 // ===========================================================================
 package object converter {
   private[converter] type EnumValue = aptus.aptdata.meta.basic.EnumValue
@@ -17,13 +15,13 @@ package object converter {
   def clsFromFile(schemaFilePath: FilePath): Cls =
     schemaFilePath
       .readFileContent()
-      .pipe(aillag.GsonParsing.parseObject) // TODO: support more than just JSON
+      .pipe(aillag.GsonToObj.fromObjectString) // TODO: support more than just JSON
       .pipe(DataToMetaConverter.dynToCls)
 
   // ---------------------------------------------------------------------------
   def clsFromString(value: JsonObjectString): Cls =
     value
-      .pipe(aillag.GsonParsing.parseObject) // TODO: support more than just JSON
+      .pipe(aillag.GsonToObj.fromObjectString) // TODO: support more than just JSON
       .pipe(DataToMetaConverter.dynToCls)
 
   // ===========================================================================

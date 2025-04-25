@@ -9,12 +9,12 @@ import aptus.aptdata.meta.schema.AptusMetaContainer_
 import io.CellConf
 
 // ===========================================================================
-class TableSchemaInferrer[$Jbos, $Jbo](
-    consumeSelfClosing: $Jbos => CloseabledIterator[$Jbo],
-    string: ($Jbo, Key) => String) {
+class TableSchemaInferrer[$Multiple, $Single](
+    consumeSelfClosing: $Multiple => CloseabledIterator[$Single],
+    string: ($Single, Key) => String) {
 
   // ---------------------------------------------------------------------------
-  def fullInferring(conf: CellConf, keys: Seq[Key])(z: $Jbos): Cls =
+  def fullInferring(conf: CellConf, keys: Seq[Key])(z: $Multiple): Cls =
       infoLookup(conf)(
             keySet  = keys.toSet,
             mutable = new MutableValuesSubset(keys, max = 3 /* enough for boolean detection at least */))(
@@ -25,7 +25,7 @@ class TableSchemaInferrer[$Jbos, $Jbo](
             .pipe(Cls.apply) }
 
     // ---------------------------------------------------------------------------
-    private def infoLookup(conf: CellConf)(keySet: Set[Key], mutable: MutableValuesSubset)(z: $Jbos): Map[Key, Info] =
+    private def infoLookup(conf: CellConf)(keySet: Set[Key], mutable: MutableValuesSubset)(z: $Multiple): Map[Key, Info] =
         consumeSelfClosing(z)
           .foldLeft(Set[(Key, Info)]()) { (curr, o) =>
             tmp(conf, keySet, mutable)(curr, o) }
@@ -36,7 +36,7 @@ class TableSchemaInferrer[$Jbos, $Jbo](
             key -> mutable.potentiallyUpdateInfo(key, info) }
 
       // ---------------------------------------------------------------------------
-      private def tmp(conf: CellConf, keySet: Set[Key], mutable: MutableValuesSubset)(curr: Set[(Key, Info)], o: $Jbo): Set[(Key, Info)] = {
+      private def tmp(conf: CellConf, keySet: Set[Key], mutable: MutableValuesSubset)(curr: Set[(Key, Info)], o: $Single): Set[(Key, Info)] = {
         curr ++
           keySet
             .map { key =>

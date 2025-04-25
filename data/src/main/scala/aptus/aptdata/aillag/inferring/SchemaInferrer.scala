@@ -3,26 +3,25 @@ package aptdata
 package aillag
 package inferring
 
-import aptus.aptdata.meta.basic.BasicType.{_Enm => _, _}
 import scala.{Any => AnySingleValue}
 
 // ===========================================================================
-class SchemaInferrer[$Jbo](
-    entries   : $Jbo => Seq[(Symbol/*BKey*/, AnyValue)],
-    nestingOpt: AnySingleValue => Option[$Jbo]) {
+class SchemaInferrer[$Single](
+    entries   : $Single => Seq[(Symbol/*BKey*/, AnyValue)],
+    nestingOpt: AnySingleValue => Option[$Single]) {
   import SchemaInferrerUtils._
 
   // ===========================================================================
-  def klass(values: Seq[$Jbo]): Cls = values.iterator.pipe(klass)
+  def klass(values: Seq[$Single]): Cls = values.iterator.pipe(klass)
 
   // ---------------------------------------------------------------------------
-  def klass(values: Iterator[$Jbo]): Cls =
+  def klass(values: Iterator[$Single]): Cls =
     values
       .map(klass(_))
       .reduceLeft(_ combine _)
 
   // ---------------------------------------------------------------------------
-  def klass(values: aptus.CloseabledIterator[$Jbo]): Cls =
+  def klass(values: aptus.CloseabledIterator[$Single]): Cls =
     values
       .map(klass(_))
       .reduceLeft(_ combine _)
@@ -36,7 +35,7 @@ o: aptus.aptdata.sngl.DynData): Cls =
       .pipe(Cls.apply)
 
   // ---------------------------------------------------------------------------
-  def klass(o: $Jbo): Cls =
+  def klass(o: $Single): Cls =
     o .pipe(entries)
       .map { case (key, value) =>
         Fld(key, info(value)) }
@@ -48,7 +47,7 @@ o: aptus.aptdata.sngl.DynData): Cls =
         case seq: Seq[_] =>
           // a201113123227 - no heterogenous arrays; TODO: t250424143819 - also for dyn?
           Info.nes(//FIXME: pes/nes issue?
-            if (nestingOpt(seq.head).nonEmpty) seq.map(_.asInstanceOf[$Jbo]).pipe(klass)
+            if (nestingOpt(seq.head).nonEmpty) seq.map(_.asInstanceOf[$Single]).pipe(klass)
             else                               valueType(seq.head))
         case _ =>
           Info.one(valueType(value)) }

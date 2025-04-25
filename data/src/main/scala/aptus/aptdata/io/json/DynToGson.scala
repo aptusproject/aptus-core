@@ -6,7 +6,7 @@ package json
 import org.apache.commons.math3.linear.RealMatrix
 
 // ===========================================================================
-private[aptdata] object ObjToGson2 { // TODO: t214360121145 - switch from gson to lihaoyi's ujson
+private[aptdata] object DynToGson { // TODO: t214360121145 - switch from gson to lihaoyi's ujson
   import com.google.gson._
 
   // ---------------------------------------------------------------------------

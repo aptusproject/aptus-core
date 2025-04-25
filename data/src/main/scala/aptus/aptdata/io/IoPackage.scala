@@ -6,7 +6,7 @@ package object io {
 
   lazy val AptusJsonFormatting =
       new io.json.JsonFormatting[Dyns, Dyn](
-        toGson             = io.json.ObjToGson2.apply,
+        toGson             = io.json.DynToGson.apply,
         consumeSelfClosing = _.valuesIterator)
 
     // ---------------------------------------------------------------------------

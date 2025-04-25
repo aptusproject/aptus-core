@@ -6,13 +6,12 @@ package table
 import aptus.Anything_
 
 // ===========================================================================
-class TableToGalliaData[$Single](
-   unknownKeys: ($Single, Cls) => Set[Key],
-    attemptKey: ($Single, Key) => Option[AnyValue],
+class TableParsing[$Single](
+     unknownKeys: ($Single, Cls) => Set[Key],
+      attemptKey: ($Single, Key) => Option[AnyValue]) {
 
-   instantiate: Seq[(Key, AnyValue)] => $Single) {
-
-  def convert(conf: CellConf /* TODO: a lighter version */)(c: Cls)(o: $Single): $Single = {
+  // ---------------------------------------------------------------------------
+  def convert(conf: CellConf /* TODO: a lighter version */)(c: Cls)(o: $Single): Seq[(Key, AnyValue)] = {
       unknownKeys(o, c).assert(_.isEmpty) // necessary for union types (see 220615165554)
 
       c .fields
@@ -22,8 +21,7 @@ class TableToGalliaData[$Single](
               _ .asInstanceOf[String]
                 .in.noneIf(conf.isNull)
                 .map(processStringField(conf)(field))
-                .map(field.key -> _) } }
-        .pipe(instantiate) }
+                .map(field.key -> _) } } }
 
     // ---------------------------------------------------------------------------
     private def processStringField(conf: CellConf)(field: Fld)(value: String): AnyValue =

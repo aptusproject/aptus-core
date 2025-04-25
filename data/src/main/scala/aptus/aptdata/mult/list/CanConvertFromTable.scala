@@ -16,7 +16,7 @@ trait CanConvertFromTable { self: Dyns =>
     val conf = new CellConf()
     val tableActualSchema: Cls = inferTableSchema(conf)(keys)
 
-    endoMap(io.AptusTableToAptusData.convert(conf)(tableActualSchema)) }
+    endoMap(io.AptusTableParsing.convert(conf)(tableActualSchema)(_).pipe(aptdata._build)) }
 
   // ===========================================================================
   /** expects only strings in data */

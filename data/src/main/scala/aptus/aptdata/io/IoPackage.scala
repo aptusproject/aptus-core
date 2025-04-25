@@ -23,11 +23,10 @@ package object io {
         instantiate = aptdata._build)
 
     // ---------------------------------------------------------------------------
-    lazy val AptusTableToAptusData =
-      new io.table.TableToGalliaData[Dyn](
+    lazy val AptusTableParsing =
+      new io.table.TableParsing[Dyn](
         unknownKeys = _ unknownKeys _,
-         attemptKey = _ attemptKey  _,
-        instantiate = aptdata._build)
+         attemptKey = _ attemptKey  _)
 
   // ===========================================================================
   lazy val AptusSchemaInferrer =

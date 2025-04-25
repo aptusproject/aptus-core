@@ -4,8 +4,8 @@ package aptdata
 // ===========================================================================
 package object io {
 
-  lazy val AptusObjToGson =
-      new io.json.ObjToGson[Dyns, Dyn](
+  lazy val AptusJsonFormatting =
+      new io.json.JsonFormatting[Dyns, Dyn](
         toGson             = io.json.ObjToGson2.apply,
         consumeSelfClosing = _.valuesIterator)
 

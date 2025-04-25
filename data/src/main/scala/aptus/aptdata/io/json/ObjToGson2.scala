@@ -4,7 +4,7 @@ package io
 package json
 
 import org.apache.commons.math3.linear.RealMatrix
-import aptdata.lowlevel.DataFormatting
+import io.json.BasicTypeJsonValueNormalization
 
 // ===========================================================================
 private[aptdata] object ObjToGson2 {
@@ -28,45 +28,24 @@ private[aptdata] object ObjToGson2 {
                   case sgl         => element(sgl) }) } }
 
     // ===========================================================================
+    private val dynOnly: PartialFunction[Any, Any] = {
+      case x: Dyn => apply(x) // nesting
+
+      // ---------------------------------------------------------------------------
+      // 2+D arrays:
+      case x: RealMatrix => x.getData.map { _.map(element).toList.pipe(jsonArray) }.toList.pipe(jsonArray)
+      case x: Seq[_] => x.map(element).pipe(jsonArray)
+
+      // ---------------------------------------------------------------------------
+      case x => x.getClass.pipe(aptus.aptdata.io.json.customJsonFormatters.get)
+        match {
+          case Some(customFormatter) => customFormatter.format(x)
+          case None                  => x.toString /* fall back on toString (avoid if possible */ } }
+
+    // ===========================================================================
     private def element(value: Any): JsonElement =
-      GsonInstance.toJsonTree(
-        value match { // see BasicType
-
-          case x: String     => x
-          case x: Int        => x
-          case x: Double     => x
-          case x: Boolean    => x
-
-          // ---------------------------------------------------------------------------
-          case x: Dyn        => apply(x)
-
-          // ---------------------------------------------------------------------------
-          case x: Byte       => x
-          case x: Short      => x
-          case x: Long       => x
-          case x: Float      => x
-
-          // ---------------------------------------------------------------------------
-          case x: BigInt     => DataFormatting.formatBigInt(x) // can't trust JSON with bignums
-          case x: BigDec     => DataFormatting.formatBigDec(x) // can't trust JSON with bignums
-
-          // ---------------------------------------------------------------------------
-          case x: Date     => DataFormatting.formatDate(x)
-          case x: DateTime => DataFormatting.formatDateTime (x)
-          case x: Instant  => DataFormatting.formatInstant(x)
-
-          // ---------------------------------------------------------------------------
-          case x: ByteBuffer => DataFormatting.formatBinary(x)
-
-          // ---------------------------------------------------------------------------
-          // 2+D arrays:
-          case x: RealMatrix => x.getData.map { _.map(element).toList.pipe(jsonArray) }.toList.pipe(jsonArray)
-          case x: Seq[_] => x.map(element).pipe(jsonArray)
-
-          // ---------------------------------------------------------------------------
-          case x => x.getClass.pipe(aptus.aptdata.io.json.customJsonFormatters.get)
-            match {
-              case Some(customFormatter) => customFormatter.format(x)
-              case None                  => x.toString /* fall back on toString (avoid if possible */ } }) }
+       BasicTypeJsonValueNormalization.partial.orElse(dynOnly)
+        .apply(value)
+        .pipe (GsonInstance.toJsonTree) }
 
 // ===========================================================================

@@ -58,6 +58,6 @@ o: aptus.aptdata.sngl.DynData): Cls =
     def valueType(value: AnySingleValue): ValueType =
       nestingOpt(value) match {
         case Some(nesting) => klass(nesting)
-        case None          => ValueTypeAnalyzer(value) } }
+        case None          => BasicTypeAnalyzer(value) } }
 
 // ===========================================================================

@@ -7,7 +7,7 @@ import meta.basic.BasicType._
 import scala.{Any => AnySingleValue}
 
 // ===========================================================================
-object ValueTypeAnalyzer {
+object BasicTypeAnalyzer { // can't move to 'basic' package because of reliance on enumeratum
 
   def apply(value: AnySingleValue): BasicType =
     value match {

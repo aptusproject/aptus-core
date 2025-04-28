@@ -100,7 +100,7 @@ package aptdata {
 
   // ===========================================================================
   private[aptdata] implicit class DynIterator_(values: CloseabledIterator[Dyn]) {
-    private[aptdata] def dyns: Dyns = mult.list.Dyns.build(values.toList)
+    private[aptdata] def dyns: Dyns = mult.list.Dyns.build(values.consumeAll())
     private[aptdata] def dynz: Dynz = mult.iter.Dynz.build(values) } } }
 
 // ===========================================================================

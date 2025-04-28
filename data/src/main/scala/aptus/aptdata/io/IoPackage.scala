@@ -31,7 +31,7 @@ package object io {
     // ---------------------------------------------------------------------------
     lazy val AptusTableSchemaInferrer =
       new io.inferring.table.TableSchemaInferrer[Dyns, Dyn](
-        attemptKey         = _  attemptKey _,
-        consumeSelfClosing = _.valuesIterator) }
+        attemptKey  = _  attemptKey _,
+        consumer    = _.valuesIterator) }
 
 // ===========================================================================

@@ -24,7 +24,7 @@ class SchemaInferrer[$Single](
   def klass(values: aptus.CloseabledIterator[$Single]): Cls =
     values
       .map(klass(_))
-      .reduceLeft(_ combine _)
+      .reduce(_ combine _)
 
   // ---------------------------------------------------------------------------
   def klass(o: sngl.DynData): Cls =

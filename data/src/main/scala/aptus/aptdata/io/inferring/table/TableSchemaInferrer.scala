@@ -11,7 +11,7 @@ import io.table.CellConf
 // ===========================================================================
 class TableSchemaInferrer[$Multiple, $Single](
     attemptKey: ($Single, Key) => Option[AnyValue],
-    consumeSelfClosing: $Multiple => CloseabledIterator[$Single]) {
+    consumer  : $Multiple => CloseabledIterator[$Single]) {
 
   // ---------------------------------------------------------------------------
   def fullInferring(conf: CellConf, keys: Keyz)(z: $Multiple): Cls =
@@ -26,8 +26,8 @@ class TableSchemaInferrer[$Multiple, $Single](
 
     // ---------------------------------------------------------------------------
     private def infoLookup(conf: CellConf)(keySet: Set[Key], mutable: MutableValuesSubset)(z: $Multiple): Map[Key, Info] =
-        consumeSelfClosing(z)
-          .foldLeft(Set[(Key, Info)]()) { (curr, o) =>
+        consumer(z)
+          .fold(Set[(Key, Info)]()) { (curr, o) =>
             tmp(conf, keySet, mutable)(curr, o) }
           .toSeq
           .groupByKey

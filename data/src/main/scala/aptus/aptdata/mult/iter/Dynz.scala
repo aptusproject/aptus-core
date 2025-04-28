@@ -12,6 +12,7 @@ import common.CommonOutputter
  * unlike gallia's counterpart, one cannot just "fork" Dynz directly: must "checkpoint" it manually.
  * can be empty (a250423153435)*/
 case class Dynz(
+      // TODO: t250428150436 - or switch to aptus.SelfClosingIterator?
       protected[aptdata] val values: CloseabledIterator[Dyn])
     extends ops.mult.HasAllMultiple[_Self]
 

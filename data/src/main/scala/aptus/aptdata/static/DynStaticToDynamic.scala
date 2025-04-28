@@ -33,6 +33,6 @@ trait DynStaticToDynamic {
                   val valuesIterator: CloseabledIterator[T],
         protected val tn            : TypeNode) {
       def toDynamic: Dyns = valuesIterator.map { x =>
-        tn.forceNonBObjInfo.pipe(staticToDynamic(x)).asInstanceOf[Dyn] /* TODO: error msg */ }.toList.pipe(x => Dyns.build(x)) } }
+        tn.forceNonBObjInfo.pipe(staticToDynamic(x)).asInstanceOf[Dyn] /* TODO: error msg */ }.consumeAll().pipe(x => Dyns.build(x)) } }
 
 // ===========================================================================

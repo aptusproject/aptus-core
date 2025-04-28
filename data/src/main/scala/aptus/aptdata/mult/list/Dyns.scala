@@ -27,7 +27,7 @@ def fromJson: Dyns = inferSchema.pipe { c => endoMap { o => io.AptusGsonToAptusD
 // TODO: t241203213031 - all the missing accessors
 
 //TODO: codegen - t241203151355
-def doubles(key: Key): Seq[Double] = exoMap(_.double(key)).toList
+def doubles(key: Key): Seq[Double] = exoMap(_.double(key)).consumeAll()
 def doubles          : Seq[Double] = ???//  TODO: t241203151505 exoMap(_.double(_.soleKey)).toList
 
     // ---------------------------------------------------------------------------

@@ -19,8 +19,6 @@ trait DynData {
   def valewsIterator: Iterator[Valew]      = valuesIterator.map(Valew.build)
 
   // ---------------------------------------------------------------------------
-  def entries: Entries = Entries.build(data)
-
-  @inline def galliaPairs = entries.map(_.galliaPair) /* for compatibility with aptus' dyn */ }
+  def entries: Entries = Entries.build(data) }
 
 // ===========================================================================

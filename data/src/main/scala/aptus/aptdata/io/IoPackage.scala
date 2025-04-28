@@ -4,15 +4,9 @@ package aptdata
 // ===========================================================================
 package object io {
 
-  lazy val AptusJsonFormatting =
-      new io.json.JsonFormatting[Dyns, Dyn](
-        toGson             = io.json.DynToGson.apply,
-        consumeSelfClosing = _.valuesIterator)
-
-    // ---------------------------------------------------------------------------
-    lazy val AptusGsonToSingleEntity =
-      new io.json.GsonToSingleEntity[Dyns, Dyn](
-        instantiate = aptdata._build)
+  lazy val AptusGsonToSingleEntity =
+    new io.json.GsonToSingleEntity[Dyns, Dyn](
+      instantiate = aptdata._build)
 
   // ===========================================================================
   lazy val AptusGsonToAptusData =
@@ -31,7 +25,7 @@ package object io {
   // ===========================================================================
   lazy val AptusSchemaInferrer =
       new io.inferring.SchemaInferrer[Dyn](
-        entries    = _.galliaPairs,
+        entries    = _.entries.map(_.aptusPair),
         nestingOpt = aptus.castIfTypeMatching[Dyn])
 
     // ---------------------------------------------------------------------------

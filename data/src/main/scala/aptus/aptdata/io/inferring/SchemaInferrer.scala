@@ -7,7 +7,7 @@ import scala.{Any => AnySingleValue}
 
 // ===========================================================================
 class SchemaInferrer[$Single](
-    entries   : $Single => Seq[(Symbol/*BKey*/, AnyValue)],
+    entries   : $Single => Seq[(Key, AnyValue)],
     nestingOpt: AnySingleValue => Option[$Single]) {
   import SchemaInferrerUtils._
 
@@ -27,11 +27,12 @@ class SchemaInferrer[$Single](
       .reduceLeft(_ combine _)
 
   // ---------------------------------------------------------------------------
-  def klass(
-o: aptus.aptdata.sngl.DynData): Cls =
-    o .galliaPairs
-      .map { case (key, value) =>
-        Fld(key, info(value)) }
+  def klass(o: sngl.DynData): Cls =
+    o .entries
+      .map { entry =>
+        Fld(
+          entry.key,
+          entry.valew.naked.pipe(info)) }
       .pipe(Cls.apply)
 
   // ---------------------------------------------------------------------------

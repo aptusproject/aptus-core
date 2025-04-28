@@ -28,7 +28,9 @@ trait _AptusPath {
   def writeFile(content: String): Unit = { content.writeFileContent(path) /* see String_ */; () }
 
   def ensureDir   (): DirPath = if (_isDir()) path else createNewDir()
-  def createNewDir(): DirPath = { assert(ioFile.mkdirs(), path); path }
+  def createNewDir(): DirPath = {
+    if (ioFile.exists()) aptus.illegalArgument(s"E250428111233 - already exists: ${path.quote}")
+    assert(ioFile.mkdirs(), path); path }
 
   def ensureEmpty(): DirPath = { listNames().ensuring(_.isEmpty); path }
 

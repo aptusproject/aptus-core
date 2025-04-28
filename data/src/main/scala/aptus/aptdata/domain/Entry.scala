@@ -18,7 +18,8 @@ case class Entries private (values: Seq[Entry])
 
 // ===========================================================================
 case class Entry private (key: Key, valew: Valew) {
-    def galliaPair: (Symbol, Any) = key.und -> valew.naked
+    def galliaPair: (BKey, AnyValue) = key.und -> valew.naked
+    def  aptusPair: ( Key, AnyValue) = key     -> valew.naked
 
     // ===========================================================================
     def retainOpt(targets: KeySet): Option[Entry] =

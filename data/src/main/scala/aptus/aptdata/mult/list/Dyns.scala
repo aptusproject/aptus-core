@@ -61,9 +61,13 @@ def doubles          : Seq[Double] = ???//  TODO: t241203151505 exoMap(_.double(
     // ===========================================================================
     override final def write(s: OutputFilePath): OutputFilePath = io.out.DynOut.write(this)(s)
 
-    override final def formatCompactJson: String = io.AptusJsonFormatting.formatCompactMultiple(this)
-    override final def  formatPrettyJson: String = io.AptusJsonFormatting.formatPrettyMultiple (this)
+    private def _jsonArray: com.google.gson.JsonArray = exoMap(io.json.DynToGson.apply).pipe(io.json.jsonArray)
 
+      // ---------------------------------------------------------------------------
+      override final def formatCompactJson: String = aptjson.GsonFormatter.compact(_jsonArray)
+      override final def  formatPrettyJson: String = aptjson.GsonFormatter.pretty (_jsonArray)
+
+    // ---------------------------------------------------------------------------
     //TODO: csv
     def formatTsv  : String = io.out.DynOut2.formatTable(this)(sep = "\t")
       .joinln.newline /* TODO: stream */

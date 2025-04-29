@@ -15,6 +15,8 @@ trait ClsCompanionTrait {
   def cls(field1: Fld, more: Fld*): Cls = Cls((field1 +: more).toList)
   def cls(fields: Seq[Fld])       : Cls = Cls(fields.toList)
 
+  def cls(name: ClsName, fields: Seq[Fld]): Cls = Cls(fields.toList).setName(name)
+
   // ---------------------------------------------------------------------------
   def soleField(field: Fld): Cls = Cls(Seq(field)) }
 

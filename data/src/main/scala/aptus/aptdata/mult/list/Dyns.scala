@@ -22,7 +22,7 @@ case class Dyns private[Dyns] (
        with CanConvertFromTable {
 
 /** mostly to convert doubles to int when applicable ("JSON number tax")  - overkill in aptus (vs gallia) */
-def fromJson: Dyns = inferSchema.pipe { c => endoMap { o => io.AptusGsonToAptusData.convertRecursively(c)(o) } }
+def fromJson: Dyns = inferSchema.pipe { c => endoMap { o => io.AptusGsonToSingleEntityWithSchema.convertRecursively(c)(o) } }
 
 // TODO: t241203213031 - all the missing accessors
 

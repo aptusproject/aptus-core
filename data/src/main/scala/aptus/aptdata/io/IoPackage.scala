@@ -5,22 +5,21 @@ package aptdata
 package object io {
 
   lazy val AptusGsonToSingleEntity =
-    new io.json.GsonToSingleEntity[Dyns, Dyn](
+    new io.json.GsonToSingleEntity[Dyn](
       instantiate = aptdata._build)
 
-  // ===========================================================================
-  lazy val AptusGsonToAptusData =
-      new io.json.GsonToGalliaData[Dyn](
-        jsonObjectStringParser = AptusGsonToSingleEntity.fromObjectString,
+    // ---------------------------------------------------------------------------
+    lazy val AptusGsonToSingleEntityWithSchema =
+      new io.json.GsonToSingleEntityWithSchema[Dyn](
         unknownKeys = _ unknownKeys _,
          attemptKey = _ attemptKey  _,
         instantiate = aptdata._build)
 
-    // ---------------------------------------------------------------------------
-    lazy val AptusTableParsing =
-      new io.table.TableParsing[Dyn](
-        unknownKeys = _ unknownKeys _,
-         attemptKey = _ attemptKey  _)
+  // ===========================================================================
+  lazy val AptusTableParsing =
+    new io.table.TableParsing[Dyn](
+      unknownKeys = _ unknownKeys _,
+       attemptKey = _ attemptKey  _)
 
   // ===========================================================================
   lazy val AptusSchemaInferrer =

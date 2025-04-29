@@ -9,19 +9,10 @@ import aptus.aptdata.meta.basic.BasicTypeValueTransformer
 
 // ===========================================================================
 /** parsing is more efficient when we know the schema already */
-class GsonToGalliaData[$Single](
-    jsonObjectStringParser: JsonObjectString => $Single,
-
+class GsonToSingleEntityWithSchema[$Single](
     unknownKeys: ($Single, Cls) => Set[Key],
      attemptKey: ($Single, Key) => Option[AnyValue],
-
      instantiate: Seq[(Key, AnyValue)] => $Single) {
-
-  // ---------------------------------------------------------------------------
-  def parseRecursively(c: Cls, jsonString: String): $Single =
-    jsonString
-      .pipe(jsonObjectStringParser)
-      .pipe(convertRecursively(c))
 
   // ---------------------------------------------------------------------------
   def convertRecursively(c: Cls)(o: $Single): $Single = {

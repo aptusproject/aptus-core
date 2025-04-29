@@ -11,7 +11,7 @@ import com.google.gson._
 // ===========================================================================
 /* important note: 201117103600 - JsonObject maintains its entries in a com.google.gson.internal.LinkedTreeMap
  * which despite its name maintains element order, though it requires a trick (see 201117103735) */
-class GsonToSingleEntity[$Multiple, $Single]( // TODO: t214360121145 - switch from gson to lihaoyi's ujson
+class GsonToSingleEntity[$Single]( // TODO: t214360121145 - switch from gson to lihaoyi's ujson
     instantiate: Seq[(Key, AnyValue)] => $Single) {
 
   def fromObjectString(value: JsonObjectString): $Single = GsonParser.stringToJsonObject (value).pipe(jsonObjectToObj)

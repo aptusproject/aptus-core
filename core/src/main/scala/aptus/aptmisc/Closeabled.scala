@@ -44,10 +44,11 @@ private[aptus] final class Closeabled[T](
   private[aptus] final class CloseabledIterator[+T](
           val underlying: Iterator[T],
           val cls       : Closeable)
-        extends Closeable
-           with IterableOnce[T] {
+        extends Closeable {
       override final def close() : Unit        = { cls.close() }
-      override final def iterator: Iterator[T] = toSelfClosing
+
+      // ---------------------------------------------------------------------------
+      final def iterator: Iterator[T] = toSelfClosing
 
       // ---------------------------------------------------------------------------
       def hasNext: Boolean = underlying.hasNext
@@ -57,7 +58,9 @@ private[aptus] final class Closeabled[T](
       def filter(p: T => Boolean): CloseabledIterator[T] = alter(_.filter(p))
       def find  (p: T => Boolean): Option            [T] = consume(_.find(p))
 
-      def reduce[U >: T](op: (U, U) => U): U = consume(_.reduce(op))
+      // ---------------------------------------------------------------------------
+      def reduce[U >: T] (op: (U, U) => U): U = consume(_.reduce(op))
+      def fold  [U](z: U)(op: (U, T) => U): U = consume(_.foldLeft(z)(op))
 
       // ---------------------------------------------------------------------------
       def drop     (n: Int)         : CloseabledIterator[T] = alter(_.drop(n))
@@ -71,14 +74,14 @@ private[aptus] final class Closeabled[T](
 
       // ===========================================================================
       def toCloseabled[U >: T]: Closeabled[Iterator[U]] = new Closeabled(underlying, cls)
-      def toSelfClosing:                   Iterator[T]  = new SelfClosingIterator(underlying, cls)
+      def toSelfClosing       : SelfClosingIterator[T]  = new SelfClosingIterator(underlying, cls)
 
       // ---------------------------------------------------------------------------
       def consume[U](f: Iterator[T] => U):      U  = { val result = f(underlying); close(); result }
       def consumeAll()                   : List[T] = consume(_.toList)
       def consumeNext()                  :      T  = consume(_.next())
 
-      // ---------------------------------------------------------------------------
+      // ===========================================================================
       def alter[U](f: Iterator[T] => Iterator[U]): CloseabledIterator[U] = new CloseabledIterator(f(underlying), cls)
 
       // ---------------------------------------------------------------------------

@@ -94,6 +94,28 @@ object MapUtils {
       b.result }
 
     // ---------------------------------------------------------------------------
+    def groupByKeyWithListMap[K, V](entries: CloseabledIterator[(K, V)]): ListMap[K, Seq[V]] = {
+        var m = immutable.ListMap.empty[K, mutable.ArrayDeque[V]]
+
+        entries
+          .foreach { elem =>
+            val key = elem._1
+            val bldr =
+              m.get(key) match { //m.getOrElseUpdate(key, mutable.ArrayDeque[V]())
+                case Some(x) => x
+                case None =>
+                  val x = mutable.ArrayDeque[V]()
+                  m = m + (key -> x) // -------------> seems like '+=' doesn't append? TODO: t210115142355 - investigate
+                  x }
+            bldr += elem._2 }
+
+        val b = immutable.ListMap.newBuilder[K, Seq[V]]
+        for ((k, v) <- m)
+          b += ((k, v.toList))
+
+        b.result }
+
+    // ---------------------------------------------------------------------------
     def groupByKeyWithTreeMap[K, V](entries: Iterator[(K, V)])(implicit ord: Ordering[K]): immutable.TreeMap[K, Seq[V]] = {
       val m = mutable.TreeMap.empty[K, mutable.ArrayDeque[V]]
 

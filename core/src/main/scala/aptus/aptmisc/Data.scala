@@ -25,8 +25,8 @@ final class Data[A] private[aptus] (coll: Seq[A]) {
   @deprecated def countBySelf0: List[(A, Count)] = coll.groupBy(identity).view.map { x => x._1 -> x._2.size }.toList.sortBy(-_._2) // TODO: t211004120452 - more efficient version
 
   /** maintains order (if presorted for instance) */
-              def countBySelfWithOrder : List[(Count, A)] = coll.map(x => x -> x).iterator.pipe(MapUtils.groupByKeyWithListMap).toList.map { x => x._2.size -> x._1 }.sortBy(-_._1) // TODO: t211004120452 - more efficient version
-  @deprecated def countBySelfWithOrder0: List[(A, Count)] = coll.map(x => x -> x).iterator.pipe(MapUtils.groupByKeyWithListMap).toList.map { x => x._1 -> x._2.size }.sortBy(-_._2) // TODO: t211004120452 - more efficient version
+              def countBySelfWithOrder : List[(Count, A)] = coll.map(x => x -> x).iterator.pipe(MapUtils.groupByKeyWithListMap(_)).toList.map { x => x._2.size -> x._1 }.sortBy(-_._1) // TODO: t211004120452 - more efficient version
+  @deprecated def countBySelfWithOrder0: List[(A, Count)] = coll.map(x => x -> x).iterator.pipe(MapUtils.groupByKeyWithListMap(_)).toList.map { x => x._1 -> x._2.size }.sortBy(-_._2) // TODO: t211004120452 - more efficient version
 
   // TODO: t220929165238 - more efficient version (see groupByKey)
   def countByKey[K, V](implicit ev: A <:< (K, V)): Seq[(Count, K)] = groupByKey.map { case (k, v) => v.size -> k }.toList.sortBy(-_._1)

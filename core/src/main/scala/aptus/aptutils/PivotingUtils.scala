@@ -2,7 +2,7 @@ package aptus
 package aptutils
 
 import util.chaining._
-import aptus.aptutils.MapUtils.groupByKeyWithListMap
+import MapUtils.groupByKeyWithListMap
 
 // ===========================================================================
 object PivotingUtils {
@@ -13,7 +13,7 @@ object PivotingUtils {
         .view
         .map(_.swap)
         .iterator
-        .pipe(groupByKeyWithListMap)
+        .pipe(groupByKeyWithListMap(_))
 
     // ---------------------------------------------------------------------------
     /** no prior grouping of key/values */
@@ -30,7 +30,7 @@ object PivotingUtils {
           .flatMap { case (k, vs) =>
             vs.map(_ -> k) }
           .iterator
-          .pipe(groupByKeyWithListMap)
+          .pipe(groupByKeyWithListMap(_))
 
       // ---------------------------------------------------------------------------
       def pivotPreGrouped[K, V](input: ListMap[K, Seq[V]]): ListMap[V, Seq[K]] = // TODO: confirm can reuse Map's below?
@@ -39,7 +39,7 @@ object PivotingUtils {
           .flatMap { case (k, vs) =>
             vs.map(_ -> k) }
           .iterator
-          .pipe(groupByKeyWithListMap)
+          .pipe(groupByKeyWithListMap(_))
 
       // ---------------------------------------------------------------------------
       def pivotPreGrouped[K, V](input: Map[K, Seq[V]]): ListMap[V, Seq[K]] =
@@ -48,6 +48,6 @@ object PivotingUtils {
           .flatMap { case (k, vs) =>
             vs.map(_ -> k) }
           .iterator
-          .pipe(groupByKeyWithListMap) }
+          .pipe(groupByKeyWithListMap(_)) }
 
 // ===========================================================================

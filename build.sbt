@@ -43,15 +43,15 @@ lazy val reflect = (project in file("reflect"))
 lazy val meta = (project in file("meta"))
   .settings(
     name   := "aptus-meta", // e.g Cls, Fld, ...
-    target := baseDirectory.value / ".." / "bin" / "meta")
+    target := baseDirectory.value / ".." / "bin" / "meta",
+    libraryDependencies += "com.beachape" %% "enumeratum" % enumeratumVersion /* needed for Key */)
   .dependsOn(reflect)
 
 // ---------------------------------------------------------------------------
 lazy val data = (project in file("data"))
   .settings(
     name   := "aptus-data", // e.g. Dyn, ...
-    target := baseDirectory.value / ".." / "bin" / "data",
-    libraryDependencies += "com.beachape" %% "enumeratum" % enumeratumVersion)
+    target := baseDirectory.value / ".." / "bin" / "data")
   .dependsOn(meta)
 
 // ---------------------------------------------------------------------------

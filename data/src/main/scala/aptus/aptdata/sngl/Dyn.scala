@@ -2,9 +2,9 @@ package aptus
 package aptdata
 package sngl
 
-import aptus.aptdata.ops.OpsBorrowedFromGallia
-import aptus.aptdata.static.DynDynamicToStatic
-import dyn.{Dyn => _Self}
+import aptdata.ops.OpsBorrowedFromGallia
+import aptdata.static.DynDynamicToStatic
+import aptdata.{Dyn => _Self}
 import ops._
 import ops.common._
 

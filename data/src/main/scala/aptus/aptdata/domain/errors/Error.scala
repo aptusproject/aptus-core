@@ -100,12 +100,16 @@ object CanNotForceKey extends ErrorCompanion(id = "E241126104802", stateError = 
         // ---------------------------------------------------------------------------
         def throwBasicType(deef: DEEF, target: TS, valew: Valew)(basicType: BasicType.Selector): Nothing =
           TransformSpecificType(deef, target, basicType(BasicType), valew).thro }
+
+      // ---------------------------------------------------------------------------
       case class TransformSpecificType(
-          deef: DataEntityErrorFormatter, target: TargetSelector,
+          deef  : DataEntityErrorFormatter,
+          target: TargetSelector,
           superType: SuperType,
-          value: Valew = Valew.build("TODO:241126150248"))
+          valew: Valew = Valew.build("TODO:241126150248"))
         extends ErrorData { val companion = TransformSpecificType
           val msg: String =
-            s"target \"${target.formatDefault}\" not a ${superType.formatErrorMessageString}:\n\t\t${deef.formatErrorEntity}" } }
+            s"target \"${target.formatDefault}\" not a ${superType.formatErrorMessageString}: " +
+              s"${valew.naked.getClass.getSimpleName}\n\t\t${deef.formatErrorEntity}" } }
 
 // ===========================================================================

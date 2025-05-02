@@ -2,19 +2,17 @@ package aptus
 package aptdata
 package ops
 
-import dyn.{Dyn => Sgl}
-
 // ===========================================================================
 trait NestOps[Self] {
     def under(nester: Key): Self }
 
   // ---------------------------------------------------------------------------
-  trait SglNestOps extends NestOps[Sgl] {
+  trait SglNestOps extends NestOps[Sngl] {
     protected val _sngl  : sngl.Dyn
     protected val _nestee: Key
 
     // ---------------------------------------------------------------------------
-    final override def under(nester: Key): Sgl =
+    final override def under(nester: Key): Sngl =
       _sngl.nest(_nestee.in.seq, nester) }
 
   // ===========================================================================

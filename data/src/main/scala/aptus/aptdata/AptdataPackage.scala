@@ -67,16 +67,6 @@ package aptdata {
       object $m { def apply(f: SKeysSelection): TargetSelector = TargetSelector.SelectMultiple(f) } }
 
   // ===========================================================================
-  implicit class Symbol___(u: Symbol) { // t241205112955 - do offer a Path+Ren, eg foo |> bar ~> BAR
-      def  ~>(s: Key): Ren  = Ren(u, s); def  |>(s: Key): Path = Path(Seq(u), s)
-      def ~~>(s: Key): Ren  = Ren(u, s); def ||>(s: Key): Path = Path(Seq(u), s) /* if need to avoid conflict with Gallia's */ }
-
-    // ---------------------------------------------------------------------------
-    implicit class String___(u: String) { // t241205112955 - do offer a Path+Ren, eg foo |> bar ~> BAR
-      def  ~>(s: Key): Ren  = Ren(u, s); def  |>(s: Key): Path = Path(Seq(u), s)
-      def ~~>(s: Key): Ren  = Ren(u, s); def ||>(s: Key): Path = Path(Seq(u), s) /* if need to avoid conflict with Gallia's */  }
-
-  // ===========================================================================
   @publik implicit class DynIoStringExtensions_(val u: String) extends io.in.DynIoStringExtensions
 
   // ---------------------------------------------------------------------------

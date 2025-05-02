@@ -3,8 +3,6 @@ package aptdata
 package ops
 package mult
 
-import sngl.Dyn.dyn
-
 // ===========================================================================
 trait MultipleGroupingDynsImpl
       extends MultipleGroupingTrait[Dyns] /* eg abstract groupBy(x) */ {

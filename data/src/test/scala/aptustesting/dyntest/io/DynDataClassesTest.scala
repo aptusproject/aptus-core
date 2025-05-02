@@ -11,7 +11,9 @@ object DynDataClassesTest extends TestSuite {
   import testmeta.TestMeta.{Person, MyComplexDataSchema}
   import testdata.TestData.{johnStatic, johnDynamic, johnDynamics}
 
-  import aptus.dyn._ // for .toDynamic & fromDataClass
+  // ---------------------------------------------------------------------------
+  import aptus.dyn
+  import dyn.static._ // for .toDynamic
 
   // ---------------------------------------------------------------------------
   val tests = Tests {
@@ -37,7 +39,7 @@ object DynDataClassesTest extends TestSuite {
       // def myMethod[T <: Product /* forgetting to add ": WTT" */] = johnDynamic.toStatic[T]
       // test(util.Try(myMethod[Person]).checkException(classOf[java.lang.IllegalArgumentException])) // <none>.T
 
-      test(fromDataClass(johnStatic).check(johnDynamic)) }
+      test(dyn.dyn(johnStatic).check(johnDynamic)) }
 
     // ---------------------------------------------------------------------------
     test("multiples") {

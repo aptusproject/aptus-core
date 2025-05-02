@@ -162,6 +162,10 @@ package object aptus
       def appendToGzipFile (out: FilePath): OutputFilePath = FileUtils.appendToGzipFile (out, str)
 
       // ===========================================================================
+      def readTsvHeader(): Vector[Cell] = { val (itr, cls) = streamFileLines1(); val header = itr.next(); cls.close(); header.splitXsv('\t').toVector }
+      def readCsvHeader(): Vector[Cell] = { val (itr, cls) = streamFileLines1(); val header = itr.next(); cls.close(); header.splitXsv(',') .toVector }
+
+      // ---------------------------------------------------------------------------
       def readFileLines(): List[Line] = FileUtils.readFileLines(path = str)
       def readFileTsv  (): List[Vector[Cell]] = readFileLines().map(_.splitXsv('\t').toVector)
       def readFileCsv  (): List[Vector[Cell]] = readFileLines().map(_.splitXsv(',') .toVector)
@@ -861,6 +865,11 @@ package object aptus
     // ---------------------------------------------------------------------------
     implicit class Future_[T](fut: concurrent.Future[T]) {
       def awaitIndefinitely() = concurrent.Await.result(fut, concurrent.duration.Duration.Inf) }
+
+    // ---------------------------------------------------------------------------
+    implicit class Writer_(val u: java.io.Writer) extends AnyVal {
+      def writeLine (value  :      String ) =                         u.write(value.newline)
+      def writeLines(values : List[String]) = values.foreach(value => u.write(value.newline)) }
 
   // ===========================================================================
   implicit class JavaList_[T](list: java.util.List[T]) {

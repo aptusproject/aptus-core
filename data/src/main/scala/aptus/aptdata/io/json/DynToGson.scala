@@ -20,11 +20,11 @@ private[aptdata] object DynToGson { // TODO: t214360121145 - switch from gson to
             .foreach { entry =>
               mut.add(
                 /* property = */ entry.key.name, // note: underlying map "uses insertion order for iteration order"
-                /* value    = */ entry.valew.naked match {
-                  // note: no nested Dynz/Iterator (see a241119155444) - TODO: t250402132436
-                  case dyns: Dyns  => jsonArray(dyns.exoMap(element))
-                  case seq: Seq[_] => jsonArray(seq.map    (element))
-                  case sgl         => element(sgl) }) } }
+                /* value    = */ entry.valew.to[JsonElement]
+                  { dyns => jsonArray(dyns.exoMap(element)) }
+                  { seq  => jsonArray(seq.map    (element)) }
+                  { dyn  =>                       apply  (dyn) }
+                  { sgl  =>                       element(sgl) } ) } }
 
     // ===========================================================================
     private val dynOnly: PartialFunction[Any, Any] = {

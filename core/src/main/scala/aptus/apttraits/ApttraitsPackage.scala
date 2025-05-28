@@ -67,6 +67,11 @@ package apttraits { // not sure why not letting me put those in the package obje
   trait AptusMiscTopLevel {
     // convenient since can't pattern match on generic type
     // note: ClassTag is typically JIT-optimized (TBC)
-    def castIfTypeMatching[T](value: Any)(implicit ct: scala.reflect.ClassTag[T]): Option[T] = ct.unapply(value) }
+    def castIfTypeMatching[T](value: Any)(implicit ct: scala.reflect.ClassTag[T]): Option[T] = ct.unapply(value)
+
+    // ===========================================================================
+    // TODO: nest under cartesian
+    def combos[A, B]   (x: Seq[A], y: Seq[B])           : Seq[(A, B)]    = for { xx <- x; yy <- y }          yield (xx, yy)
+    def combos[A, B, C](x: Seq[A], y: Seq[B], z: Seq[C]): Seq[(A, B, C)] = for { xx <- x; yy <- y; zz <- z } yield (xx, yy, zz) }
 
 // ===========================================================================

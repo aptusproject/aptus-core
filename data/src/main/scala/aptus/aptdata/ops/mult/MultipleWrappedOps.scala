@@ -6,43 +6,66 @@ package mult
 import common._
 
 // ===========================================================================
+// this is mostly boilerplate code.
 // rational for not abstracting for endoMap is: will be warned by compiler if missing + (mostly) minimal set that shouldn't change much
 trait MultipleWrappedOps[Mult]
       extends AllCommons[Mult]
-         with CommonHasTransformTargetSelectorTrait[Mult] /* transformTargetSelector */ {
+         with CommonHasTransformTargetSelectorTrait[Mult] /* transformTarget */ {
     hem: HasEndoMap[Mult]
       with HasDataEntityErrorFormatter [Mult] =>
 
-  // TODO: t241127134106 - macros for boilerplate (eg wrapped ops)
-
-  protected[aptdata] final override def transformTargetSelector(target: TargetSelector, f: ValueF): Mult = endoMap(_.transformTargetSelector(target, f))
+  // TODO: t241127134106 - macros for boilerplate (eg wrapped ops) - or codegen at least
 
   // ===========================================================================
-  final override def ensurePresent(key1: Key, more: Key*): Mult = endoMap(_.ensurePresent(key1, more: _*))
-  final override def ensureMissing(key1: Key, more: Key*): Mult = endoMap(_.ensureMissing(key1, more: _*))
+  override final protected[ops] def _ensurePresent(target: TargetEither): Mult = endoMap(_._ensurePresent(target))
+  override final protected[ops] def _ensureMissing(target: TargetEither): Mult = endoMap(_._ensureMissing(target))
 
   // ===========================================================================
-  final override def rename(mapping: Map[Key, Key]): Mult = endoMap(_.rename(mapping))
-  final override def rename(from: Key) = new _Rename(from: Key) { def to(to: Key): Mult = endoMap(_.rename(from).to(to)) }
-
-  // ---------------------------------------------------------------------------
-  final override def retain(targets: Set[Key]): Mult = endoMap(_.retain(targets))
-  final override def remove(targets: Set[Key]): Mult = endoMap(_.remove(targets))
-
-  // ---------------------------------------------------------------------------
-  final override def add(entry: Entry)        : Mult = endoMap(_.add(entry))
-  final override def add(entries: List[Entry]): Mult = endoMap(_.add(entries))
+  protected[aptdata] override final def transformTarget(either: TargetEither, f: ValueF): Mult = endoMap(_.transformTarget(either, f))
 
   // ===========================================================================
-  final override def convert(key: Key): ConvertOps[Mult] =
-    new MultConvertOps[Mult] {
-      protected val _hem = hem
-      protected val _key: Key = key }
+  override final def convert(targets: Targets): ConvertOps[Mult] = new MultConvertOps[Mult](hem, targets)
+  override final def nest   (nestee: Key)     : NestOps   [Mult] = new MultNestOps   [Mult](hem, nestee)
+
+  // ===========================================================================
+  override final protected[ops] def _rename(target: TargetData): Mult = endoMap(_._rename(target))
+
+  override final def rename(mapping: Map[Key, Key]): Mult = endoMap(_.rename(mapping))
+  override final def rename(sel: Sel2): _Rename = new _Rename { def to(to: Key): Mult = endoMap(_.rename(sel ).to(to)) }
+
+  override final def rename          (from: NoRenarget)  : _Rename = new _Rename { def to(to: Key): Mult = endoMap(_.rename          (from).to(to)) }
+  override final def renameGuaranteed(from: NoRenarget)  : _Rename = new _Rename { def to(to: Key): Mult = endoMap(_.renameGuaranteed(from).to(to)) }
+
+  // ===========================================================================
+  override final protected[ops] def _retain(target: TargetEither): Mult = endoMap(_._retain(target))
+
+  override final def retainMultiple(values: Set[Key]): Mult = endoMap(_.retainMultiple(values))
+  override final def retainKey     (value : Key)     : Mult = endoMap(_.retainKey (value))
 
   // ---------------------------------------------------------------------------
-  final override def nest(nestee: Key): NestOps[Mult] =
-    new MultNestOps[Mult] {
-      protected val _hem         = hem
-      protected val _nestee: Key = nestee } }
+  override final protected[ops] def _remove(target: TargetEither): Mult = endoMap(_._remove(target))
+
+  override final def removeMultiple(values: Set[Key]): Mult = endoMap(_.removeMultiple(values))
+  override final def removeKey     (value : Key)     : Mult = endoMap(_.removeKey (value))
+
+  // ===========================================================================
+  override final protected[ops] def _add    (target: NoRenarget, value: NakedValue): Mult = endoMap(_._add    (target, value))
+  override final protected[ops] def _replace(target: NoRenarget, value: NakedValue): Mult = endoMap(_._replace(target, value))
+  override final protected[ops] def _put    (target: NoRenarget, value: NakedValue): Mult = endoMap(_._put    (target, value))
+
+    // ---------------------------------------------------------------------------
+    // add: must not exist
+    override final def add(entry: Entry)        : Mult = endoMap(_.add(entry))
+    override final def add(entries: List[Entry]): Mult = endoMap(_.add(entries))
+
+    // ---------------------------------------------------------------------------
+    // replace: must exist
+    override final def replace(key: Key, value: NakedValue): Mult = endoMap(_.replace(key, value))
+    override final def replace(entries: List[Entry])       : Mult = endoMap(_.replace(entries))
+
+    // ---------------------------------------------------------------------------
+    // put: may or may not exist
+    override final def put(key: Key, value: NakedValue): Mult = endoMap(_.put(key, value))
+    override final def put(entries: List[Entry])       : Mult = endoMap(_.put(entries)) }
 
 // ===========================================================================

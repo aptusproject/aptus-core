@@ -11,6 +11,10 @@ trait CommonOpsTrait[Data]
     with    CommonRemoveRetainTrait   [Data]
     with    CommonAddReplacePutTrait  [Data] {
 
+  @abstrct       def reorderKeys           (f: SKeysFunction): Data
+  @abstrct       def reorderKeysRecursively(f: SKeysFunction): Data
+  @nonovrd final def sorted                                  : Data = reorderKeysRecursively(_.sorted)
+
   // ===========================================================================
   @nonovrd final def convert(target1: Target, more: Target*): ConvertOps[Data] = convert(target1 +~ more)
   @abstrct       def convert(targets: Targets)              : ConvertOps[Data]

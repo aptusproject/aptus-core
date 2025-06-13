@@ -3,20 +3,17 @@ package aptdata
 package sngl
 
 // ===========================================================================
-trait DynReordering {
-    self: DynDataWithGetter
-    with aptus.aptdata.ops.OpsBorrowedFromGallia =>
-  private type _Self = DynReordering
-
-  // ---------------------------------------------------------------------------
-  /** equality minus field ordering */
-  final def equivalent(that: _Self): Boolean = this.sorted == that.sorted
-
-  // ===========================================================================
-  final def sorted: _Self = reorderKeysRecursively(_.sorted)
-
-  // ---------------------------------------------------------------------------
-  def reorderKeys           (f: SKeysFunction): _Self = f(skeys).map { key => key -> forceKey(key) }.dyn // worth keeping?
-  def reorderKeysRecursively(f: SKeysFunction): _Self = _reorderKeysRecursively(_.skeys.pipe(f).pipe(Keyz._fromStrings))(o = this) }
+trait DynReordering { self: Dyn =>
+  override final def reorderKeys           (f: SKeysFunction): Dyn = f(skeys).map { key => key -> forceKey(key) }.dyn // worth keeping?
+  override final def reorderKeysRecursively(f: SKeysFunction): Dyn =
+    f(skeys)
+      .map { skey =>
+        entries
+          .findValue(_.skey == skey)
+          .force // guaranteed by use of skeys above
+          .transformValew2 { _.fold2
+            { _.reorderKeysRecursively(f) }
+            { _.reorderKeysRecursively(f) } } }
+          .dyn }
 
 // ===========================================================================

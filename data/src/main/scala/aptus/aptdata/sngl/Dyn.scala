@@ -28,8 +28,14 @@ case class Dyn private[Dyn] (
        with DynDataEntityErrorFormatterProvider
        with aspects.DynSchemaInferrer {
       self: Dyn =>
+
     override final def ident: Dyn = this
 
+    // ---------------------------------------------------------------------------
+    /** equality minus field ordering */
+    final def equivalent(that: Dyn): Boolean = this.sorted == that.sorted
+
+    // ---------------------------------------------------------------------------
     override final def formatDebug: String = data.map(_.formatDebug).section
 
     // ---------------------------------------------------------------------------

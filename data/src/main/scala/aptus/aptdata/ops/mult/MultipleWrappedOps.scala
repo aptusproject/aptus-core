@@ -6,7 +6,7 @@ package mult
 import common._
 
 // ===========================================================================
-// this is mostly boilerplate code.
+// this is mostly boilerplate code - not bothering to split it up
 // rational for not abstracting for endoMap is: will be warned by compiler if missing + (mostly) minimal set that shouldn't change much
 trait MultipleWrappedOps[Mult]
       extends AllCommons[Mult]
@@ -17,6 +17,10 @@ trait MultipleWrappedOps[Mult]
   // TODO: t241127134106 - macros for boilerplate (eg wrapped ops) - or codegen at least
 
   // ===========================================================================
+  override final def reorderKeys           (f: SKeysFunction): Mult = endoMap(_.reorderKeys           (f))
+  override final def reorderKeysRecursively(f: SKeysFunction): Mult = endoMap(_.reorderKeysRecursively(f))
+
+// ===========================================================================
   override final protected[ops] def _ensurePresent(target: TargetEither): Mult = endoMap(_._ensurePresent(target))
   override final protected[ops] def _ensureMissing(target: TargetEither): Mult = endoMap(_._ensureMissing(target))
 

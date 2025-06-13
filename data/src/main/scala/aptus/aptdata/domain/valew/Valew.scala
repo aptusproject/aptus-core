@@ -22,6 +22,17 @@ case class Valew private[Valew] (naked: NakedValue)
         case dyn : Dyn    => h(dyn)
         case sgl          => i(sgl) }
 
+  // ---------------------------------------------------------------------------
+  def fold2(f: Dyn => Dyn)(g: Dyns => Dyns): NakedValue = _fold2(f)(g)(value = naked)
+
+    // ---------------------------------------------------------------------------
+    private def _fold2(f: Dyn => Dyn)(g: Dyns => Dyns)(value: NakedValue): NakedValue =
+        value match { // note: no nested Dynz/Iterator (see a241119155444) - TODO: t250402132436
+          case dyn : Dyn    => f(dyn)
+          case dyns: Dyns   => g(dyns)
+          case seq : Seq[_] => seq.map(_fold2(f)(g))
+          case other        => other }
+
     // ---------------------------------------------------------------------------
     def fold3[T](d: Dyn => T)(n: NakedValue => T)(s: Seq[T] => T): T =
       naked match {
@@ -41,11 +52,11 @@ case class Valew private[Valew] (naked: NakedValue)
           seq
             .map {
               case dyn : Dyn    => f(dyn)
-              case sgl          => Valew.notNesting(sgl) }
+              case sgl          => Valew.notNestingError(sgl) }
             .dyns
             .pipe(Valew.build) }
         { dyn => f(dyn).pipe(Valew.build) }
-        { sgl => Valew.notNesting(sgl) }
+        { sgl => Valew.notNestingError(sgl) }
 
     // ---------------------------------------------------------------------------
     def nesting(p: Dyn => Unit): Unit =
@@ -79,7 +90,7 @@ case class Valew private[Valew] (naked: NakedValue)
 
   // ===========================================================================
   object Valew {
-    private def notNesting(value: NakedValue) = aptus.illegalArgument(
+    private def notNestingError(value: NakedValue) = aptus.illegalArgument(
       s"E250529135752 - not nesting: ${value} (${value.getClass})")
 
     // ---------------------------------------------------------------------------

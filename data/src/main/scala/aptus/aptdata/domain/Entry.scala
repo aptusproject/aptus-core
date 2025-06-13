@@ -32,6 +32,7 @@ case class Entry private (key: Key, valew: Valew) {
     // ---------------------------------------------------------------------------
     def reKey(newKey: Key): Entry = copy(key = newKey)
 
+    def transformValew2            (f: Valew => NakedValue): Entry = copy(valew = Valew.build(f(valew)))
     def transformValew             (f: Valew => Valew): Entry = copy(valew = f(valew))
     def transformValew(newKey: Key)(f: Valew => Valew): Entry = Entry(newKey, valew = f(valew))
 

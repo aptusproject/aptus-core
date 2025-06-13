@@ -3,7 +3,9 @@ package aptreflect
 package nodes
 
 // ===========================================================================
-case class TypeField(key: String, typeNode: TypeNode) {
+case class TypeField(
+      key     : String,
+      typeNode: TypeNode) {
     def formatDebug: String = s"${key}: ${typeNode.formatDebug}"
     def formatDefault: String = toString }
 

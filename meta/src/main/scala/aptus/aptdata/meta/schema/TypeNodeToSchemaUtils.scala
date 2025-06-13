@@ -19,7 +19,7 @@ object TypeNodeToSchemaUtils {
       .fields
       .map { field =>
         Fld(
-            key  = field.key.symbol,
+            key  = field.key.pipe(Key.from),
             info = field.typeNode.pipe(forceInfo) )
           .setEnumName(field.typeNode.leaf.fullName.format) /* mostly for macros */ }
       .pipe   (Cls.apply) // expects at least one field

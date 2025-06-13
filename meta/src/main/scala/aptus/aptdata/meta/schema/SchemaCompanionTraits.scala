@@ -28,7 +28,7 @@ trait FldCompanionTrait {
   /** to do eg: "foo".string -> Fld */
   implicit class SKey_(name: String)
     extends aptus.aptdata.meta.schema.FldCreator {
-      protected val _key: Key = aptus.aptdata.meta.schema.Key._fromString(name) }
+      protected val _key: Key = aptus.aptdata.meta.schema.Key.from(name) }
 
   // ---------------------------------------------------------------------------
   def typed[T: WTT](key: Key): Fld = implicitly[WTT[T]].typeNode.forceNonBObjInfo.pipe(Fld(key, _))

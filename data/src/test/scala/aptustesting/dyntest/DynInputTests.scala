@@ -1,58 +1,53 @@
 package aptustesting
 package dyntest
 
+import utest._
+
 // ===========================================================================
-object DynInputTests {
+object DynInputTests extends TestSuite {
   import aptus.dyn._
 
-  // ===========================================================================
-  def main(args: Array[String]): Unit = { apply() }
-
   // ---------------------------------------------------------------------------
-  def apply(): Unit = { _apply(); msg(getClass).p }
-
-  // ---------------------------------------------------------------------------
-  private def _apply(): Unit = {
-
-    JsonObjectFilePath
+  val tests = Tests {
+    test(JsonObjectFilePath
       .dyn
         .replace(foo).withValue("BAR")
       .check {
-        dyn(foo -> "BAR", baz -> 1.0 /* because of JSON number tax - see a241125114540 */) }
+        dyn(foo -> "BAR", baz -> 1.0 /* because of JSON number tax - see a241125114540 */) })
 
     // ---------------------------------------------------------------------------
-    RowFilePath
+    test(RowFilePath
       .dyn
         .upperCase(foo)
       .check {
-        dyn(foo -> "BAR", baz -> "1" /* no type inferrence by default - see a241125114008 */) }
+        dyn(foo -> "BAR", baz -> "1" /* no type inferrence by default - see a241125114008 */) })
 
     // ===========================================================================
     val expected: aptus.aptdata.ops.ConvertOps[Dyns] = _Mult1.upperCase(foo).convert(baz)
 
     // ---------------------------------------------------------------------------
-    JsonArrayFilePath
+    test(JsonArrayFilePath
       .dyns
         .upperCase(foo)
-      .check { expected.toDouble /* because of JSON number tax - see a241125114540 */ }
+      .check { expected.toDouble /* because of JSON number tax - see a241125114540 */ })
 
     // ---------------------------------------------------------------------------
-    JsonLinesFilePath
+    test(JsonLinesFilePath
       .dyns
         .upperCase(foo)
-      .check { expected.toDouble /* because of JSON number tax - see a241125114540 */ }
+      .check { expected.toDouble /* because of JSON number tax - see a241125114540 */ })
 
     // ---------------------------------------------------------------------------
-    TsvFilePath
+    test(TsvFilePath
       .dyns
         .upperCase(foo)
-      .check { expected.toStr /* no type inferrence by default - see a241125114008 */ }
+      .check { expected.toStr /* no type inferrence by default - see a241125114008 */ })
 
 
     // ---------------------------------------------------------------------------
-    TsvWithCRFilePath
+    test(TsvWithCRFilePath
       .dyns
         .upperCase(foo)
-      .check { expected.toStr /* no type inferrence by default - see a241125114008 */ } } }
+      .check { expected.toStr /* no type inferrence by default - see a241125114008 */ }) } }
 
 // ===========================================================================

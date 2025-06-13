@@ -1,9 +1,10 @@
 package aptustesting
 package dyntest
 
+import utest._
 
 // ===========================================================================
-object DynOutputStringTests {
+object DynOutputStringTests extends TestSuite {
   import aptus.dyn._
   import aptus.aptdata.io.json
 
@@ -28,39 +29,33 @@ object DynOutputStringTests {
        |]""".stripMargin
 
   // ===========================================================================
-  def main(args: Array[String]): Unit = { apply() }
-
-  // ---------------------------------------------------------------------------
-  def apply(): Unit = { _apply(); msg(getClass).p }
-
-  // ---------------------------------------------------------------------------
-  private def _apply(): Unit = {
-    _Sngl1
+  val tests = Tests {
+    test(_Sngl1
       .increment(baz)
       .formatPrettyJson
-      .check(expected1)
+      .check(expected1))
 
     // ---------------------------------------------------------------------------
-    _Mult1
+    test(_Mult1
       .increment(baz)
       .formatPrettyJson
-      .check(expected2)
+      .check(expected2))
 
     // ===========================================================================
     // custom formatter
 
-    dyn(foo -> bar, qux -> new java.io.File("/my/path")).formatCompactJson
-      .check("""{"foo":"bar","qux":"/my/path"}""")
+    test(dyn(foo -> bar, qux -> new java.io.File("/my/path")).formatCompactJson
+      .check("""{"foo":"bar","qux":"/my/path"}"""))
 
     // ---------------------------------------------------------------------------
     // TODO: t241205093939 - simplify
-    json.customJsonFormatters +
+    test { json.customJsonFormatters +
         (classOf[java.nio.file.Path] ->
           new json.CustomJsonFormatter {
             def format(value: Any): String =
               value.asInstanceOf[java.nio.file.Path].toFile.getAbsolutePath })
 
       dyn(foo -> bar, qux -> java.nio.file.Paths.get("/my/path")).formatCompactJson
-        .check("""{"foo":"bar","qux":"/my/path"}""") } }
+        .check("""{"foo":"bar","qux":"/my/path"}""") } } }
 
 // ===========================================================================

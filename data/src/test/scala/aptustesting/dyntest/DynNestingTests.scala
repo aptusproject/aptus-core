@@ -1,8 +1,10 @@
 package aptustesting
 package dyntest
 
+import utest._
+
 // ===========================================================================
-object DynNestingTest {
+object DynNestingTest extends TestSuite {
   import aptus.dyn._
 
   // ===========================================================================
@@ -12,16 +14,13 @@ object DynNestingTest {
   private val g  = "g"
 
   // ===========================================================================
-  def main(args: Array[String]): Unit = { apply(); msg(getClass).p }
-
-  // ---------------------------------------------------------------------------
-  def apply(): Unit = {
-    _Sngl3.isPresent(p |> foo).checkTrue ()
-    _Sngl3.isPresent(p |> FOO).checkFalse()
+  val tests = Tests {
+    test(_Sngl3.isPresent(p |> foo).checkTrue ())
+    test(_Sngl3.isPresent(p |> FOO).checkFalse())
 
     // ---------------------------------------------------------------------------
-    dyn(f1 -> foo , f2 -> foo , g -> 1)
+    test(dyn(f1 -> foo , f2 -> foo , g -> 1)
         .nest(f1).under(F)
-      .check(dyn(f2 -> foo, g -> 1, F -> dyn(f1 -> foo))) } }
+      .check(dyn(f2 -> foo, g -> 1, F -> dyn(f1 -> foo)))) } }
 
 // ===========================================================================

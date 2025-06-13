@@ -49,7 +49,7 @@ object DynMoreTests {
       val res = dyn("p" -> dyn("FOO" -> "bar"))
 
       // dyn("p" -> dyn(foo -> "bar")).rename("p" |> foo -> "FOO")
-      in.transform   ("p").using(_.dyn.rename(foo).to("FOO")).check(res)
-      in.transformDyn("p")      (_    .rename(foo).to("FOO")).check(res) } } }
+      in.transform       (p).using(_.dyn.rename(foo).to("FOO")).check(res)
+      in.transformNesting(p).using(_    .rename(foo).to("FOO")).check(res) } } }
 
 // ===========================================================================

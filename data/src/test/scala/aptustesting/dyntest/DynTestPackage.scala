@@ -49,9 +49,17 @@ package object dyntest
   implicit class TryTests_[T](val value: Try[T]) extends TestsTrait[Try[T]] { val format = _.toString /* TODO */
     def checkFailure: Unit = _check(_.isFailure) // favor one with explicit error rather
 
+    // ---------------------------------------------------------------------------
     def check(err: HasErrorId)                     : Unit = _check { DynTestUtils.checkError(err, superTypeOpt = None)(_).get }
     def check(err: HasErrorId, expected: SuperType): Unit = _check { DynTestUtils.checkError(err, expected.in.some)   (_).get } // TODO: a actual/expected version
 
+    // ---------------------------------------------------------------------------
+    def checkGuaranteeError(): Unit = checkIllegalArgument("E241118160516") // TODO: use class version
+
+    def checkIllegalArgument(msg1: String, more: String*) = checkException(classOf[IllegalArgumentException], msg1, more:_*)
+    def checkIllegalState   (msg1: String, more: String*) = checkException(classOf[IllegalStateException]   , msg1, more:_*)
+
+    // ---------------------------------------------------------------------------
     def checkException(klass: Class[_] /* use tag rather */)                             : Unit = _check(_.failed.get.getClass == klass)
     def checkException(klass: Class[_] /* use tag rather */, msg1: String, more: String*): Unit = _check { x =>
       val throwable = x.failed.get
@@ -75,7 +83,7 @@ package object dyntest
     def checkFalse() = check(false) }
 
   // ---------------------------------------------------------------------------
-  implicit class StringTests_(val value: String) extends TestsTrait[String] { val format = identity }
+  implicit class StringTests_(val value: String) extends TestsTrait[String] { val format = identity; def key: Key = Key.from(value) }
   implicit class DynTests_   (val value: Dyn)    extends TestsTrait[Dyn]    { val format = _.formatPrettyJson }
   implicit class DynsTests_  (val value: Dyns)   extends TestsTrait[Dyns]   { val format = _.formatPrettyJson }
 

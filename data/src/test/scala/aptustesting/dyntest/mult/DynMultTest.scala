@@ -2,33 +2,29 @@ package aptustesting
 package dyntest
 package mult
 
+import utest._
+
 // ===========================================================================
-object DynMultipleTest {
+object DynMultTest extends TestSuite {
   import aptus.dyn._
 
   // ===========================================================================
-  def main(args: Array[String]): Unit = { apply() }
+  val tests = Tests {
+    test(z9.headOption.check(d8.in.some))
+    test(z9.head      .check(d8))
 
-  // ---------------------------------------------------------------------------
-  def apply(): Unit = { _apply(); msg(getClass).p }
-
-  // ---------------------------------------------------------------------------
-  private def _apply(): Unit = {
-    z9.headOption.check(d8.in.some)
-    z9.head      .check(d8)
-
-    z9.lastOption.check(d9.in.some)
-    z9.last      .check(d9)
+    test(z9.lastOption.check(d9.in.some))
+    test(z9.last      .check(d9))
 
     // ===========================================================================
-    _Mult1.testDynz(_.increment(baz))
+    test(_Mult1.testDynz(_.increment(baz))
       .check {
-    _Mult1           .increment(baz) }
+    _Mult1           .increment(baz) })
 
     // ===========================================================================
     // union/append/prepend
 
-    {
+    test {
       def _tmp[T <: aptus.aptdata.ops.mult.MultipleOpsTrait[T]]
           (x: Dyns, y: Dyns)
           (f: Dyns => T)
@@ -46,28 +42,28 @@ object DynMultipleTest {
             dyn(foo -> bar1, baz -> 1), dyn(foo -> bar2, baz -> 2))) }
 
       // ---------------------------------------------------------------------------
-      _tmp(_Mult1, _Mult1)(identity)(identity)
-      _tmp(_Mult1, _Mult1)(_.asDynz)(_.asDyns) }
+      test(_tmp(_Mult1, _Mult1)(identity)(identity))
+      test(_tmp(_Mult1, _Mult1)(_.asDynz)(_.asDyns)) }
 
     // ===========================================================================
-    _Mult1.take(1).check(dyns(_Sngl1x1))
-    _Mult1.drop(1).check(dyns(_Sngl1x2))
+    test(_Mult1.take(1).check(dyns(_Sngl1x1)))
+    test(_Mult1.drop(1).check(dyns(_Sngl1x2)))
 
-    _Mult1.take(Some(1)).check(dyns(_Sngl1x1))
-    _Mult1.drop(Some(1)).check(dyns(_Sngl1x2))
+    test(_Mult1.take(Some(1)).check(dyns(_Sngl1x1)))
+    test(_Mult1.drop(Some(1)).check(dyns(_Sngl1x2)))
 
     // ---------------------------------------------------------------------------
-          _Mult1.take(1).forceOne  .check(_Sngl1x1)
-          _Mult1.drop(1).forceOne  .check(_Sngl1x2)
+          test(_Mult1.take(1).forceOne  .check(_Sngl1x1))
+          test(_Mult1.drop(1).forceOne  .check(_Sngl1x2))
 
-    Try { _Mult1        .forceOne }.check(Error.MoreThanOneElement)
-    Try { _Mult1.drop(2).forceOne }.check(Error.NoElements)
+    test(Try { _Mult1        .forceOne }.check(Error.MoreThanOneElement))
+    test(Try { _Mult1.drop(2).forceOne }.check(Error.NoElements))
 
     // ===========================================================================
-    _Mult1.append(dyn(baz -> 3)).filter(_.containsKey(foo)).check(_Mult1)
-    _Mult1.append(dyn(baz -> 3)).filter(_.int(baz) < 3)    .check(_Mult1)
+    test(_Mult1.append(dyn(baz -> 3)).filter(_.containsKey(foo)).check(_Mult1))
+    test(_Mult1.append(dyn(baz -> 3)).filter(_.int(baz) < 3)    .check(_Mult1))
 
-    _Mult1.append(dyn(baz -> 3)).filter(_.containsKey(foo)).check(_Mult1)
-    _Mult1.append(dyn(baz -> 3)).filter(_.int(baz) < 3)    .check(_Mult1) } }
+    test(_Mult1.append(dyn(baz -> 3)).filter(_.containsKey(foo)).check(_Mult1))
+    test(_Mult1.append(dyn(baz -> 3)).filter(_.int(baz) < 3)    .check(_Mult1)) } }
 
 // ===========================================================================

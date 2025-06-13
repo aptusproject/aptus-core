@@ -22,28 +22,39 @@ trait DynTestData {
   val BAR1 = "BAR1"
   val BAR2 = "BAR2"
 
+  val rab  = "rab"
+  val RAB  = "RAB"
+
   val qux = "qux"
+  val QUX = "QUX"
 
   // ---------------------------------------------------------------------------
   val p  = "p"
+  val P  = "P"
   val p1 = "p1"
   val p2 = "p2"
 
   val baz = "baz"
   val BAZ = "BAZ"
 
-  // ===========================================================================
-  val _Sngl1  = dyn(foo -> bar, baz -> 1)
-  val _Sngl1a = dyn(foo -> bar, baz -> 1)
-  val _Sngl1b = dyn(foo -> bar, baz -> 2)
-  val _Sngl1k = dyn(foo -> bar, baz -> 0)
-  val _Sngl1c = dyn(FOO -> bar, baz -> 1)
-  val _Sngl1d = dyn(foo -> BAR, baz -> 1)
-  def _Sngl1e = dyn(foo -> "rab", baz -> 1)
-  val _Sngl1rr = dyn(foo -> bar, baz -> 1.1)
-  val _Sngl1s = dyn(foo -> bar, baz -> "1")
-  val _Sngl1r  = dyn(foo -> bar, baz -> 1.0)
+  val _group = "_group"
 
+  // ===========================================================================
+  val _Sngl1       = dyn(foo -> bar, baz ->  1)
+  val _Sngl1_NoFoo = dyn(            baz ->  1)
+  val _Sngl1_NoBaz = dyn(foo -> bar)
+  val _Sngl1_2     = dyn(foo -> bar, baz ->  2)
+  val _Sngl1_0     = dyn(foo -> bar, baz ->  0)
+  val _Sngl1_FOO   = dyn(FOO -> bar, baz ->  1)
+  val _Sngl1_BAR   = dyn(foo -> BAR, baz ->  1)
+  def _Sngl1_rab   = dyn(foo -> rab, baz ->  1)
+  def _Sngl1_RAB   = dyn(foo -> RAB, baz ->  1)
+  val _Sngl1_1_0   = dyn(foo -> bar, baz ->  1.0)
+  val _Sngl1_1_1   = dyn(foo -> bar, baz ->  1.1)
+  val _Sngl1_1str  = dyn(foo -> bar, baz -> "1")
+  val _Sngl1_T     = dyn(foo -> bar, baz ->  1, qux -> T)
+
+  // ---------------------------------------------------------------------------
   val _Sngl1z  = dyn(foo -> List(bar1, bar2), baz -> 1.0)
 
   val _Sngl1x1  = dyn(foo -> bar1, baz ->  1)
@@ -51,14 +62,18 @@ trait DynTestData {
   val _Sngl1x2  = dyn(foo -> bar2, baz ->  2)
   val _Sngl1x2s = dyn(foo -> bar2, baz -> "2")
 
-  val _Sngl1_T = _Sngl1.add(qux -> T)
+  val _Sngl2  = dyn(foo -> Seq(bar1, bar2), baz -> 1)
+  val _Sngl2b = dyn(foo -> Seq(bar2, bar1), baz -> 2)
 
   // ---------------------------------------------------------------------------
-  val _Sngl3  =           dyn(p -> _Sngl1)
-  val _Sngl3d =           dyn(p -> _Sngl1d)
+  val _Sngl3  = dyn(p -> _Sngl1)
+  val _Sngl3c = dyn(p -> _Sngl1_FOO)
+  val _Sngl3d = dyn(p -> _Sngl1_BAR)
   val _Sngl33 = dyn(p2 -> _Sngl3)
 
-  // ---------------------------------------------------------------------------
+  val _Sngl4z = dyn(p -> _Sngl1z)
+
+  // ===========================================================================
   def _Mult1  = dyns(_Sngl1x1, _Sngl1x2)
 
   def _Mult1a = _Mult1
@@ -69,10 +84,13 @@ trait DynTestData {
   def _Mult1s = dyns(_Sngl1x1s, _Sngl1x2s)
   def _Mult1r = _Mult1.convert(baz).toDouble.ensuring(_.doubles(baz) == List(1.0, 2.0))
 
+  def _Mult1_T = dyns(_Sngl1x1.add(qux -> T), _Sngl1x2.add(qux -> T))
+
   // ---------------------------------------------------------------------------
   val _Mult11  = dyn(p -> _Mult1)
   val _Mult11b = dyn(p -> _Mult1b)
   val _Mult11d = dyn(p -> _Mult1d)
+  val _Mult11e = dyn(p -> dyns(_Sngl1x1, _Sngl1_NoFoo))
 
   // ===========================================================================
   val d8: Dyn  = dyn(foo -> bar1, baz -> 1)

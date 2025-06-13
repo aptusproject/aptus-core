@@ -70,6 +70,8 @@ with aspects.DynzSchemaInferrer2 {
     extends aspects.DynzBuilding
        with aspects.DynzFluentBuilding
        with aspects.DynzDummies {
+    val Empty = new Dyns(Nil).asDynz
+
     /* only for builder */
     private[aptdata] def _build(values: CloseabledIterator[Dyn]): Dynz =
       new Dynz(values) }

@@ -52,13 +52,17 @@ case y: domain.NumberLike[_] => ??? // TODO: t241126131228
         case Some(Valew(_)) => ???//Some(x) - happens?
         case Some(      x ) => normalizeValue(x) /* TODO: happens? -> add to test */ }
 
+    // ===========================================================================
+    case Dyn .Empty => None
+    case Dyns.Empty => None
+
     // ---------------------------------------------------------------------------
     case x: Dynz        => Error.NoNestedIterators(()).thro
     case x: Iterator[_] => Error.NoNestedIterators(()).thro
 
     // TODO: t241203213714 - turn maps to Dyn automatically?
 
-    // ---------------------------------------------------------------------------
+    // ===========================================================================
     case x => Some(x) }
 
   // ===========================================================================

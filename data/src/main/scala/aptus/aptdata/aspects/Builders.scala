@@ -4,7 +4,6 @@ package aspects
 
 // ===========================================================================
 trait DynBuilding {
-                                     val Empty                          : Dyn = sngl.DynBuilder.build(Nil) // allowed, unlike in gallia (see a250423153425)
     /** checks uniqueness of keys */ def build (values: Iterable[Entry]): Dyn = sngl.DynBuilder.build(values)
     /** by-pass uniqueness check */  def byPass(values: Iterable[Entry]): Dyn = sngl.DynBuilder.build(values, byPassUniquenessCheck = true) }
 

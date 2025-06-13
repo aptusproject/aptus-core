@@ -33,7 +33,7 @@ def doubles          : Seq[Double] = ???//  TODO: t241203151505 exoMap(_.double(
     // ---------------------------------------------------------------------------
     override final protected      lazy val empty               : _Self = _Self.empty
     override final protected           def const(values: Sngls): _Self = values.consumeAll().pipe(_Self.apply)
-    override final protected[aptdata]      def valuesIterator      : Sngls = CloseabledIterator.fromSeq(values)
+    override final protected[aptdata]      def valuesIterator  : Sngls = CloseabledIterator.fromSeq(values)
 
     // ---------------------------------------------------------------------------
     def toStatic[DC <: Product: aptreflect.lowlevel.ReflectionTypesAbstraction.WTT]: List[DC] = _toStatic[DC].consumeAll()
@@ -78,6 +78,8 @@ def doubles          : Seq[Double] = ???//  TODO: t241203151505 exoMap(_.double(
     extends aspects.DynsBuilding
        with aspects.DynsFluentBuilding
        with aspects.DynsDummies {
+    val Empty = new Dyns(Nil)
+
     /* only for builder */
     private[aptdata] def _build(values: Seq[Dyn]): Dyns =
       new Dyns(values) }

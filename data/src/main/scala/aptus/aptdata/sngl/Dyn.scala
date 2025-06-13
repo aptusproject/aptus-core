@@ -2,7 +2,6 @@ package aptus
 package aptdata
 package sngl
 
-import aptdata.ops.OpsBorrowedFromGallia
 import aptdata.static.DynDynamicToStatic
 import aptdata.{Dyn => _Self}
 import ops._
@@ -15,11 +14,7 @@ case class Dyn private[Dyn] (
     extends AllCommons[_Self]
 
        with accessors.ValewGetterAccessors /* eg myDyn.string("name") */
-
-       with DynTransformImpl /* ONLY transform (concrete) */
        with DynOpsImpl       /* eg retain (concrete) */
-
-       with OpsBorrowedFromGallia /* eg nest, reorderKeysRecursively, ... */
        with DynData
        with DynEntryMapping        /* map/flatMap on entry */
        with DynEntriesTransforming /* transform entries direction (full control) */
@@ -34,6 +29,8 @@ case class Dyn private[Dyn] (
        with aspects.DynSchemaInferrer {
       self: Dyn =>
     override final def ident: Dyn = this
+
+    override final def formatDebug: String = data.map(_.formatDebug).section
 
     // ---------------------------------------------------------------------------
     def unknownKeys(c: Cls): Set[Key] = keys.diff(c.akeys).toSet
@@ -56,8 +53,8 @@ case class Dyn private[Dyn] (
     extends aspects.DynBuilding
        with aspects.DynFluentBuilding
        with aspects.DynDummies {
-    /* only for builder */
-    private[sngl] def _build(data: List[Entry]): Dyn =
-      new Dyn(data) }
+    val Empty: Dyn = new Dyn(Nil)
+
+    /* only for builder */ private[sngl] def _build(data: List[Entry]): Dyn = new Dyn(data) }
 
 // ===========================================================================

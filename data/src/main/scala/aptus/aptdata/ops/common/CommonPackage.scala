@@ -8,7 +8,7 @@ package object common {
 
   trait CommonHasTransformTargetSelectorTrait[Data] {
     // most important transformation, most actions use that
-    @abstrct protected[aptdata] def transformTargetSelector(target: TargetSelector, f: ValueF): Data }
+    @abstrct protected[aptdata] def transformTarget(either: TargetEither, f: ValueF): Data }
 
   // ===========================================================================
   trait HasIdent[Data] {
@@ -27,17 +27,22 @@ package object common {
   trait CommonOutputter
       extends aptus                   .HasFormatJson
          with aptus.AptusWritingTraits.HasWriteOutputFile /* eg write to file */
+         with CommonFormatDebug
+
+    // ---------------------------------------------------------------------------
+    trait CommonFormatDebug { def formatDebug: DebugString }
 
   // ===========================================================================
   trait AllCommons[Data]
        extends HasIdent[Data]
+          with CommonFormatDebug
           with CommonOpsTrait        [Data] /* eg abstract retain */
           with CommonTransformTrait  [Data] /* eg transform(x).using(...) */
          	// TODO: t241205125816 - all the generates: generusion and generussion
           with CommonMoreTransforms  [Data] /* eg @nonovrd final transformString(x).using(...) */
           with CommonUpperCaseLikeOps[Data] /* eg @nonovrd final upperCase(x) */
           with CommonShorthands      [Data] /* eg @nonovrd final final convert(x).toInt */ {
-      self: CommonHasTransformTargetSelectorTrait[Data] /* only: abstract transformTargetSelector() */
+      self: CommonHasTransformTargetSelectorTrait[Data] /* only: abstract transformTarget() */
           with HasDataEntityErrorFormatter [Data] => } }
 
 // ===========================================================================

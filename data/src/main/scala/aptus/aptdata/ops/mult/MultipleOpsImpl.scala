@@ -5,11 +5,17 @@ package mult
 
 // ===========================================================================
 trait MultipleOpsImpl[Mult <: HasValuesIterator[Mult]]
-        extends MultipleOpsTrait[Mult] {
+        extends MultipleOpsTrait[Mult]
+        with    common.CommonFormatDebug {
     self: HasIteratorConstructor[Mult]
        with HasValuesIterator   [Mult]
        with common.HasIdent[Mult] =>
 
+  // ---------------------------------------------------------------------------
+  override final def formatDebug: DebugString =
+    valuesIterator.map(_.formatDebug).consumeAll().pipe { x => x.mkString("[", ",", "]").prepend(x.size.str.colon) }
+
+  // ---------------------------------------------------------------------------
   override final def union  (that : Mult): Mult = (this.valuesIterator                  union that.valuesIterator).pipe(const)
   override final def prepend(value: Sngl): Mult = (CloseabledIterator.fromValues(value) union this.valuesIterator).pipe(const)
 

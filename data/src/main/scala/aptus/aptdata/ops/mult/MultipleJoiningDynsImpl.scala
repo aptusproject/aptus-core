@@ -34,7 +34,7 @@ trait MultipleJoiningDynsImpl {
       .innerJoin(that.values)
         .on(_.get(viaLeft), _.get(viaRight))
       .map { case (_, (l, r)) =>
-        r .remove(viaRight)
+        r .removeKey(viaRight)
           .pipe(l.merge) }
       .pipe(Dyns.build)
 
@@ -47,7 +47,7 @@ trait MultipleJoiningDynsImpl {
         .on(_.get(viaLeft), _.get(viaRight))
       .map { case (_, (l, rOpt)) =>
         rOpt
-          .map(_.remove(viaRight))
+          .map(_.removeKey(viaRight))
           .map(l.merge)
           .getOrElse(l) }
       .pipe(Dyns.build)

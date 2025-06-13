@@ -13,7 +13,7 @@ trait MultipleGroupingDynsImpl
   override final def groupBy(key: Key): Dyns =
     valuesIterator
       .map { dyn =>
-        dyn.nakedValueOpt(key) -> dyn.remove(key) }
+        dyn.nakedValueOpt(key) -> dyn.removeKey(key) }
       .groupByKeyWithListMap
       .view
       .map { case (groupingValueOpt: Option[NakedValue], groupedValues: Seq[Dyn]) =>

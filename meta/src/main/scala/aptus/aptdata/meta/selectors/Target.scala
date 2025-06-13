@@ -81,6 +81,9 @@ case class NoRenarget private(und: NoRenargetable) extends AnyVal {
             type Builder = NoRenarget.type => NoRenarget
 
     // ---------------------------------------------------------------------------
+    implicit def _toNoRenarget(value: Key): NoRenarget = NoRenarget(value)
+
+    // ---------------------------------------------------------------------------
     def explicit(value: String): Self = NoRenarget(Key.from(value))
     def explicit(value: Symbol): Self = NoRenarget(Key.from(value))
     def explicit(value: Enm)   : Self = NoRenarget(Key.from(value))

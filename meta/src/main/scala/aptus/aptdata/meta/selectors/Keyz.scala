@@ -4,10 +4,9 @@ package meta
 package selectors
 
 // ===========================================================================
-// ===========================================================================
 case class Keyz(values: Seq[Key]) extends AnyVal {
-def bkeys   = values.map(_.und)
-def bkeySet = values.map(_.und).toSet
+    def bkeys   = values.map(_.und)
+    def bkeySet = values.map(_.und).toSet
 
     // ---------------------------------------------------------------------------
     def map[T](f: Key => T): Seq[T] = values.map(f)
@@ -47,7 +46,7 @@ def bkeySet = values.map(_.und).toSet
   // ===========================================================================
   object  Keyz {
     implicit def _from       (values: Seq[ Key]):  Keyz =  Keyz(values)
-    implicit def _fromStrings(values: Seq[SKey]):  Keyz = Keyz(values.map(Key._fromString)) }
+    implicit def _fromStrings(values: Seq[SKey]):  Keyz = Keyz(values.map(Key.from)) }
   object BKeyz { implicit def _to(values: Seq[BKey]): BKeyz = BKeyz(values) }
 
 // ===========================================================================

@@ -6,14 +6,23 @@ package selectors
 // ===========================================================================
 /** renaming */
 case class Ren(from: Key, to: Key)
-    extends HasFormatDefault {
+      extends HasFormatDefault
+         with Targetable
+         with Renargetable {
 
-  def pair = from -> to
+    def rpath: RPath = RPath.leaf(this)
 
-  // ---------------------------------------------------------------------------
-  override final def toString: String = formatDefault
-    override final def formatDefault: String =
-      s"${from} ~> ${to}" }
+    // ---------------------------------------------------------------------------
+    def pair = from -> to
+
+    // ---------------------------------------------------------------------------
+    override final def toString: String = formatDefault
+      override final def formatDefault: String =
+        s"${from}${RenSeparator}${to}" }
+
+  // ===========================================================================
+  object Ren {
+    def idem(key: Key): Ren = Ren(key, key) }
 
 // ===========================================================================
 /** renamings */

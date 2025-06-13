@@ -3,10 +3,14 @@ package aptdata
 package meta
 package selectors
 
-// ===========================================================================
-sealed trait TargetSelector {
-    val guaranteed: Boolean
+import ops.common.td.TargetData
 
+// ===========================================================================
+sealed trait TargetSelector extends PresenceGuarantee[TargetSelector] {
+    protected[aptdata] val guaranteed: Boolean
+    protected[aptdata] val selection : SKeysSelection
+
+    // ---------------------------------------------------------------------------
               def setPresenceGuarantee(value: Boolean): TargetSelector
     protected def formatNonGuaranteed: String
 
@@ -15,53 +19,46 @@ sealed trait TargetSelector {
     @nonovrd final def formatDefault: String = if (guaranteed) formatNonGuaranteed.append("[guaranteed]]") else formatNonGuaranteed
 
     // ---------------------------------------------------------------------------
-    @nonovrd final def guaranteePresence: TargetSelector = setPresenceGuarantee(value = true)
-    @nonovrd final def mayBeMissing     : TargetSelector = setPresenceGuarantee(value = false) }
+    def targetData(skeys: SKeys)         : TargetData = selection.apply(skeys)             .pipe(TargetData.parseSKeys(guaranteed = false))
+    def targetData(skeys: SKeys, to: Key): TargetData = selection.apply(skeys).map(_ ~> to).pipe(TargetData.parseRens (guaranteed = false)) }
 
   // ===========================================================================
   object TargetSelector { // a241127165900 - can't have it all at once (eg dynamic + path)
 
-    // ===========================================================================
-    // explicit ones - TODO
-
-    case class Explicit(value: Key, guaranteed: Boolean = false)
-        extends TargetSelector {
-      override protected def formatNonGuaranteed: String = value.name
-      @nonovrd           def setPresenceGuarantee(value: Boolean) = copy(guaranteed = value) } // TODO: boilerplate...
-
-    // ---------------------------------------------------------------------------
-    case class Renaming(value: Ren, guaranteed: Boolean = false)
-        extends TargetSelector {
-      override protected def formatNonGuaranteed: String = value.formatDefault
-      @nonovrd           def setPresenceGuarantee(value: Boolean) = copy(guaranteed = value) }
-
-    // ---------------------------------------------------------------------------
-    case class Nesting(value: Path, guaranteed: Boolean = false)
-        extends TargetSelector {
-      override protected def formatNonGuaranteed: String = ???
-      @nonovrd           def setPresenceGuarantee(value: Boolean) = copy(guaranteed = value) }
-
-    // ===========================================================================
-    // dynamic ones
-
     /** for eg: key.startsWith("...") */
-    case class Predicate(p: SKey => Boolean, guaranteed: Boolean = false)
+    case class Predicate(
+          protected[aptdata] val p: SKey => Boolean,
+          protected[aptdata] val guaranteed: Boolean = false)
         extends TargetSelector {
-      override protected def formatNonGuaranteed: String = ???
+
+      // ---------------------------------------------------------------------------
+      override val selection: SKeysSelection = _.filter(p)
+
+      override protected def formatNonGuaranteed: String = "Predicate"
       @nonovrd           def setPresenceGuarantee(value: Boolean) = copy(guaranteed = value) }
 
-    // ---------------------------------------------------------------------------
+    // ===========================================================================
     /** for eg: keys.head */
-    case class SelectOne(f: SKeys => SKey, guaranteed: Boolean = false)
+    case class SelectOne(
+          protected[aptdata] val f: SKeys => SKey,
+          protected[aptdata] val guaranteed: Boolean = false)
         extends TargetSelector {
-      override protected def formatNonGuaranteed: String = ???
+      override val selection: SKeysSelection = f(_).in.seq
+
+      // ---------------------------------------------------------------------------
+      override protected def formatNonGuaranteed: String = "SelectOne"
       @nonovrd           def setPresenceGuarantee(value: Boolean) = copy(guaranteed = value) }
 
-    // ---------------------------------------------------------------------------
+    // ===========================================================================
     /** for eg: keys.take(3) */
-    case class SelectMultiple(f: SKeysSelection, guaranteed: Boolean = false)
+    case class SelectMultiple(
+          protected[aptdata] val f: SKeysSelection,
+          protected[aptdata] val guaranteed: Boolean = false)
         extends TargetSelector {
-      override protected def formatNonGuaranteed: String = ???
+      override val selection: SKeysSelection = f
+
+      // ---------------------------------------------------------------------------
+      override protected def formatNonGuaranteed: String = "SelectMultiple"
       @nonovrd           def setPresenceGuarantee(value: Boolean) = copy(guaranteed = value) } }
 
 // ===========================================================================

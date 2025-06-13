@@ -65,19 +65,19 @@ object CanNotForceKey extends ErrorCompanion(id = "E241126104802", stateError = 
   object TransformGuaranteeFailure extends ErrorCompanion(id = "E241118160516")
     case class TransformGuaranteeFailure(x: Any)
       extends ErrorData { val companion = TransformGuaranteeFailure
-        val msg: String = s"TODO:${id}:guarantee" }
+        val msg: String = s"TODO:${id}:guarantee:${x}" }
 
   // ===========================================================================
   object EnsurePresenceError extends ErrorCompanion(id = "E241118144208")
       case class EnsurePresenceError(x: Any)
         extends ErrorData { val companion = EnsurePresenceError
-          val msg: String = s"TODO:${id}" }
+          val msg: String = s"TODO:${id}:${x}" }
 
     // ---------------------------------------------------------------------------
     object EnsureAbsenceError extends ErrorCompanion(id = "E241118144208")
       case class EnsureAbsenceError(x: Any)
         extends ErrorData { val companion = EnsureAbsenceError
-          val msg: String = s"TODO:${id}" }
+          val msg: String = s"TODO:${id}:${x}" }
 
   // ===========================================================================
   object AccessAsSpecificType extends ErrorCompanion(id = "E241122144121")
@@ -90,26 +90,25 @@ object CanNotForceKey extends ErrorCompanion(id = "E241126104802", stateError = 
     // ---------------------------------------------------------------------------
     // TODO: t241205114751 - create combo for those two
     private type DEEF = DataEntityErrorFormatter
-    private type TS   = TargetSelector
 
     // ---------------------------------------------------------------------------
     object TransformSpecificType extends ErrorCompanion(id = "E241122144221") {
-        def throwIntegerLike       (deef: DEEF, target: TargetSelector, valew: Valew): Nothing = TransformSpecificType(deef, target, IntegerLike, valew).thro
-        def throwRealLike          (deef: DEEF, target: TargetSelector, valew: Valew): Nothing = TransformSpecificType(deef, target, RealLike   , valew).thro
+        def throwIntegerLike       (deef: DEEF, target: TargetEither, valew: Valew): Nothing = TransformSpecificType(deef, target, IntegerLike, valew).thro
+        def throwRealLike          (deef: DEEF, target: TargetEither, valew: Valew): Nothing = TransformSpecificType(deef, target, RealLike   , valew).thro
 
         // ---------------------------------------------------------------------------
-        def throwBasicType(deef: DEEF, target: TS, valew: Valew)(basicType: BasicType.Selector): Nothing =
+        def throwBasicType(deef: DEEF, target: TargetEither, valew: Valew)(basicType: BasicType.Selector): Nothing =
           TransformSpecificType(deef, target, basicType(BasicType), valew).thro }
 
       // ---------------------------------------------------------------------------
       case class TransformSpecificType(
           deef  : DataEntityErrorFormatter,
-          target: TargetSelector,
+          target: TargetEither,
           superType: SuperType,
           valew: Valew = Valew.build("TODO:241126150248"))
         extends ErrorData { val companion = TransformSpecificType
           val msg: String =
-            s"target \"${target.formatDefault}\" not a ${superType.formatErrorMessageString}: " +
+            s"target \"${target.fold(_.formatDefault, _.formatDefault)}\" not a ${superType.formatErrorMessageString}: " +
               s"${valew.naked.getClass.getSimpleName}\n\t\t${deef.formatErrorEntity}" } }
 
 // ===========================================================================

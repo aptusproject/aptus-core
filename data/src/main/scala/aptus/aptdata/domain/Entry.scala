@@ -18,8 +18,24 @@ case class Entries private (values: Seq[Entry])
 
 // ===========================================================================
 case class Entry private (key: Key, valew: Valew) {
+    def skey: SKey = key.name
+
+    override def toString: String = formatDebug
+
+    final def formatDebug: String =
+      s"${key.formatDefault.quote}:${valew.formatDefault}"
+
+    // ===========================================================================
     def galliaPair: (BKey, AnyValue) = key.und -> valew.naked
     def  aptusPair: ( Key, AnyValue) = key     -> valew.naked
+
+    // ---------------------------------------------------------------------------
+    def reKey(newKey: Key): Entry = copy(key = newKey)
+
+    def transformValew             (f: Valew => Valew): Entry = copy(valew = f(valew))
+    def transformValew(newKey: Key)(f: Valew => Valew): Entry = Entry(newKey, valew = f(valew))
+
+    def transformNesting(f: Dyn => Dyn): Entry = transformValew(_.transformNesting(f))
 
     // ===========================================================================
     def retainOpt(targets: KeySet): Option[Entry] =

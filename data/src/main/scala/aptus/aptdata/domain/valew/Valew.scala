@@ -11,10 +11,10 @@ case class Valew private[Valew] (naked: NakedValue)
     require(!ValewOps.isOrContainsValew(naked), naked) // a241119155118
 
     // ---------------------------------------------------------------------------
-    def transform(valueF: Valew => NakedValue) = ValewOps.potentiallyUnwrap(valueF(this))
+    def transformValew(valueF: Valew => NakedValue) = ValewOps.potentiallyUnwrap(valueF(this))
 
-    // ---------------------------------------------------------------------------
-    def to[T](f: Dyns => T)(g: Seq[_] => T)(h: Dyn => T)(i: NakedValue => T): T =
+    // ===========================================================================
+    def fold[T](f: Dyns => T)(g: Seq[_] => T)(h: Dyn => T)(i: NakedValue => T): T =
       naked match {
         // note: no nested Dynz/Iterator (see a241119155444) - TODO: t250402132436
         case dyns: Dyns   => f(dyns)
@@ -23,16 +23,66 @@ case class Valew private[Valew] (naked: NakedValue)
         case sgl          => i(sgl) }
 
     // ---------------------------------------------------------------------------
-    override def toString: String = formatDefault
-      def formatDefault: String =
-        s"Valew(${naked.getClass}:${naked.toString})"
+    def fold3[T](d: Dyn => T)(n: NakedValue => T)(s: Seq[T] => T): T =
+      naked match {
+        // note: no nested Dynz/Iterator (see a241119155444) - TODO: t250402132436
+        case dyns: Dyns   => dyns.exoMap(d).consumeAll().pipe(s)
+        case seq : Seq[_] => s(seq.map {
+          case dyn : Dyn    => d(dyn)
+          case sgl          => n(sgl) })
+        case dyn : Dyn    => d(dyn)
+        case sgl          => n(sgl) }
 
     // ---------------------------------------------------------------------------
-    // TODO: t250528102620 - if seq...
-    def format: String = aptdata.lowlevel.AnyValueFormatter.format(naked) }
+    def transformNesting(f: Dyn => Dyn): Valew =
+      fold[Valew]
+        { dyns => dyns.endoMap(f).pipe(Valew.build) }
+        { seq =>
+          seq
+            .map {
+              case dyn : Dyn    => f(dyn)
+              case sgl          => Valew.notNesting(sgl) }
+            .dyns
+            .pipe(Valew.build) }
+        { dyn => f(dyn).pipe(Valew.build) }
+        { sgl => Valew.notNesting(sgl) }
+
+    // ---------------------------------------------------------------------------
+    def nesting(p: Dyn => Unit): Unit =
+      fold[Unit]
+        { dyns => dyns.valuesIterator.foreach(p) }
+        { seq =>
+          seq
+            .map {
+              case dyn : Dyn    => p(dyn)
+              case _            => () } }
+        { dyn => p(dyn) }
+        { _   => () }
+
+    // ===========================================================================
+    override def toString: String = formatDebug
+
+      // ---------------------------------------------------------------------------
+      def formatDebug: String =
+        s"Valew(${naked.getClass}:${naked.toString})"
+
+      // ---------------------------------------------------------------------------
+      def formatDefault: String =
+        fold3[String](
+          _.formatDebug)(
+          aptdata.lowlevel.AnyValueFormatter.format)(
+          _.mkString("[", ",", "]"))
+
+    // ---------------------------------------------------------------------------
+// TODO: t250528102620 - if seq...
+@deprecated def format: String = aptdata.lowlevel.AnyValueFormatter.format(naked) }
 
   // ===========================================================================
   object Valew {
+    private def notNesting(value: NakedValue) = aptus.illegalArgument(
+      s"E250529135752 - not nesting: ${value} (${value.getClass})")
+
+    // ---------------------------------------------------------------------------
     /** must be prenormalized first (see 241122121139) */
     def build(value: NakedValue) = Valew.apply(value)
 

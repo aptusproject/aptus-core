@@ -2,6 +2,7 @@ package aptus
 package aptdata
 package accessors
 
+import aptus.aptdata.ops.common.CommonOpsTrait
 import domain._
 
 // ===========================================================================
@@ -10,22 +11,37 @@ private[aptdata] trait ValewComplexAccessors { self: Valew =>
             def anys$  : Seq   [NakedValue] = ???//values$[AnyValue]
   //@inline def anys$$ : Seq   [NakedValue] = ???//Bar.anys$$(u)
 
-  @deprecated def obj  = naked.asInstanceOf[Dyn]
-  @deprecated def objs = naked.asInstanceOf[Seq[Dyn]]
+  // ===========================================================================
+  def nesting : Dyn  = naked.asInstanceOf[Dyn]
+  def nestings: Dyns = naked.asInstanceOf[Dyns]
 
-  // ---------------------------------------------------------------------------
-  def dyn  = naked.asInstanceOf[Dyn]
-  def dyns = naked.asInstanceOf[Dyns]
+  // TODO: confirm can't have Iterable[Dyn] at this point?
+  def nestingsOpt: Option[Dyns] = naked match { case x: Dyns => Some(x); case _ => None }
+  def  nestingOpt: Option[Dyn]  = naked match { case x: Dyn  => Some(x); case _ => None }
+
+    // ---------------------------------------------------------------------------
+    @deprecated def obj  = naked.asInstanceOf[Dyn]
+    @deprecated def objs = naked.asInstanceOf[Seq[Dyn]]
+
+    // ---------------------------------------------------------------------------
+    @deprecated def dyn : Dyn  = naked.asInstanceOf[Dyn]
+    @deprecated def dyns: Dyns = naked.asInstanceOf[Dyns]
+
+    // ---------------------------------------------------------------------------
+    @deprecated def  dynOpt: Option[Dyn]  = naked match { case x: Dyn  => Some(x); case _ => None }
+    @deprecated def dynsOpt: Option[Dyns] = naked match { case x: Dyns => Some(x); case _ => None } // TODO: confirm can't have Iterable[Dyn] at this point?
 
   // ===========================================================================
-  def  dynOpt: Option[Dyn]  = naked match { case x: Dyn  => Some(x); case _ => None }
-  def dynsOpt: Option[Dyns] = naked match { case x: Dyns => Some(x); case _ => None } // TODO: confirm can't have Iterable[Dyn] at this point?
+  def forceCommonOpsTrait: CommonOpsTrait[_] = naked.asInstanceOf[ops.common.CommonOpsTrait[_]]
 
-  // ---------------------------------------------------------------------------
+  def nestingEither2[T, U](f: Dyn => T)(g: Dyns => U) = nestingEither.fold(f, g)
+
   def nestingEither: Either[Dyn, Dyns] =
     naked match {
+      // no Dynz allowed here (see a241119123645)
       case x: Dyn  => Left (x)
       case x: Dyns => Right(x)
+//TODO: t250520155944 - confirm never Seq[Dyn] directly?
       case _       => Error.NoNestedIterators(()).thro }
 
   // ===========================================================================

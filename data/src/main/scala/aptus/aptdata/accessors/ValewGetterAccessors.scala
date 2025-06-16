@@ -6,80 +6,143 @@ package accessors
 private[aptdata] trait ValewGetterAccessors {
     self: ValewGetter => // TODO
 
-  // ---------------------------------------------------------------------------
+  import lowlevel.AnyValueFormatter.format
+
+  // ===========================================================================
   private def error = illegalArgument("TODO:t241022114436")
+
+  // ---------------------------------------------------------------------------
+  private implicit class Option__[T](diss: Option[T]) {
+    def forceOrError(target: NoRenarget) = diss.getOrElse(illegalArgument(s"E241022114436 - missing - ${target.format}")) }
+
+  // ---------------------------------------------------------------------------
+  def multipleValuesError(target: NoRenarget) = illegalArgument(s"E250502125928 - multiple values - ${target.format}")
 
   // ===========================================================================
   // codegened (see 241121238315)
 
-  def string    (key: Key): One[String    ] = getOrElse(key, error).string
-  def boolean   (key: Key): One[Boolean   ] = getOrElse(key, error).boolean
-  def int       (key: Key): One[Int       ] = getOrElse(key, error).int
-  def double    (key: Key): One[Double    ] = getOrElse(key, error).double
-  def byte      (key: Key): One[Byte      ] = getOrElse(key, error).byte
-  def short     (key: Key): One[Short     ] = getOrElse(key, error).short
-  def long      (key: Key): One[Long      ] = getOrElse(key, error).long
-  def float     (key: Key): One[Float     ] = getOrElse(key, error).float
-  def bigInt    (key: Key): One[BigInt    ] = getOrElse(key, error).bigInt
-  def bigDec    (key: Key): One[BigDec    ] = getOrElse(key, error).bigDec
-  def date      (key: Key): One[Date      ] = getOrElse(key, error).date
-  def dateTime  (key: Key): One[DateTime  ] = getOrElse(key, error).dateTime
-  def instant   (key: Key): One[Instant   ] = getOrElse(key, error).instant
-  def byteBuffer(key: Key): One[ByteBuffer] = getOrElse(key, error).byteBuffer
+  def string    (target: NoRenarget): One[String    ] = string_    (target).forceOrError(target)
+  def boolean   (target: NoRenarget): One[Boolean   ] = boolean_   (target).forceOrError(target)
+  def int       (target: NoRenarget): One[Int       ] = int_       (target).forceOrError(target)
+  def double    (target: NoRenarget): One[Double    ] = double_    (target).forceOrError(target)
+  def byte      (target: NoRenarget): One[Byte      ] = byte_      (target).forceOrError(target)
+  def short     (target: NoRenarget): One[Short     ] = short_     (target).forceOrError(target)
+  def long      (target: NoRenarget): One[Long      ] = long_      (target).forceOrError(target)
+  def float     (target: NoRenarget): One[Float     ] = float_     (target).forceOrError(target)
+  def bigInt    (target: NoRenarget): One[BigInt    ] = bigInt_    (target).forceOrError(target)
+  def bigDec    (target: NoRenarget): One[BigDec    ] = bigDec_    (target).forceOrError(target)
+  def date      (target: NoRenarget): One[Date      ] = date_      (target).forceOrError(target)
+  def dateTime  (target: NoRenarget): One[DateTime  ] = dateTime_  (target).forceOrError(target)
+  def instant   (target: NoRenarget): One[Instant   ] = instant_   (target).forceOrError(target)
+  def byteBuffer(target: NoRenarget): One[ByteBuffer] = byteBuffer_(target).forceOrError(target)
+
+  def strings    (target: NoRenarget): Nes[String    ] = strings_    (target).forceOrError(target)
+  def booleans   (target: NoRenarget): Nes[Boolean   ] = booleans_   (target).forceOrError(target)
+  def ints       (target: NoRenarget): Nes[Int       ] = ints_       (target).forceOrError(target)
+  def doubles    (target: NoRenarget): Nes[Double    ] = doubles_    (target).forceOrError(target)
+  def bytes      (target: NoRenarget): Nes[Byte      ] = bytes_      (target).forceOrError(target)
+  def shorts     (target: NoRenarget): Nes[Short     ] = shorts_     (target).forceOrError(target)
+  def longs      (target: NoRenarget): Nes[Long      ] = longs_      (target).forceOrError(target)
+  def floats     (target: NoRenarget): Nes[Float     ] = floats_     (target).forceOrError(target)
+  def bigInts    (target: NoRenarget): Nes[BigInt    ] = bigInts_    (target).forceOrError(target)
+  def bigDecs    (target: NoRenarget): Nes[BigDec    ] = bigDecs_    (target).forceOrError(target)
+  def dates      (target: NoRenarget): Nes[Date      ] = dates_      (target).forceOrError(target)
+  def dateTimes  (target: NoRenarget): Nes[DateTime  ] = dateTimes_  (target).forceOrError(target)
+  def instants   (target: NoRenarget): Nes[Instant   ] = instants_   (target).forceOrError(target)
+  def byteBuffers(target: NoRenarget): Nes[ByteBuffer] = byteBuffers_(target).forceOrError(target)
+
+  def string_    (target: NoRenarget): Opt[String    ] = typed_[String    ](target)(_.string    )(_ string_     _)
+  def boolean_   (target: NoRenarget): Opt[Boolean   ] = typed_[Boolean   ](target)(_.boolean   )(_ boolean_    _)
+  def int_       (target: NoRenarget): Opt[Int       ] = typed_[Int       ](target)(_.int       )(_ int_        _)
+  def double_    (target: NoRenarget): Opt[Double    ] = typed_[Double    ](target)(_.double    )(_ double_     _)
+  def byte_      (target: NoRenarget): Opt[Byte      ] = typed_[Byte      ](target)(_.byte      )(_ byte_       _)
+  def short_     (target: NoRenarget): Opt[Short     ] = typed_[Short     ](target)(_.short     )(_ short_      _)
+  def long_      (target: NoRenarget): Opt[Long      ] = typed_[Long      ](target)(_.long      )(_ long_       _)
+  def float_     (target: NoRenarget): Opt[Float     ] = typed_[Float     ](target)(_.float     )(_ float_      _)
+  def bigInt_    (target: NoRenarget): Opt[BigInt    ] = typed_[BigInt    ](target)(_.bigInt    )(_ bigInt_     _)
+  def bigDec_    (target: NoRenarget): Opt[BigDec    ] = typed_[BigDec    ](target)(_.bigDec    )(_ bigDec_     _)
+  def date_      (target: NoRenarget): Opt[Date      ] = typed_[Date      ](target)(_.date      )(_ date_       _)
+  def dateTime_  (target: NoRenarget): Opt[DateTime  ] = typed_[DateTime  ](target)(_.dateTime  )(_ dateTime_   _)
+  def instant_   (target: NoRenarget): Opt[Instant   ] = typed_[Instant   ](target)(_.instant   )(_ instant_    _)
+  def byteBuffer_(target: NoRenarget): Opt[ByteBuffer] = typed_[ByteBuffer](target)(_.byteBuffer)(_ byteBuffer_ _)
+
+  def strings_    (target: NoRenarget): Ons[String    ] = typed_[Seq[String    ]](target)(_.strings    )(_ strings_     _)
+  def booleans_   (target: NoRenarget): Ons[Boolean   ] = typed_[Seq[Boolean   ]](target)(_.booleans   )(_ booleans_    _)
+  def ints_       (target: NoRenarget): Ons[Int       ] = typed_[Seq[Int       ]](target)(_.ints       )(_ ints_        _)
+  def doubles_    (target: NoRenarget): Ons[Double    ] = typed_[Seq[Double    ]](target)(_.doubles    )(_ doubles_     _)
+  def bytes_      (target: NoRenarget): Ons[Byte      ] = typed_[Seq[Byte      ]](target)(_.bytes      )(_ bytes_       _)
+  def shorts_     (target: NoRenarget): Ons[Short     ] = typed_[Seq[Short     ]](target)(_.shorts     )(_ shorts_      _)
+  def longs_      (target: NoRenarget): Ons[Long      ] = typed_[Seq[Long      ]](target)(_.longs      )(_ longs_       _)
+  def floats_     (target: NoRenarget): Ons[Float     ] = typed_[Seq[Float     ]](target)(_.floats     )(_ floats_      _)
+  def bigInts_    (target: NoRenarget): Ons[BigInt    ] = typed_[Seq[BigInt    ]](target)(_.bigInts    )(_ bigInts_     _)
+  def bigDecs_    (target: NoRenarget): Ons[BigDec    ] = typed_[Seq[BigDec    ]](target)(_.bigDecs    )(_ bigDecs_     _)
+  def dates_      (target: NoRenarget): Ons[Date      ] = typed_[Seq[Date      ]](target)(_.dates      )(_ dates_       _)
+  def dateTimes_  (target: NoRenarget): Ons[DateTime  ] = typed_[Seq[DateTime  ]](target)(_.dateTimes  )(_ dateTimes_   _)
+  def instants_   (target: NoRenarget): Ons[Instant   ] = typed_[Seq[Instant   ]](target)(_.instants   )(_ instants_    _)
+  def byteBuffers_(target: NoRenarget): Ons[ByteBuffer] = typed_[Seq[ByteBuffer]](target)(_.byteBuffers)(_ byteBuffers_ _)
 
   // ---------------------------------------------------------------------------
-  def strings    (key: Key): Nes[String    ] = getOrElse(key, error).strings
-  def booleans   (key: Key): Nes[Boolean   ] = getOrElse(key, error).booleans
-  def ints       (key: Key): Nes[Int       ] = getOrElse(key, error).ints
-  def doubles    (key: Key): Nes[Double    ] = getOrElse(key, error).doubles
-  def bytes      (key: Key): Nes[Byte      ] = getOrElse(key, error).bytes
-  def shorts     (key: Key): Nes[Short     ] = getOrElse(key, error).shorts
-  def longs      (key: Key): Nes[Long      ] = getOrElse(key, error).longs
-  def floats     (key: Key): Nes[Float     ] = getOrElse(key, error).floats
-  def bigInts    (key: Key): Nes[BigInt    ] = getOrElse(key, error).bigInts
-  def bigDecs    (key: Key): Nes[BigDec    ] = getOrElse(key, error).bigDecs
-  def dates      (key: Key): Nes[Date      ] = getOrElse(key, error).dates
-  def dateTimes  (key: Key): Nes[DateTime  ] = getOrElse(key, error).dateTimes
-  def instants   (key: Key): Nes[Instant   ] = getOrElse(key, error).instants
-  def byteBuffers(key: Key): Nes[ByteBuffer] = getOrElse(key, error).byteBuffers
-
-  // ---------------------------------------------------------------------------
-  def string_    (key: Key): Opt[String    ] = get(key).map(_.string)
-  def boolean_   (key: Key): Opt[Boolean   ] = get(key).map(_.boolean)
-  def int_       (key: Key): Opt[Int       ] = get(key).map(_.int)
-  def double_    (key: Key): Opt[Double    ] = get(key).map(_.double)
-  def byte_      (key: Key): Opt[Byte      ] = get(key).map(_.byte)
-  def short_     (key: Key): Opt[Short     ] = get(key).map(_.short)
-  def long_      (key: Key): Opt[Long      ] = get(key).map(_.long)
-  def float_     (key: Key): Opt[Float     ] = get(key).map(_.float)
-  def bigInt_    (key: Key): Opt[BigInt    ] = get(key).map(_.bigInt)
-  def bigDec_    (key: Key): Opt[BigDec    ] = get(key).map(_.bigDec)
-  def date_      (key: Key): Opt[Date      ] = get(key).map(_.date)
-  def dateTime_  (key: Key): Opt[DateTime  ] = get(key).map(_.dateTime)
-  def instant_   (key: Key): Opt[Instant   ] = get(key).map(_.instant)
-  def byteBuffer_(key: Key): Opt[ByteBuffer] = get(key).map(_.byteBuffer)
-
-  // ---------------------------------------------------------------------------
-  def strings_    (key: Key): Ons[String    ] = get(key).map(_.strings)
-  def booleans_   (key: Key): Ons[Boolean   ] = get(key).map(_.booleans)
-  def ints_       (key: Key): Ons[Int       ] = get(key).map(_.ints)
-  def doubles_    (key: Key): Ons[Double    ] = get(key).map(_.doubles)
-  def bytes_      (key: Key): Ons[Byte      ] = get(key).map(_.bytes)
-  def shorts_     (key: Key): Ons[Short     ] = get(key).map(_.shorts)
-  def longs_      (key: Key): Ons[Long      ] = get(key).map(_.longs)
-  def floats_     (key: Key): Ons[Float     ] = get(key).map(_.floats)
-  def bigInts_    (key: Key): Ons[BigInt    ] = get(key).map(_.bigInts)
-  def bigDecs_    (key: Key): Ons[BigDec    ] = get(key).map(_.bigDecs)
-  def dates_      (key: Key): Ons[Date      ] = get(key).map(_.dates)
-  def dateTimes_  (key: Key): Ons[DateTime  ] = get(key).map(_.dateTimes)
-  def instants_   (key: Key): Ons[Instant   ] = get(key).map(_.instants)
-  def byteBuffers_(key: Key): Ons[ByteBuffer] = get(key).map(_.byteBuffers)
+  private def typed_[T](target: NoRenarget)(f: Valew => T)(g: (Dyn, Path) => Option[T]): Opt[T] =
+    target.und match {
+      case key: Key                 => get(key) .map(f)
+      case Path(Nil,          leaf) => get(leaf).map(f)
+      case Path(head +: rest, leaf) => get(head).flatMap(_.dynOpt.flatMap(x => g(x, Path(rest, leaf)))) }
 
   // ===========================================================================
-  def obj  (key: Key): One[Dyn] = getOrElse(key, error).dyn
-  def obj_ (key: Key): Opt[Dyn] = get      (key).map (_.dyn)
-  def objs (key: Key): Nes[Dyn] = getOrElse(key, error).dyns.values // t250416161852 -
-  def objs_(key: Key): Ons[Dyn] = get      (key).map (_.dyns.values)
+  def obj  (target: NoRenarget): One[Dyn] = obj_ (target).forceOrError(target)
+  def objs (target: NoRenarget): Nes[Dyn] = objs_(target).forceOrError(target)
+
+  // ---------------------------------------------------------------------------
+  def obj_ (target: NoRenarget): Opt[Dyn] = typed_[    Dyn ](target)(_.dyn)        (_ obj_  _)
+  def objs_(target: NoRenarget): Ons[Dyn] = typed_[Seq[Dyn]](target)(_.dyns.values)(_ objs_ _)
+
+  // ===========================================================================
+  def objs$_(key: Key): Option[Nes[Dyn]] = ???//values$_[Obj](key)
+  def objs$$(key: Key):        Seq[Dyn]  = ???//values$$[Obj](key)
+  def objs$$2_(path: Path): Ons[Dyn] = ???
+  def objs$$2 (path: Key) : Nes[Dyn]  = ??? // dis._plumbing.nestingAccess$$2(pnk)(_.accessors.objs$$)
+
+  def objs$$2 (path: Path):        Nes[Dyn]  = ??? // dis._plumbing.nestingAccess$$2(pnk)(_.accessors.objs$$)
+
+  // ===========================================================================
+  def text (target: NoRenarget): One[StringValue] = text_ (target).forceOrError(target)
+  def texts(target: NoRenarget): Seq[StringValue] = texts_(target).forceOrError(target)
+
+    // ---------------------------------------------------------------------------
+    def text_(target: NoRenarget): Opt[StringValue] = target.und match {
+      case key: Key => self.get(key).map { _.naked match { case _: Seq[_] => multipleValuesError(target); case sgl => format(sgl) } }
+      case Path(Nil,          leaf) => text_(leaf)
+      case Path(head +: rest, leaf) => ValewGetterAccessorsUtils.text_(self)(head, Path(rest, leaf)) }
+
+    // ---------------------------------------------------------------------------
+    def texts_(target: NoRenarget): Ons[StringValue] = target.und match {
+      case key: Key                 => self.get(key ).map(toStringValues /* permissive */)
+      case Path(Nil,          leaf) => self.get(leaf).map(toStringValues /* permissive */)
+      case Path(head +: rest, leaf) => ValewGetterAccessorsUtils.texts_(self)(head, Path(rest, leaf)) }
+
+    // ---------------------------------------------------------------------------
+    private def toStringValues(valew: Valew): Seq[StringValue] =
+      valew.fold[Seq[StringValue]]
+        { dyns => dyns.formatCompactJson.in.seq }
+        { seq  => seq.map(lowlevel.AnyValueFormatter.format) }
+        { dyn  => dyn.formatCompactJson.in.seq }
+        { sgl  => lowlevel.AnyValueFormatter.format(sgl).in.seq }
+
+  // ---------------------------------------------------------------------------
+  //def texts$_(key: KeyW): Option[Nes[String]] = anys$_(key).map(_.map(_.str))
+  def texts$$(key: Key):     Seq[String]  = ???//anys$$(key)      .map(_.str)
+  def texts$$2(path: Path): Nes[String] = ??? // ObjUNesting.scala:def texts$$2(pnk: PotentiallyNestedKey) = dis._plumbing.nestingAccess$$2(pnk)(_.accessors.texts$$)
+
+  // ===========================================================================
+  /** if confident one and exactly one (else favor seq-based + eg force.option) */
+  def nakedValue(target: NoRenarget): One[NakedValue] = nakedValues(target).force.one
+
+  // ---------------------------------------------------------------------------
+  /** never fails, just returns all values */
+  def nakedValues(target: NoRenarget): Seq[NakedValue] = target.und match {
+    case key: Key => self.get(key ).toSeq.flatMap { _.naked match { case seq: Seq[_] => seq; case sgl => Seq(sgl) } }
+    case Path(Nil,          leaf) => nakedValues(leaf)
+    case Path(head +: rest, leaf) => ValewGetterAccessorsUtils.nakedValues(self)(head, Path(rest, leaf)) }
 
   // ===========================================================================
   // 2D
@@ -92,50 +155,6 @@ private[aptdata] trait ValewGetterAccessors {
   def realMatrixCommons(key: Key): RealMatrixCommons = getOrElse(key, error).matrix
 
   // ===========================================================================
-//TODO:
-  def boolean(key: Path): One[Boolean] = ???// self.getOrElse(key, error).boolean
-  def int    (key: Path): One[Int    ] = ???// self.getOrElse(key, error).int
-  def double (key: Path): One[Double ] = ???// self.getOrElse(key, error).double
-  def string (key: Path): One[String ] = ???// self.getOrElse(key, error).string
-
-  def booleans(key: Path): Nes[Boolean] = ???// self.getOrElse(key, error).booleans
-  def ints    (key: Path): Nes[Int    ] = ???// self.getOrElse(key, error).ints
-  def doubles (key: Path): Nes[Double ] = ???// self.getOrElse(key, error).doubles
-  def strings (key: Path): Nes[String ] = ???// self.getOrElse(key, error).strings
-
-  def boolean_(key: Path): Opt[Boolean] = ???// self.getOrElse(key, error).boolean_
-  def int_    (key: Path): Opt[Int    ] = ???// self.getOrElse(key, error).int_
-  def double_ (key: Path): Opt[Double ] = ???// self.getOrElse(key, error).double_
-  def string_ (key: Path): Opt[String ] = ???// self.getOrElse(key, error).string_
-
-  // ---------------------------------------------------------------------------
-  def objs (key: Path): Nes[Dyn] = ???
-  def obj_ (key: Path): Opt[Dyn] = ???
-  def obj  (key: Path): One[Dyn] = ???
-  def objs_(key: Path): Ons[Dyn] = ???
-
-  // ===========================================================================
-  //def values$ [$Type](key: KeyW):        Seq[$Type]  = anys$ (key).asInstanceOf[    Seq[$Type] ]
-  //def values$_[$Type](key: KeyW): Option[Nes[$Type]] = anys$_(key).asInstanceOf[Option[Nes[$Type]]]
-  //def values$$[$Type](key: KeyW):        Seq[$Type]  = anys$$(key).asInstanceOf[Seq[$Type]]
-  //
-  //def obj   (path: KPath):     Obj    = ???
-  //def objs$ (key: KeyW):     Seq[Obj] = ???//values$ [Obj](key)
-
-  def objs$_(key: Key): Option[Nes[Dyn]] = ???//values$_[Obj](key)
-  def objs$$(key: Key):        Seq[Dyn]  = ???//values$$[Obj](key)
-  def objs$$2_(path: Path): Ons[Dyn] = ???
-  def objs$$2 (path: Key) : Nes[Dyn]  = ??? // dis._plumbing.nestingAccess$$2(pnk)(_.accessors.objs$$)
-
-  //def texts$_(key: KeyW): Option[Nes[String]] = anys$_(key).map(_.map(_.str))
-  def texts$$(key: Key):     Seq[String]  = ???//anys$$(key)      .map(_.str)
-  def texts$$2(path: Path): Nes[String] = ??? // ObjUNesting.scala:def texts$$2(pnk: PotentiallyNestedKey) = dis._plumbing.nestingAccess$$2(pnk)(_.accessors.texts$$)
-
-  def objs$$2 (path: Path):        Nes[Dyn]  = ??? // dis._plumbing.nestingAccess$$2(pnk)(_.accessors.objs$$)
-
-  def text   (key: Path):        StringValue     = ???// text_(key).force
-  def text_  (key: Path): Option[StringValue]    = ???// self.get(key).map(_.format)
-
   def any_  (key: Path): Option[NakedValue]    = ???// self.get(key)
   def any   (key: Path): NakedValue    = ???// self.getOrElse(key, error)
 
@@ -144,9 +163,6 @@ private[aptdata] trait ValewGetterAccessors {
   def arraySize (key: Key): aptus.Size = ???
 
   // ---------------------------------------------------------------------------
-  def text   (key: Key):        StringValue     = text_(key).force
-  def text_  (key: Key): Option[StringValue]    = get(key).map(_.format)
-
   def any_  (key: Key): Opt[NakedValue] = get      (key) .map(_.naked)
   def any   (key: Key): One[NakedValue] = getOrElse(key, error).naked
 

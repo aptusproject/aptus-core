@@ -8,11 +8,17 @@ trait TopLevelBuildingUtils {
   private[aptdata] def _build(x: Seq[(Key, AnyValue)]) = x.map(Entry.buildn).pipe(Dyn.build)
 
   // ---------------------------------------------------------------------------
-  def fromDataClass[DC <: Product: aptreflect.lowlevel.ReflectionTypesAbstraction.WTT](value: DC): Dyn = value.toDynamic
-
-  // ---------------------------------------------------------------------------
+  def dyn(entry1: Entry, more: Entry*): Dyn = Dyn.build(entry1 +: more)
   def dyns(dyn1: Sngl, more: Sngl*): Dyns = Dyns.build(dyn1 +: more)
   def dynz(dyn1: Sngl, more: Sngl*): Dynz = Dyns.build(dyn1 +: more).asDynz
+
+  // ---------------------------------------------------------------------------
+  def dyn (string: String /* eg path or JSON string */): Dyn  = io.in.DynIn.single   (string)
+  def dyns(string: String /* eg path or JSON string */): Dyns = io.in.DynIn.multiple (string)
+  def dynz(string: String /* eg path or JSON string */): Dynz = io.in.DynIn.multiplez(string)
+
+  // ---------------------------------------------------------------------------
+  def fromDataClass[DC <: Product: aptreflect.lowlevel.ReflectionTypesAbstraction.WTT](value: DC): Dyn = value.toDynamic
 
   // ---------------------------------------------------------------------------
   def single      (string: String /* eg path or JSON string */): Dyn  = io.in.DynIn.single   (string)

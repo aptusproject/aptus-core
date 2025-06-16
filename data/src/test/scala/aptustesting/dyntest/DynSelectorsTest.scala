@@ -37,9 +37,7 @@ test(_Sngl1.transform(Targets(Seq(baz), guaranteed = true)).using(f1).check(_Sng
     // ===========================================================================
     test(_Sngl1.transform          (baz).using(f1).check(_Sngl1_2))
     test(_Sngl1.transformGuaranteed(baz).using(f1).check(_Sngl1_2))
-    test(_Sngl1.transformIfPresent (baz).using(f1).check(_Sngl1_2))
-
-    test(_Sngl1.transformIfPresent (BAZ).using(f1).check(_Sngl1))
+    test(_Sngl1.transform          (BAZ).using(f1).check(_Sngl1))
     test(util.Try {
       _Sngl1.transformGuaranteed(BAZ).using(f1) }.check(TransformGuaranteeFailure))
 

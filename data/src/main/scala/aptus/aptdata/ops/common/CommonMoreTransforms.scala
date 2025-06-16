@@ -4,11 +4,13 @@ package ops
 package common
 
 import domain.{IntegerLike, RealLike}
+import CommonMoreTransformsUtils.{_TransformType, _TransformIfType}
 
 // ===========================================================================
 trait CommonMoreTransforms[Data] {
-    self: CommonTransformTrait[Data] /* eg transform(x).string(...) */ with
-       HasDataEntityErrorFormatter[Data] =>
+    self: CommonTransformTrait[Data] /* eg transform(x).string(...) */
+       with common.CommonHasTransformTargetSelectorTrait[Data]
+       with HasDataEntityErrorFormatter[Data] =>
   import Error.TransformSpecificType
 
   // ===========================================================================
@@ -22,40 +24,82 @@ trait CommonMoreTransforms[Data] {
     // only these 4
 
   // ===========================================================================
-  // not nested Dynz (see a241119155444)
-
-  @nonovrd final def transformDyn (key: Key)(f: Dyn  => NakedValue): Data = transform(key).using { _. dynOpt.map(f).getOrElse(TransformSpecificType(deef, TargetSelector.Explicit(key), aptdata.sngl.Dyn)      .thro) }
-  @nonovrd final def transformDyns(key: Key)(f: Dyns => NakedValue): Data = transform(key).using { _.dynsOpt.map(f).getOrElse(TransformSpecificType(deef, TargetSelector.Explicit(key), aptdata.mult.list.Dyns).thro) }
-
-@nonovrd final def transformDyn (ren: Ren)(f: Dyn  => NakedValue): Data = transform(ren).using { _. dynOpt.map(f).getOrElse(TransformSpecificType(deef, TargetSelector.Renaming(ren), sngl.Dyn).thro) }
-
-  // ===========================================================================
-  @nonovrd final def transformBoolean(key: Key): _TransformBoolean = new _TransformBoolean(key)
-  @nonovrd final def transformInt    (key: Key): _TransformInt     = new _TransformInt    (key)
-  @nonovrd final def transformDouble (key: Key): _TransformDouble  = new _TransformDouble (key)
-  @nonovrd final def transformString (key: Key): _TransformString  = new _TransformString (key)
-  // only these 4
-
-    // ---------------------------------------------------------------------------
-    final class _TransformString  private[aptdata] (key: Key) { def using(f: String  => NakedValue): Data = transform(key).string(f) }
-    final class _TransformInt     private[aptdata] (key: Key) { def using(f: Int     => NakedValue): Data = transform(key).int    (f) }
-    final class _TransformBoolean private[aptdata] (key: Key) { def using(f: Boolean => NakedValue): Data = transform(key).boolean(f) }
-    final class _TransformDouble  private[aptdata] (key: Key) { def using(f: Double  => NakedValue): Data = transform(key).double (f) }
+  // nesting
 
   // ---------------------------------------------------------------------------
-  @nonovrd final def transformIfBoolean(key: Key): _TransformIfBoolean = new _TransformIfBoolean(key)
-  @nonovrd final def transformIfInt    (key: Key): _TransformIfInt     = new _TransformIfInt    (key)
-  @nonovrd final def transformIfDouble (key: Key): _TransformIfDouble  = new _TransformIfDouble (key)
-  @nonovrd final def transformIfString (key: Key): _TransformIfString  = new _TransformIfString (key)
+  @nonovrd final def transformNesting(sel: Sel)                      : _TransformNesting = new _TransformNesting(Sel(sel).in.left)
+  @nonovrd final def transformNesting(targets: Targets)              : _TransformNesting = new _TransformNesting(targets.in.right)
+  @nonovrd final def transformNesting(target1: Target, more: Target*): _TransformNesting = transformNesting(Targets(target1 +: more, guaranteed = false))
+
+  @nonovrd final def transformNestings(sel: Sel)                      : _TransformNestings = new _TransformNestings(Sel(sel).in.left)
+  @nonovrd final def transformNestings(targets: Targets)              : _TransformNestings = new _TransformNestings(targets.in.right)
+  @nonovrd final def transformNestings(target1: Target, more: Target*): _TransformNestings = transformNestings(Targets(target1 +: more, guaranteed = false))
+
+    // ---------------------------------------------------------------------------
+    class _TransformNesting(targets: TargetEitheR) {
+      def using(f: Dyn => NakedValue): Data =
+        targets.map(TargetData.parse).pipe { x => self.transformTarget(x,
+          _.nestingOpt.map(f).getOrElse(TransformSpecificType(deef, x, sngl.Dyn).thro)) } }
+
+    // ---------------------------------------------------------------------------
+    class _TransformNestings(targets: TargetEitheR) { // no nested Dynz (see a241119155444)
+      def using(f: Dyns => NakedValue): Data =
+        targets.map(TargetData.parse).pipe { x => self.transformTarget(x,
+          _.nestingsOpt.map(f).getOrElse(TransformSpecificType(deef, x, sngl.Dyn).thro)) } }
+
+  // ===========================================================================
+  @nonovrd final def transformBoolean(target1: Target, more: Target*): _TransformBoolean = new _TransformBoolean(Targets(target1 +: more, guaranteed = false))
+  @nonovrd final def transformInt    (target1: Target, more: Target*): _TransformInt     = new _TransformInt    (Targets(target1 +: more, guaranteed = false))
+  @nonovrd final def transformDouble (target1: Target, more: Target*): _TransformDouble  = new _TransformDouble (Targets(target1 +: more, guaranteed = false))
+  @nonovrd final def transformString (target1: Target, more: Target*): _TransformString  = new _TransformString (Targets(target1 +: more, guaranteed = false))
+  // only these 4
+
+  @nonovrd final def transformBoolean(targets: Targets): _TransformBoolean = new _TransformBoolean(targets)
+  @nonovrd final def transformInt    (targets: Targets): _TransformInt     = new _TransformInt    (targets)
+  @nonovrd final def transformDouble (targets: Targets): _TransformDouble  = new _TransformDouble (targets)
+  @nonovrd final def transformString (targets: Targets): _TransformString  = new _TransformString (targets)
+
+    // ---------------------------------------------------------------------------
+    final class _TransformString  private[aptdata] (targets: Targets) { def using(f: String  => NakedValue): Data = transform(targets).string(f) }
+    final class _TransformInt     private[aptdata] (targets: Targets) { def using(f: Int     => NakedValue): Data = transform(targets).int    (f) }
+    final class _TransformBoolean private[aptdata] (targets: Targets) { def using(f: Boolean => NakedValue): Data = transform(targets).boolean(f) }
+    final class _TransformDouble  private[aptdata] (targets: Targets) { def using(f: Double  => NakedValue): Data = transform(targets).double (f) }
+
+  // ---------------------------------------------------------------------------
+  @nonovrd final def transformIfBoolean(target1: Target, more: Target*): _TransformIfBoolean = new _TransformIfBoolean(Targets(target1 +: more, guaranteed = false))
+  @nonovrd final def transformIfInt    (target1: Target, more: Target*): _TransformIfInt     = new _TransformIfInt    (Targets(target1 +: more, guaranteed = false))
+  @nonovrd final def transformIfDouble (target1: Target, more: Target*): _TransformIfDouble  = new _TransformIfDouble (Targets(target1 +: more, guaranteed = false))
+  @nonovrd final def transformIfString (target1: Target, more: Target*): _TransformIfString  = new _TransformIfString (Targets(target1 +: more, guaranteed = false))
+
+  @nonovrd final def transformIfBoolean(targets: Targets): _TransformIfBoolean = new _TransformIfBoolean(targets)
+  @nonovrd final def transformIfInt    (targets: Targets): _TransformIfInt     = new _TransformIfInt    (targets)
+  @nonovrd final def transformIfDouble (targets: Targets): _TransformIfDouble  = new _TransformIfDouble (targets)
+  @nonovrd final def transformIfString (targets: Targets): _TransformIfString  = new _TransformIfString (targets)
   // only these 4
 
     // ---------------------------------------------------------------------------
-    final class _TransformIfString  private[aptdata] (key: Key) { def using(f: String  => NakedValue): Data = transform(key).ifString(f) }
-    final class _TransformIfInt     private[aptdata] (key: Key) { def using(f: Int     => NakedValue): Data = transform(key).ifInt    (f) }
-    final class _TransformIfBoolean private[aptdata] (key: Key) { def using(f: Boolean => NakedValue): Data = transform(key).ifBoolean(f) }
-    final class _TransformIfDouble  private[aptdata] (key: Key) { def using(f: Double  => NakedValue): Data = transform(key).ifDouble (f) }
+    final class _TransformIfString  private[aptdata] (targets: Targets) { def using(f: String  => NakedValue): Data = transform(targets).ifString(f) }
+    final class _TransformIfInt     private[aptdata] (targets: Targets) { def using(f: Int     => NakedValue): Data = transform(targets).ifInt    (f) }
+    final class _TransformIfBoolean private[aptdata] (targets: Targets) { def using(f: Boolean => NakedValue): Data = transform(targets).ifBoolean(f) }
+    final class _TransformIfDouble  private[aptdata] (targets: Targets) { def using(f: Double  => NakedValue): Data = transform(targets).ifDouble (f) }
 
 // TODO: if IntLike...?
+
+  // ===========================================================================
+  @nonovrd def transformType(basicType: BasicType)(target1: Target, more: Target*): _TransformType[Data, basicType.T] =
+      new _TransformType[Data, basicType.T](self, basicType, Targets(target1 +: more, guaranteed = false))
+
+    // ---------------------------------------------------------------------------
+    @nonovrd def transformIfType(basicType: BasicType)(target1: Target, more: Target*): _TransformIfType[Data, basicType.T] =
+      new _TransformIfType[Data, basicType.T](self, basicType, Targets(target1 +: more, guaranteed = false))
+
+    // ---------------------------------------------------------------------------
+    @nonovrd def transformType(basicType: BasicType, targets: Targets): _TransformType[Data, basicType.T] =
+      new _TransformType[Data, basicType.T](self, basicType, targets)
+
+    // ---------------------------------------------------------------------------
+    @nonovrd def transformIfType(basicType: BasicType, targets: Targets): _TransformIfType[Data, basicType.T] =
+      new _TransformIfType[Data, basicType.T](self, basicType, targets)
 
   // ===========================================================================
   @nonovrd final def transformIntegerLike[T](target: TargetSelector)(f: IntegerLike[_] => T): Data = _transformIntegerLike[T](target: TargetSelector)(f)
@@ -63,55 +107,12 @@ trait CommonMoreTransforms[Data] {
 
     // ---------------------------------------------------------------------------
     @inline private def _transformIntegerLike[T](target: TargetSelector)(f: IntegerLike[_] => T): Data =
-      transform(target).using { valew => valew.integerLikeOpt.map(f).getOrElse {
-        TransformSpecificType(deef, target, IntegerLike).thro /* including Double/Float - see a241125115501 */ } }
-
-    @inline private def _transformRealLike[T](target: TargetSelector)(f: RealLike[_] => T): Data =
-      transform(target).using { valew => valew.realLikeOpt.map(f).getOrElse {
-        TransformSpecificType(deef, target, RealLike).thro } }
-
-  // ===========================================================================
-  @nonovrd def transformType(basicType: BasicType)(key: Key)(f: basicType.T   => NakedValue): Data =
-//FIXME: what about Seq[Int] - t241127142124
-      basicType match { // codegened (see 241121238314)
-
-        case BasicType._String   => transform(key).string  (x => f.asInstanceOf[String     => NakedValue](x))
-        case BasicType._Boolean  => transform(key).boolean (x => f.asInstanceOf[Boolean    => NakedValue](x))
-        case BasicType._Int      => transform(key).int     (x => f.asInstanceOf[Int        => NakedValue](x))
-        case BasicType._Double   => transform(key).double  (x => f.asInstanceOf[Double     => NakedValue](x))
-        case BasicType._Byte     => transform(key).byte    (x => f.asInstanceOf[Byte       => NakedValue](x))
-        case BasicType._Short    => transform(key).short   (x => f.asInstanceOf[Short      => NakedValue](x))
-        case BasicType._Long     => transform(key).long    (x => f.asInstanceOf[Long       => NakedValue](x))
-        case BasicType._Float    => transform(key).float   (x => f.asInstanceOf[Float      => NakedValue](x))
-        case BasicType._BigInt   => transform(key).bigInt  (x => f.asInstanceOf[BigInt     => NakedValue](x))
-        case BasicType._BigDec   => transform(key).bigDec  (x => f.asInstanceOf[BigDec     => NakedValue](x))
-        case BasicType._Date     => transform(key).date    (x => f.asInstanceOf[Date       => NakedValue](x))
-        case BasicType._DateTime => transform(key).dateTime(x => f.asInstanceOf[DateTime   => NakedValue](x))
-        case BasicType._Instant  => transform(key).instant (x => f.asInstanceOf[Instant    => NakedValue](x))
-        case BasicType._Binary   => transform(key).binary  (x => f.asInstanceOf[ByteBuffer => NakedValue](x))
-
-        case _                   => ??? }
+      innie(target).using { _.integerLikeOpt.map(f).getOrElse {
+        TransformSpecificType(deef, target.in.left, IntegerLike).thro /* including Double/Float - see a241125115501 */ } }
 
     // ---------------------------------------------------------------------------
-    // codegened (see 241121238324)
-    @nonovrd def transformIfType(basicType: BasicType)(key: Key)(f: basicType.T   => NakedValue): Data =
-//FIXME: what about Seq[Int] - t241127142124
-      basicType match {
-        case BasicType._String   => transform(key).ifString  (x => f.asInstanceOf[String     => NakedValue](x))
-        case BasicType._Boolean  => transform(key).ifBoolean (x => f.asInstanceOf[Boolean    => NakedValue](x))
-        case BasicType._Int      => transform(key).ifInt     (x => f.asInstanceOf[Int        => NakedValue](x))
-        case BasicType._Double   => transform(key).ifDouble  (x => f.asInstanceOf[Double     => NakedValue](x))
-        case BasicType._Byte     => transform(key).ifByte    (x => f.asInstanceOf[Byte       => NakedValue](x))
-        case BasicType._Short    => transform(key).ifShort   (x => f.asInstanceOf[Short      => NakedValue](x))
-        case BasicType._Long     => transform(key).ifLong    (x => f.asInstanceOf[Long       => NakedValue](x))
-        case BasicType._Float    => transform(key).ifFloat   (x => f.asInstanceOf[Float      => NakedValue](x))
-        case BasicType._BigInt   => transform(key).ifBigInt  (x => f.asInstanceOf[BigInt     => NakedValue](x))
-        case BasicType._BigDec   => transform(key).ifBigDec  (x => f.asInstanceOf[BigDec     => NakedValue](x))
-        case BasicType._Date     => transform(key).ifDate    (x => f.asInstanceOf[Date       => NakedValue](x))
-        case BasicType._DateTime => transform(key).ifDateTime(x => f.asInstanceOf[DateTime   => NakedValue](x))
-        case BasicType._Instant  => transform(key).ifInstant (x => f.asInstanceOf[Instant    => NakedValue](x))
-        case BasicType._Binary   => transform(key).ifBinary  (x => f.asInstanceOf[ByteBuffer => NakedValue](x))
-
-        case _                 => ??? } }
+    @inline private def _transformRealLike[T](target: TargetSelector)(f: RealLike[_] => T): Data =
+      innie(target).using { _.realLikeOpt.map(f).getOrElse {
+        TransformSpecificType(deef, target.in.left, RealLike).thro } } }
 
 // ===========================================================================

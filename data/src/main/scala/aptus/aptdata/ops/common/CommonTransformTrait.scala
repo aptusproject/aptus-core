@@ -6,7 +6,7 @@ package common
 // ===========================================================================
 trait CommonTransformTrait[Data] {
     self: CommonHasTransformTargetSelectorTrait[Data]
-      with HasDataEntityErrorFormatter[Data] => /* only: abstract transformTargetSelector() */
+      with HasDataEntityErrorFormatter[Data] => /* only: abstract transformTarget() */
   private   type Innie = CommonTransformByTypesHelperTrait[Data]
   private   val  diss  = this
 
@@ -17,34 +17,27 @@ trait CommonTransformTrait[Data] {
       final class _GenerateFromUsing private[aptdata] (x: Any) { def using(f: Valew => Any): Data = ??? }
 
   // ===========================================================================
-  @inline private def innie(_target: TargetSelector): Innie = new _Innie(diss.deef, _target)
+  @inline private[common] def innie(_target: TargetSelector): Innie = new _Innie(diss.deef, Left(_target))
+  @inline private[common] def innie(td: TargetData)         : Innie = new _Innie(diss.deef, Right(td))
 
-    private[common] class _Innie private[common](val deef: DataEntityErrorFormatter, val target: TargetSelector)
+    // ---------------------------------------------------------------------------
+    private[common] class _Innie private[common](val deef: DataEntityErrorFormatter, val target: TargetEither)
         extends CommonTransformByTypesHelperTrait[Data]
            with HasDataEntityErrorFormatter[Data]
            with HasTargetSelector {
-      override final def using(f: ValueF): Data = transformTargetSelector(target, f) // main transformer <--------------------
+      override final def using(f: ValueF): Data = transformTarget(target, f) // main transformer <--------------------
 
       /** favor explicit `.using(f)` version rather (but good for quick development/test) */
       @inline @nonovrd final def apply(f: ValueF): Data = using(f) }
 
   // ===========================================================================
-@nonovrd final def transform(key : Key ): Innie = transform(TargetSelector.Explicit(key))
-  @nonovrd final def transform(ren : Ren ): Innie = transform(TargetSelector.Renaming(ren))
-  @nonovrd final def transform(path: Path): Innie = transform(TargetSelector.Nesting(path))
-  @nonovrd final def transform(sel : Sel ): Innie = transform(Sel(sel))
-  @nonovrd final def transform(target: TargetSelector): Innie = innie(target)
+  @nonovrd final def transform(target1: Target, more: Target*): Innie = transform(target1 +~ more)
+  @nonovrd final def transform(targets: Targets)              : Innie = innie(TargetData.parse(targets))
+  @nonovrd final def transform(sel: Sel)                      : Innie = innie(Sel(sel))
 
-  @nonovrd final def transformGuaranteed(key : Key ): Innie = transformGuaranteed(TargetSelector.Explicit(key).guaranteePresence)
-  @nonovrd final def transformGuaranteed(ren : Ren ): Innie = transformGuaranteed(TargetSelector.Renaming(ren).guaranteePresence)
-  @nonovrd final def transformGuaranteed(path: Path): Innie = transformGuaranteed(TargetSelector.Nesting(path).guaranteePresence)
-  @nonovrd final def transformGuaranteed(sel : Sel ): Innie = transformGuaranteed(Sel(sel).guaranteePresence)
-  @nonovrd final def transformGuaranteed(target: TargetSelector): Innie = transform          (target.guaranteePresence)
-
-  @nonovrd final def transformIfPresent(key : Key ): Innie = transformIfPresent(TargetSelector.Explicit(key).mayBeMissing /* default */)
-  @nonovrd final def transformIfPresent(ren : Ren ): Innie = transformIfPresent(TargetSelector.Renaming(ren).mayBeMissing /* default */)
-  @nonovrd final def transformIfPresent(path: Path): Innie = transformIfPresent(TargetSelector.Nesting(path).mayBeMissing /* default */)
-  @nonovrd final def transformIfPresent(sel : Sel ): Innie = transformIfPresent(Sel(sel).mayBeMissing /* default */)
-  @nonovrd final def transformIfPresent(target: TargetSelector): Innie = transform          (target.mayBeMissing /* default */) }
+  // ---------------------------------------------------------------------------
+  @nonovrd final def transformGuaranteed(target1: Target, more: Target*): Innie = transformGuaranteed(target1 +! more)
+  @nonovrd final def transformGuaranteed(targets: Targets)              : Innie = targets .guaranteePresence.pipe(TargetData.parse).pipe(innie)
+  @nonovrd final def transformGuaranteed(sel: Sel)                      : Innie = Sel(sel).guaranteePresence.pipe(innie) }
 
 // ===========================================================================

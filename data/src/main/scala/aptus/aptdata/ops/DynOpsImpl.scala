@@ -22,7 +22,7 @@ trait DynOpsImpl extends common.CommonHasTransformTargetSelectorTrait[Dyn] {
 
   // ===========================================================================
   override final protected[ops] def _ensurePresent(target: TargetEither): Dyn = sngl.tap(_ => _fold(target)(_ ensurePresence _))
-  override final protected[ops] def _ensureMissing(target: TargetEither): Dyn = sngl.tap(_ => _fold(target)(_ ensureAbsence _))
+  override final protected[ops] def _ensureAbsent (target: TargetEither): Dyn = sngl.tap(_ => _fold(target)(_ ensureAbsence _))
 
   // ===========================================================================
   override final protected[ops] def _rename(target: TargetData): Dyn = target.rename(sngl)

@@ -22,7 +22,7 @@ trait MultipleWrappedOps[Mult]
 
 // ===========================================================================
   override final protected[ops] def _ensurePresent(target: TargetEither): Mult = endoMap(_._ensurePresent(target))
-  override final protected[ops] def _ensureMissing(target: TargetEither): Mult = endoMap(_._ensureMissing(target))
+  override final protected[ops] def _ensureAbsent (target: TargetEither): Mult = endoMap(_._ensureAbsent (target))
 
   // ===========================================================================
   protected[aptdata] override final def transformTarget(either: TargetEither, f: ValueF): Mult = endoMap(_.transformTarget(either, f))

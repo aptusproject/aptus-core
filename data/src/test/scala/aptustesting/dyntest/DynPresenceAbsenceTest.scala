@@ -31,24 +31,24 @@ object DynPresenceAbsenceTest extends TestSuite {
     // ===========================================================================
     test("ensuring") {
       test(_Sngl1_T.noop(_.ensurePresent(foo, qux)))
-      test(_Sngl1_T.noop(_.ensureMissing(FOO, BAR)))
+      test(_Sngl1_T.noop(_.ensureAbsent (FOO, BAR)))
 
       // ---------------------------------------------------------------------------
       test(_Sngl3.noop(_.ensurePresent(p |> foo)))
-      test(_Sngl3.noop(_.ensureMissing(p |> FOO)))
+      test(_Sngl3.noop(_.ensureAbsent (p |> FOO)))
 
       // ---------------------------------------------------------------------------
-      test(Try(_Sngl1_T.ensureMissing(foo, qux)).check(Error.EnsurePresenceError))
+      test(Try(_Sngl1_T.ensureAbsent (foo, qux)).check(Error.EnsurePresenceError))
       test(Try(_Sngl1_T.ensurePresent(FOO, BAR)).check(Error.EnsureAbsenceError))
 
       // ===========================================================================
       test(    _Sngl3.add(qux -> T).noop(_.ensurePresent(qux, p |> foo)))
-      test(    _Sngl3.add(qux -> T).noop(_.ensureMissing(QUX, p |> FOO)))
-      test(Try(_Sngl3.add(qux -> T)       .ensureMissing(qux, p |> FOO)).check(Error.EnsureAbsenceError))
-      test(Try(_Sngl3.add(qux -> T)       .ensureMissing(QUX, p |> foo)).check(Error.EnsureAbsenceError))
+      test(    _Sngl3.add(qux -> T).noop(_.ensureAbsent (QUX, p |> FOO)))
+      test(Try(_Sngl3.add(qux -> T)       .ensureAbsent (qux, p |> FOO)).check(Error.EnsureAbsenceError))
+      test(Try(_Sngl3.add(qux -> T)       .ensureAbsent (QUX, p |> foo)).check(Error.EnsureAbsenceError))
 
       // ---------------------------------------------------------------------------
-      test(    _Sngl3.add(qux -> T).noop(_.ensureMissing(QUX, p |> FOO)))
+      test(    _Sngl3.add(qux -> T).noop(_.ensureAbsent (QUX, p |> FOO)))
       test(    _Sngl3.add(qux -> T).noop(_.ensurePresent(qux, p |> foo)))
       test(Try(_Sngl3.add(qux -> T)       .ensurePresent(QUX, p |> foo)).check(Error.EnsurePresenceError))
       test(Try(_Sngl3.add(qux -> T)       .ensurePresent(qux, p |> FOO)).check(Error.EnsurePresenceError)) } } }

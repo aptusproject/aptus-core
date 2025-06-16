@@ -20,7 +20,7 @@ private[aptdata] object DynToGson { // TODO: t214360121145 - switch from gson to
             .foreach { entry =>
               mut.add(
                 /* property = */ entry.key.name, // note: underlying map "uses insertion order for iteration order"
-                /* value    = */ entry.valew.to[JsonElement]
+                /* value    = */ entry.valew.fold[JsonElement]
                   { dyns => jsonArray(dyns.exoMap(element)) }
                   { seq  => jsonArray(seq.map    (element)) }
                   { dyn  =>                       apply  (dyn) }
@@ -28,12 +28,15 @@ private[aptdata] object DynToGson { // TODO: t214360121145 - switch from gson to
 
     // ===========================================================================
     private val dynOnly: PartialFunction[Any, Any] = {
+      case null => JsonNull.INSTANCE // should be avoided as much as possible
+
+      // ---------------------------------------------------------------------------
       case x: Dyn => apply(x) // nesting
 
       // ---------------------------------------------------------------------------
       // 2+D arrays:
       case x: RealMatrix => x.getData.map { _.map(element).toList.pipe(jsonArray) }.toList.pipe(jsonArray)
-      case x: Seq[_] => x.map(element).pipe(jsonArray)
+      case x: Seq[_]     => x.map(element).pipe(jsonArray)
 
       // ---------------------------------------------------------------------------
       case x => x.getClass.pipe(aptus.aptdata.io.json.customJsonFormatters.get)

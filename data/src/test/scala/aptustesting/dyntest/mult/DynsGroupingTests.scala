@@ -2,8 +2,10 @@ package aptustesting
 package dyntest
 package mult
 
+import utest._
+
 // ===========================================================================
-object DynsGroupingTest {
+object DynsGroupingTest extends TestSuite {
   import aptus.dyn._
 
   // ===========================================================================
@@ -20,14 +22,8 @@ object DynsGroupingTest {
     dyn(foo -> "bar2", baz -> Seq(2)))
 
   // ===========================================================================
-  def main(args: Array[String]): Unit = { apply() }
-
-  // ---------------------------------------------------------------------------
-  def apply(): Unit = { _apply(); msg(getClass).p }
-
-  // ---------------------------------------------------------------------------
-  private def _apply(): Unit = {
-    GroupingInput.groupBy(foo)        .check(Output1)
-    GroupingInput.group  (baz).by(foo).check(Output2) } }
+  val tests = Tests {
+    test(GroupingInput.groupBy(foo)        .check(Output1))
+    test(GroupingInput.group  (baz).by(foo).check(Output2)) } }
 
 // ===========================================================================

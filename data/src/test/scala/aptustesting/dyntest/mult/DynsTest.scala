@@ -2,15 +2,11 @@ package aptustesting
 package dyntest
 package mult
 
+import utest._
+
 // ===========================================================================
-object DynsTest {
-  def main(args: Array[String]): Unit = { apply() }
-
-  // ---------------------------------------------------------------------------
-  def apply(): Unit = { _apply(); msg(getClass).p }
-
-  // ---------------------------------------------------------------------------
-  private def _apply(): Unit = {
+object DynsTest extends TestSuite {
+  val tests = Tests {
     //TODO
   }
 }

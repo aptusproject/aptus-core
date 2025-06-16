@@ -4,18 +4,18 @@ package sngl
 
 // ===========================================================================
 trait DynValewGetter //TODO: cleanup
-        extends ValewGetter /* .get and .getOrElse */ {
+        extends ValewGetter /* .get and .getOrElse */
+        with    DynValewPresenceAbsence /* isPresent, isAbsent, ... */ {
       self: DynData
-         with DynDataEntityErrorFormatterProvider
-         with aptdata.ops.OpsBorrowedFromGallia /* eg nest, reorderKeysRecursively, ... */ =>
+         with DynDataEntityErrorFormatterProvider =>
 
     override final protected[aptdata] def get(key: Key): Option[Valew] =
       data.find(_.key == key).map(_.valew)
 
     // ---------------------------------------------------------------------------
     //TODO: choose wich name to use
-    def    containsKey(key: Key): Boolean = isPresent(key)
-    def notContainsKey(key: Key): Boolean = isMissing(key)
+    def    containsKey(key: Key): Boolean =  keySet.contains(key)
+    def notContainsKey(key: Key): Boolean = !keySet.contains(key)
 
     //TODO: choose wich name to use
     /*private[aptdata] */def attemptKey (key: Key): Option[NakedValue]  = get(key).map(_.naked)
@@ -24,14 +24,7 @@ trait DynValewGetter //TODO: cleanup
     // ---------------------------------------------------------------------------
     def nakedValueOpt(key: Key): Option[NakedValue] = get(key).map(_.naked)
 
-    // ===========================================================================
-    def size: Size = data.size
-
     // ---------------------------------------------------------------------------
-    def isMissing(key: Key): Boolean = !keySet.contains(key)
-    def isPresent(key: Key): Boolean =  keySet.contains(key)
-
-    def isMissing(path: Path): Boolean = !containsPath(path)
-    def isPresent(path: Path): Boolean =  containsPath(path) }
+    def size: Size = data.size }
 
 // ===========================================================================

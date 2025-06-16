@@ -56,7 +56,7 @@ private[aptdata] object DynIn { import DynInUtils._
   // ===========================================================================
   private def gzipNormalisingOpt(value: InputFilePath): Option[InputFilePath] =
     value
-      .in.noneIf(_.endsWith(".gz"))
+      .in.someIf(_.endsWith(".gz"))
       .map(_.stripSuffixGuaranteed(".gz"))
 
   // ---------------------------------------------------------------------------

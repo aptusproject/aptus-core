@@ -15,12 +15,20 @@ object DynNestingTest extends TestSuite {
 
   // ===========================================================================
   val tests = Tests {
-    test(_Sngl3.isPresent(p |> foo).checkTrue ())
-    test(_Sngl3.isPresent(p |> FOO).checkFalse())
+    test(_Sngl1.noop(_.nest(FOO).under(qux)))
 
     // ---------------------------------------------------------------------------
-    test(dyn(f1 -> foo , f2 -> foo , g -> 1)
-        .nest(f1).under(F)
-      .check(dyn(f2 -> foo, g -> 1, F -> dyn(f1 -> foo)))) } }
+    test(_Sngl1_NoBaz.nest(foo).under(p)
+      .check(dyn(p -> _Sngl1_NoBaz)))
+
+    // ---------------------------------------------------------------------------
+    test(_Sngl1_T.nest(foo).under(p)
+      .check(dyn(baz -> 1, qux -> T, p -> _Sngl1_NoBaz)))
+
+    // ---------------------------------------------------------------------------
+    test(_Sngl1_T
+        .nest(foo, baz).under(p)
+      .check(dyn(qux -> T, p -> _Sngl1))) }
+}
 
 // ===========================================================================

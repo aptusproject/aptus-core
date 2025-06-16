@@ -3,69 +3,88 @@ package aptdata
 package ops
 
 // ===========================================================================
-trait DynOpsImpl {
+trait DynOpsImpl extends common.CommonHasTransformTargetSelectorTrait[Dyn] {
     sngl: Dyn => // TODO: limit
 
   // ---------------------------------------------------------------------------
-  /** MUST have distinct keys */ def merge(that: Dyn): Dyn = aptdata.sngl.Dyn.build((data: Iterable[Entry]) ++ (that.data: Iterable[Entry]))
+  private def _fold[T](target: TargetEither)(f: (TargetData, Dyn) => T): T =
+    target
+      .fold(_.targetData(sngl.skeys), identity)
+      .pipe(f(_, sngl))
 
   // ===========================================================================
-  final override def ensurePresent(key1: Key, more: Key*): Dyn = sngl.pipeIf((key1 +: more).intersect(keys). isEmpty)(_ => Error.EnsurePresenceError(()).thro)
-  final override def ensureMissing(key1: Key, more: Key*): Dyn = sngl.pipeIf((key1 +: more).intersect(keys).nonEmpty)(_ => Error.EnsureAbsenceError (()).thro)
-
-  // ===========================================================================
-  final override def rename(mapping: Map[Key, Key]): Dyn = mapEntries(_.rename(mapping))
-  final override def rename(from: Key) = new _Rename(from: Key) {
-    def to(to: Key): Dyn = mapEntries(_.rename(Ren(from, to))) }
+  override final protected[aptdata] def transformTarget(target: TargetEither, valueF: ValueF): Dyn =
+    _fold(target)((x, y) => x.transform(y)(valueF))
 
   // ---------------------------------------------------------------------------
-  final override def retain(targets: Set[Key]): Dyn = flatMapEntries(_.retainOpt(targets)) // TODO: specialized for 1?
-  final override def remove(targets: Set[Key]): Dyn = flatMapEntries(_.removeOpt(targets)) // TODO: specialized for 1?
-
-// 241120
-final def rename(path: Path): _RenamePath = new _RenamePath(path)
-  final class _RenamePath(path: Path) { def to(x :Key): Dyn = ??? /* TODO: t250402144718 */ }
-final def retain(path: Path): Dyn = ???
-final def remove(path: Path): Dyn = ???
-
-  // ---------------------------------------------------------------------------
-final def replace          (key: Ren): _Replace = new _Replace(???, guaranteed = false)
-
-  final def replace          (key: Key): _Replace = new _Replace(key, guaranteed = false)
-  final def replaceIfPresent (key: Key): _Replace = new _Replace(key, guaranteed = false)
-  final def replaceGuaranteed(key: Key): _Replace = new _Replace(key, guaranteed = true)
-
-    final class _Replace private[aptdata] (key: Key, guaranteed: Boolean) {
-      def withValue(value: NakedValue): Dyn =
-        if (guaranteed) transformGuaranteed(key).using(_ => value)
-        else            transformIfPresent (key).using(_ => value) }
+  /** MUST have distinct keys */ def merge(that: Dyn): Dyn =
+    aptdata.sngl.Dyn.build((data: Iterable[Entry]) ++ (that.data: Iterable[Entry]))
 
   // ===========================================================================
-  final override def add(entry: Entry)        : Dyn = Dyn.build(data :+ entry)
-  final override def add(entries: List[Entry]): Dyn = Dyn.build(data ++ entries)
+  override final protected[ops] def _ensurePresent(target: TargetEither): Dyn = sngl.tap(_ => _fold(target)(_ ensurePresence _))
+  override final protected[ops] def _ensureMissing(target: TargetEither): Dyn = sngl.tap(_ => _fold(target)(_ ensureAbsence _))
 
   // ===========================================================================
-  final def put(key: Key, value: NakedValue) : Dyn =
-      if (containsKey(key)) replace(key).withValue(value)
-      else                      add(key,           value)
+  override final protected[ops] def _rename(target: TargetData): Dyn = target.rename(sngl)
+
+    override final def rename(mapping: Map[Key, Key]): Dyn = mapEntries(_.rename(mapping))
+
+    override final def rename(sel: Sel2): _Rename = new _Rename { def to(to: Key): Dyn =
+      sel(meta.selectors.SelectOneShorthands).targetData(sngl.skeys, to).rename(sngl) }
+
+    override final def rename          (from: NoRenarget)  : _Rename = new _Rename { def to(to: Key): Dyn = rename(from ~> to) }
+    override final def renameGuaranteed(from: NoRenarget)  : _Rename = new _Rename { def to(to: Key): Dyn = rename(
+      ((from ~> to): Renarget).guaranteePresence) }
 
   // ===========================================================================
-  final override def nest(nestee: Key): NestOps[Dyn] =
-    new SglNestOps {
-      protected val _sngl        = sngl
-      protected val _nestee: Key = nestee }
+  override final protected[ops] def _retain(target: TargetEither): Dyn = _fold(target)(_ retain _)
 
-  // ---------------------------------------------------------------------------
-  def unnest = ???
+    override final def retainMultiple(values: Set[Key]): Dyn = data.filter(x => values.contains(x.key)).dyn
+    override final def retainKey     (key   : Key)     : Dyn = data.filter(_.key == key).dyn
+
+    // ---------------------------------------------------------------------------
+    override final protected[ops] def _remove(target: TargetEither): Dyn = _fold(target)(_ remove _)
+
+    // ---------------------------------------------------------------------------
+    override final def removeMultiple(values: Set[Key]): Dyn = data.filterNot(x => values.contains(x.key)).dyn
+    override final def removeKey     (value   : Key)   : Dyn = data.filterNot(_.key == value).dyn
+
+  // ===========================================================================
+  override final protected[ops] def _add    (target: NoRenarget, value: NakedValue): Dyn = _noRenarget(target) { (x, y) => x.add    (y -> value) }
+  override final protected[ops] def _replace(target: NoRenarget, value: NakedValue): Dyn = _noRenarget(target) { (x, y) => x.replace(y -> value) }
+  override final protected[ops] def _put    (target: NoRenarget, value: NakedValue): Dyn = _noRenarget(target) { (x, y) => x.put    (y -> value) }
+
+    // ---------------------------------------------------------------------------
+    // add: must not exist
+    override final def add(entry: Entry)        : Dyn = Dyn.build(data :+ entry)   // errors out if already present, use .put() otherwise
+    override final def add(entries: List[Entry]): Dyn = Dyn.build(data ++ entries) // errors out if already present, use .put() otherwise
+
+    // ---------------------------------------------------------------------------
+    // replace: must exist
+    override final def replace(key: Key, value: NakedValue): Dyn = transformGuaranteed(key.target).using { _ => value }
+    override final def replace(entries: List[Entry])       : Dyn = entries.foldLeft(sngl) { (x, entry) => x.replace(entry) }
+
+    // ---------------------------------------------------------------------------
+    // put: may or may not exist
+    override final def put(entries: List[Entry])       : Dyn = entries.foldLeft(sngl) { (x, entry) => x.put(entry) }
+    override final def put(key: Key, value: NakedValue): Dyn =
+        if (containsKey(key)) replace(key).withValue(value)
+        else                      add(key,           value)
+
+  // ===========================================================================
+  override final def nest(nestee: Key)             : NestOps[Dyn] = new SglNestOps(sngl, nestee.in.seq)
+  /*override final */def nest(nestee1: Key, more: Key*): NestOps[Dyn] = new SglNestOps(sngl, nestee1 +: more)
+
+  def unnest = ??? // TODO
 
   // ===========================================================================
   // converts
-final def convert(key: Path): ConvertOps[Dyn] = ???
+  override final def convert(targets: Targets): ConvertOps[Dyn] = new SglConvertOps(sngl, targets)
 
-  // ---------------------------------------------------------------------------
-  final override def convert(key: Key): ConvertOps[Dyn] =
-    new SglConvertOps {
-      protected val _ctt: common.CommonTransformTrait[Dyn] = sngl
-      protected val _key: Key = key } }
+  // ===========================================================================
+  protected def _noRenarget(value: NoRenarget)(f: (Dyn, Key) => Dyn): Dyn =
+    value.fold2
+      { key      => f(sngl, key) }
+      { initPath => leaf => sngl.transformNesting(initPath).using(f(_, leaf)) } }
 
 // ===========================================================================

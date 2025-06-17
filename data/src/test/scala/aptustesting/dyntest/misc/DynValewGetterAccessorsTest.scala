@@ -10,12 +10,12 @@ object DynValewGetterAccessorsTest extends TestSuite with DynTestData {
 
   // ---------------------------------------------------------------------------
   val tests = Tests {
-    test(_Sngl1. string  (foo).check(bar))
+    test(_Sngl1. string  (foo)           .check(bar))
     test(_Sngl1. string  (Path.leaf(foo)).check(bar))
     test(_Sngl3 .string  (      p |> foo).check(bar))
     test(_Sngl33.string  (p2 |> p |> foo).check(bar))
 
-    test(_Sngl1. text  (foo).check(bar))
+    test(_Sngl1. text  (foo)           .check(bar))
     test(_Sngl1. text  (Path.leaf(foo)).check(bar))
     test(_Sngl3 .text  (      p |> foo).check(bar))
     test(_Sngl33.text  (p2 |> p |> foo).check(bar))

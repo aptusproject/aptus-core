@@ -3,8 +3,7 @@ package aptdata
 package accessors
 
 // ===========================================================================
-private[aptdata] trait ValewGetterAccessors {
-    self: ValewGetter => // TODO
+private[aptdata] trait ValewGetterBasicAccessors { self: ValewGetter =>
 
   // ---------------------------------------------------------------------------
   protected implicit class Option__[T](diss: Option[T]) {

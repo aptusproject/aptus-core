@@ -36,6 +36,17 @@ package aptdata {
   implicit class AptusDataTypeLeaf_(protected val diss: TypeLeaf) extends AptusDataTypeLeaf
 
   // ===========================================================================
+  /* indirection so Cls doesn't directly refer to Dyn */
+  implicit class AptusDataCls_(diss: Cls) {
+      def toDyn: Dyn = meta.converter.MetaToDataConverter.clsToDyn(diss) }
+
+    // ---------------------------------------------------------------------------
+    /* indirection so Cls doesn't directly refer to Dyn */
+    implicit class AptusDataClsType_(diss: Cls.type) {
+      def fromDyn(value: Dyn): Cls =
+        meta.converter.DataToMetaConverter.dynToCls(value) }
+
+  // ===========================================================================
   private[aptdata] trait HasTargetSelector {
       @abstrct protected def target: TargetEither }
 
@@ -88,11 +99,6 @@ package aptdata {
                    implicit class EntriesSeq_ (values:  Seq[(SKey, NakedValue)]) {                  def dyn: Dyn = Dyn.build(values.map(Entry._fromString)) }
   private[aptdata] implicit class EntriesSeq2_(values:  Seq[(Key, NakedValue)])  { private[aptdata] def dyn: Dyn = Dyn.build(values.map(Entry._fromKey)) }
   private[aptdata] implicit class EntriesSeq3_(values:  Seq[Entry])              { private[aptdata] def dyn: Dyn = Dyn.build(values) }
-
-  // ---------------------------------------------------------------------------
-  // will remove after (t241130165320 - refactor code borrowed from gallia)
-  private [aptus] implicit class EntriesSeq2GalliaTmp_(values:  Seq[(Key, NakedValue)])  {
-    def galliaDyn: Dyn = Dyn.build(values.map(Entry._fromKey))  }
 
   // ---------------------------------------------------------------------------
   private[aptdata] implicit class DynSeq_(values: Seq [Dyn]) {

@@ -1,9 +1,7 @@
 package aptus
 package aptdata
-package ops
-package common
-
-import aptus.aptdata.meta.selectors._
+package meta
+package selectors
 
 // ===========================================================================
 package object td {

@@ -51,15 +51,15 @@ package aptdata {
       @abstrct protected def target: TargetEither }
 
     // ---------------------------------------------------------------------------
-    private[aptdata] type TargetData = aptus.aptdata.ops.common.td.TargetData
-    private[aptdata] val  TargetData = aptus.aptdata.ops.common.td.TargetData
+    private[aptdata] type TargetData = aptus.aptdata.meta.selectors.td.TargetData
+    private[aptdata] val  TargetData = aptus.aptdata.meta.selectors.td.TargetData
 
     // ---------------------------------------------------------------------------
     private[aptdata] type TargetEitheR = Either[TargetSelector, Targets]
     private[aptdata] type TargetEither = Either[TargetSelector, TargetData]
 
     // ---------------------------------------------------------------------------
-    implicit class TargetData_ (protected val self: TargetData) extends ops.common.td.TargetDataOps
+    implicit class TargetData_ (protected val self: TargetData) extends meta.selectors.td.TargetDataOps
 
   // ===========================================================================
   private[aptdata] trait ValewGetter {

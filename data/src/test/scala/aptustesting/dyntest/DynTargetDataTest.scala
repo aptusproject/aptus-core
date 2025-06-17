@@ -28,7 +28,7 @@ object DynTargetDataTest extends TestSuite {
 
   // ===========================================================================
   val tests = Tests {
-    import aptus.aptdata.ops.common.td._
+    import aptus.aptdata.meta.selectors.td._
     import TargetData.{build => td}
 
     // ---------------------------------------------------------------------------

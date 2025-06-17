@@ -3,8 +3,6 @@ package aptdata
 package meta
 package selectors
 
-import ops.common.td.TargetData
-
 // ===========================================================================
 /** dynamic target selector */
 sealed trait TargetSelector extends PresenceGuarantee[TargetSelector] {
@@ -20,8 +18,8 @@ sealed trait TargetSelector extends PresenceGuarantee[TargetSelector] {
     @nonovrd final def formatDefault: String = if (guaranteed) formatNonGuaranteed.append("[guaranteed]]") else formatNonGuaranteed
 
     // ---------------------------------------------------------------------------
-    def targetData(skeys: SKeys)         : TargetData = selection.apply(skeys)             .pipe(TargetData.parseSKeys(guaranteed = false))
-    def targetData(skeys: SKeys, to: Key): TargetData = selection.apply(skeys).map(_ ~> to).pipe(TargetData.parseRens (guaranteed = false)) }
+    def targetData(skeys: SKeys)         : td.TargetData = selection.apply(skeys)             .pipe(td.TargetData.parseSKeys(guaranteed = false))
+    def targetData(skeys: SKeys, to: Key): td.TargetData = selection.apply(skeys).map(_ ~> to).pipe(td.TargetData.parseRens (guaranteed = false)) }
 
   // ===========================================================================
   object TargetSelector { // a241127165900 - can't have it all at once (eg dynamic + path)

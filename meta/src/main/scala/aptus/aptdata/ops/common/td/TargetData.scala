@@ -1,10 +1,8 @@
 package aptus
 package aptdata
-package ops
-package common
+package meta
+package selectors
 package td
-
-import aptus.aptdata.meta.selectors._
 
 // ===========================================================================
 case class TargetData(

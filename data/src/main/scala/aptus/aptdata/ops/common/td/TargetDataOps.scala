@@ -1,7 +1,7 @@
 package aptus
 package aptdata
-package ops
-package common
+package meta
+package selectors
 package td
 
 // ===========================================================================

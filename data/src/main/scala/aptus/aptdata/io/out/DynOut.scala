@@ -22,7 +22,7 @@ private[aptdata] object DynOut {
       .parse(value)
       .map {
         case FileExtensionMultiple.JsonArrayExtension => dyns.formatCompactJson.newline.writeFileContent(value)
-        case FileExtensionMultiple.TsvExtension       => DynOut2.formatTable(dyns)(sep = "\t").writeFileLines(value)
+        case FileExtensionMultiple.TsvExtension       => DynTableFormatting.formatTable(dyns)(sep = "\t").writeFileLines(value)
         case _ => ??? }
       .getOrElse { ??? }
 

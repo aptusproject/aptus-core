@@ -69,7 +69,7 @@ def doubles          : Seq[Double] = ???//  TODO: t241203151505 exoMap(_.double(
 
     // ---------------------------------------------------------------------------
     //TODO: csv
-    def formatTsv  : String = io.out.DynOut2.formatTable(this)(sep = "\t")
+    def formatTsv  : String = io.out.DynTableFormatting.formatTable(this)(sep = "\t")
       .joinln.newline /* TODO: stream */
     def formatTable: String = formatTsv }
 

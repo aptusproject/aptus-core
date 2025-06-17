@@ -4,7 +4,7 @@ package io
 package out
 
 // ===========================================================================
-private[aptdata] object DynOut2 {
+private[aptdata] object DynTableFormatting {
   private val Missing = ""
 
   // ---------------------------------------------------------------------------
@@ -12,8 +12,7 @@ private[aptdata] object DynOut2 {
     val (header, data) = tableData(dyns)
 
     (header +: data)
-      .map(_.mkString /* t241024104357 - use xsv lib */ (sep))
-  }
+      .map(_.mkString /* t241024104357 - use xsv lib */ (sep)) }
 
   // ---------------------------------------------------------------------------
   private def tableData(dyns: Dyns): (Seq[Key], Seq[Seq[StringValue]]) = {
@@ -27,8 +26,6 @@ private[aptdata] object DynOut2 {
             row
               .get(_)
               .map(_.format)
-              .getOrElse(Missing) } } }
-
-}
+              .getOrElse(Missing) } } } }
 
 // ===========================================================================

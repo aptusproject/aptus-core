@@ -20,7 +20,7 @@ trait CommonOpsTrait[Data]
   @abstrct       def convert(targets: Targets)              : ConvertOps[Data]
 
   // ===========================================================================
-  // TODO: t250606100085 - offer multiple at least, maybe paths?
-  @abstrct def nest(nestee: Key): NestOps[Data] }
+  @nonovrd final def nest(nestee1: Key, more: Key*): NestOps[Data] = nest(nestee1 +: more)
+  @abstrct       def nest(nestees: Keyz)           : NestOps[Data] }
 
 // ===========================================================================

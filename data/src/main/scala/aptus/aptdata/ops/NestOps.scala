@@ -24,9 +24,9 @@ trait NestOps[Self] { def under(nester: Key): Self }
   // ===========================================================================
   class MultNestOps[Mult] private[aptdata](
         protected val _hem: ops.mult.HasEndoMap[Mult],
-        protected val _nestee: Key)
+        protected val _nestees: Keyz)
       extends NestOps[Mult] {
     final override def under(nester: Key): Mult =
-      _hem.endoMap(_.nest(_nestee).under(nester)) }
+      _hem.endoMap(_.nest(_nestees).under(nester)) }
 
 // ===========================================================================

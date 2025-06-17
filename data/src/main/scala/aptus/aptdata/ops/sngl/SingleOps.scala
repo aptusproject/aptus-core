@@ -30,8 +30,7 @@ trait SingleOps
   override final protected[ops] def _ensureAbsent (target: TargetEither): Dyn = sngl.tap(_ => _fold(target)(_ ensureAbsence _))
 
   // ===========================================================================
-  override final def nest(nestee: Key)                 : NestOps[Dyn] = new SglNestOps(sngl, nestee.in.seq)
-  /*override final */def nest(nestee1: Key, more: Key*): NestOps[Dyn] = new SglNestOps(sngl, nestee1 +: more)
+  override final def nest(nestees: Keyz): NestOps[Dyn] = new SglNestOps(sngl, nestees)
 
   def unnest = ??? // TODO
 

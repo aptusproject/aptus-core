@@ -29,12 +29,14 @@ trait MultipleWrappedOps[Mult]
 
   // ===========================================================================
   override final def convert(targets: Targets): ConvertOps[Mult] = new MultConvertOps[Mult](hem, targets)
-  override final def nest   (nestee: Key)     : NestOps   [Mult] = new MultNestOps   [Mult](hem, nestee)
+
+  override final def nest(nestees: Keyz): NestOps[Mult] = new MultNestOps   [Mult](hem, nestees)
 
   // ===========================================================================
   override final protected[ops] def _rename(target: TargetData): Mult = endoMap(_._rename(target))
 
   override final def rename(mapping: Map[Key, Key]): Mult = endoMap(_.rename(mapping))
+
   override final def rename(sel: Sel2): _Rename = new _Rename { def to(to: Key): Mult = endoMap(_.rename(sel ).to(to)) }
 
   override final def rename          (from: NoRenarget)  : _Rename = new _Rename { def to(to: Key): Mult = endoMap(_.rename          (from).to(to)) }

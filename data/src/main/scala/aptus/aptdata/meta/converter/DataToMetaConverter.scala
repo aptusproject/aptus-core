@@ -10,19 +10,19 @@ object DataToMetaConverter { // 201222111331
   // ---------------------------------------------------------------------------
   def dynToCls(value: Dyn): Cls =
       value
-        .objs(_fields)
+        .nestings(_fields)
         .map(fld)
         .pipe(Cls.apply)
 
     // ---------------------------------------------------------------------------
     private def fld(value: Dyn): Fld = Fld(
         key  = value.string(_key).symbol,
-        info = value.obj(_info).pipe(info))
+        info = value.nesting(_info).pipe(info))
 
       // ---------------------------------------------------------------------------
       private def info(value: Dyn): Info = Info(
           optional = value.boolean(_optional),
-          union    = value.objs(_union).map(subInfo))
+          union    = value.nestings(_union).map(subInfo))
 
         // ---------------------------------------------------------------------------
         private def subInfo(value: Dyn): SubInfo = SubInfo(

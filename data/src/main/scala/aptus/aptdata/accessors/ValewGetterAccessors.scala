@@ -86,23 +86,24 @@ private[aptdata] trait ValewGetterAccessors {
     target.und match {
       case key: Key                 => get(key) .map(f)
       case Path(Nil,          leaf) => get(leaf).map(f)
-      case Path(head +: rest, leaf) => get(head).flatMap(_.dynOpt.flatMap(x => g(x, Path(rest, leaf)))) }
+      case Path(head +: rest, leaf) => get(head).flatMap(_.nestingOpt.flatMap(x => g(x, Path(rest, leaf)))) }
 
   // ===========================================================================
-  def obj  (target: NoRenarget): One[Dyn] = obj_ (target).forceOrError(target)
-  def objs (target: NoRenarget): Nes[Dyn] = objs_(target).forceOrError(target)
+  def nesting  (target: NoRenarget): One[Dyn] = nesting_ (target).forceOrError(target)
+  def nestings (target: NoRenarget): Nes[Dyn] = nestings_(target).forceOrError(target)
 
   // ---------------------------------------------------------------------------
-  def obj_ (target: NoRenarget): Opt[Dyn] = typed_[    Dyn ](target)(_.dyn)        (_ obj_  _)
-  def objs_(target: NoRenarget): Ons[Dyn] = typed_[Seq[Dyn]](target)(_.dyns.values)(_ objs_ _)
+  def nesting_ (target: NoRenarget): Opt[Dyn] = typed_[    Dyn ](target)(_.nesting)        (_ nesting_  _)
+  def nestings_(target: NoRenarget): Ons[Dyn] = typed_[Seq[Dyn]](target)(_.nestings.values)(_ nestings_ _)
 
   // ===========================================================================
+  // to be cleanedup/migrated
   def objs$_(key: Key): Option[Nes[Dyn]] = ???//values$_[Obj](key)
   def objs$$(key: Key):        Seq[Dyn]  = ???//values$$[Obj](key)
-  def objs$$2_(path: Path): Ons[Dyn] = ???
-  def objs$$2 (path: Key) : Nes[Dyn]  = ??? // dis._plumbing.nestingAccess$$2(pnk)(_.accessors.objs$$)
+  def objs$$2_(path: Path): Ons[Dyn]     = ???
+  def objs$$2 (path: Key) : Nes[Dyn]     = ??? // dis._plumbing.nestingAccess$$2(pnk)(_.accessors.objs$$)
 
-  def objs$$2 (path: Path):        Nes[Dyn]  = ??? // dis._plumbing.nestingAccess$$2(pnk)(_.accessors.objs$$)
+  def objs$$2 (path: Path): Nes[Dyn]  = ??? // dis._plumbing.nestingAccess$$2(pnk)(_.accessors.objs$$)
 
   // ===========================================================================
   def text (target: NoRenarget): One[StringValue] = text_ (target).forceOrError(target)
@@ -129,9 +130,16 @@ private[aptdata] trait ValewGetterAccessors {
         { sgl  => lowlevel.AnyValueFormatter.format(sgl).in.seq }
 
   // ---------------------------------------------------------------------------
+  // to be cleanedup/migrated
   //def texts$_(key: KeyW): Option[Nes[String]] = anys$_(key).map(_.map(_.str))
   def texts$$(key: Key):     Seq[String]  = ???//anys$$(key)      .map(_.str)
   def texts$$2(path: Path): Nes[String] = ??? // ObjUNesting.scala:def texts$$2(pnk: PotentiallyNestedKey) = dis._plumbing.nestingAccess$$2(pnk)(_.accessors.texts$$)
+
+  // ===========================================================================
+  // to be cleanedup/migrated
+            def any__  : Option[NakedValue] = ???//value__[AnyValue]
+            def anys$  : Seq   [NakedValue] = ???//values$[AnyValue]
+  //@inline def anys$$ : Seq   [NakedValue] = ???//Bar.anys$$(u)
 
   // ===========================================================================
   /** if confident one and exactly one (else favor seq-based + eg force.option) */
@@ -152,11 +160,12 @@ private[aptdata] trait ValewGetterAccessors {
   def doubless (key: Key): Seq2D[Double ] = getOrElse(key, error).doubless
   def stringss (key: Key): Seq2D[String ] = getOrElse(key, error).stringss
 
+  def matrix           (key: Key): RealMatrixCommons = getOrElse(key, error).matrix
   def realMatrixCommons(key: Key): RealMatrixCommons = getOrElse(key, error).matrix
 
   // ===========================================================================
-  def any_  (key: Path): Option[NakedValue]    = ???// self.get(key)
-  def any   (key: Path): NakedValue    = ???// self.getOrElse(key, error)
+  def any_  (key: Path): Option[NakedValue] = ???// self.get(key)
+  def any   (key: Path): NakedValue         = ???// self.getOrElse(key, error)
 
   // ---------------------------------------------------------------------------
   def basicValue(key: Key): NakedValue = ???

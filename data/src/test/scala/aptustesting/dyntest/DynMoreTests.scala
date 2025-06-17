@@ -45,7 +45,7 @@ object DynMoreTests extends TestSuite {
       val res = dyn("p" -> dyn("FOO" -> "bar"))
 
       // dyn("p" -> dyn(foo -> "bar")).rename("p" |> foo -> "FOO")
-      test(in.transform       (p).using(_.dyn.rename(foo).to("FOO")).check(res))
-      test(in.transformNesting(p).using(_    .rename(foo).to("FOO")).check(res)) } } }
+      test(in.transform       (p).using(_.nesting.rename(foo).to("FOO")).check(res))
+      test(in.transformNesting(p).using(_        .rename(foo).to("FOO")).check(res)) } } }
 
 // ===========================================================================

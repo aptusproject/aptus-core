@@ -13,8 +13,7 @@ case class Dyn private[Dyn] (
       protected[aptdata] val data: List[Entry])
     extends AllCommons[_Self]
 
-       with accessors.ValewGetterAccessors        /* eg myDyn.string("name") */
-       with accessors.ValewGetterComplexAccessors /* eg myDyn.texts("name") */
+       with accessors.ValewGetterAccessors /* eg myDyn.string("name"), myDyn.texts("name"), ... */
        with sngl.SingleOps         /* eg retain (concrete) */
        with DynData
        with DynEntryMapping        /* map/flatMap on entry */

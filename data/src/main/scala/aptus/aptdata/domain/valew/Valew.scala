@@ -81,12 +81,12 @@ case class Valew private[Valew] (naked: NakedValue)
       def formatDefault: String =
         fold3[String](
           _.formatDebug)(
-          aptdata.lowlevel.AnyValueFormatter.format)(
+          aptdata.lowlevel.AnyValueFormatter.formatLeaf)(
           _.mkString("[", ",", "]"))
 
     // ---------------------------------------------------------------------------
 // TODO: t250528102620 - if seq...
-@deprecated def format: String = aptdata.lowlevel.AnyValueFormatter.format(naked) }
+@deprecated def format: String = aptdata.lowlevel.AnyValueFormatter.formatLeaf(naked) }
 
   // ===========================================================================
   object Valew {

@@ -14,7 +14,7 @@ case class Dyn private[Dyn] (
     extends AllCommons[_Self]
 
        with accessors.ValewGetterAccessors /* eg myDyn.string("name") */
-       with DynOpsImpl       /* eg retain (concrete) */
+       with sngl.SingleOps         /* eg retain (concrete) */
        with DynData
        with DynEntryMapping        /* map/flatMap on entry */
        with DynEntriesTransforming /* transform entries direction (full control) */

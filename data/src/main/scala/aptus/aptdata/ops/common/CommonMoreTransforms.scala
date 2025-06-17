@@ -39,13 +39,13 @@ trait CommonMoreTransforms[Data] {
     class _TransformNesting(targets: TargetEitheR) {
       def using(f: Dyn => NakedValue): Data =
         targets.map(TargetData.parse).pipe { x => self.transformTarget(x,
-          _.nestingOpt.map(f).getOrElse(TransformSpecificType(deef, x, sngl.Dyn).thro)) } }
+          _.nestingOpt.map(f).getOrElse(TransformSpecificType(deef, x, aptdata.sngl.Dyn).thro)) } }
 
     // ---------------------------------------------------------------------------
     class _TransformNestings(targets: TargetEitheR) { // no nested Dynz (see a241119155444)
       def using(f: Dyns => NakedValue): Data =
         targets.map(TargetData.parse).pipe { x => self.transformTarget(x,
-          _.nestingsOpt.map(f).getOrElse(TransformSpecificType(deef, x, sngl.Dyn).thro)) } }
+          _.nestingsOpt.map(f).getOrElse(TransformSpecificType(deef, x, aptdata.sngl.Dyn).thro)) } }
 
   // ===========================================================================
   @nonovrd final def transformBoolean(target1: Target, more: Target*): _TransformBoolean = new _TransformBoolean(Targets(target1 +: more, guaranteed = false))

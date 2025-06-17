@@ -6,6 +6,7 @@ package selectors
 import ops.common.td.TargetData
 
 // ===========================================================================
+/** dynamic target selector */
 sealed trait TargetSelector extends PresenceGuarantee[TargetSelector] {
     protected[aptdata] val guaranteed: Boolean
     protected[aptdata] val selection : SKeysSelection

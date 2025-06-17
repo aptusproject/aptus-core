@@ -18,9 +18,9 @@ object DynTransformDerivedTest extends TestSuite {
 		test(_Sngl1.upperCase(_.selectOne(_.find(_.startsWith("f")).get)).check(_Sngl1_BAR))
 
     test(_Sngl1.upperCaseGuaranteed(foo).check(_Sngl1_BAR))
-    test(_Sngl1.upperCaseIfPresent (foo).check(_Sngl1_BAR))
-    test(_Sngl1.upperCaseIfPresent (baz).check(_Sngl1)) // present but not String
-    test(_Sngl1.upperCaseIfPresent (qux).check(_Sngl1))
+    test(_Sngl1.upperCase          (foo).check(_Sngl1_BAR))
+    test(_Sngl1.upperCase          (baz).check(_Sngl1)) // present but not String
+    test(_Sngl1.upperCase          (qux).check(_Sngl1))
 
     // ===========================================================================
     test(_Sngl1.decrement(baz)                              .check(_Sngl1_0))

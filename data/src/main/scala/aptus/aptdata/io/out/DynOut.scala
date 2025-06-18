@@ -27,12 +27,12 @@ private[aptdata] object DynOut {
       .getOrElse { ??? }
 
   // ---------------------------------------------------------------------------
-  def write(dyns: Dynz)(value: OutputFilePath): OutputFilePath =
+  def write(dynz: Dynz)(value: OutputFilePath): OutputFilePath =
     FileExtensionMultiple
       .parse(value)
       .map {
-        case FileExtensionMultiple.JsonArrayExtension => dyns.formatCompactJson.newline.writeFileContent(value)
-        case FileExtensionMultiple.TsvExtension       => ???//DynOut2.formatTable(dyns)(sep = "\t").writeFileLines(value)
+        case FileExtensionMultiple.JsonArrayExtension => dynz.formatCompactJson.newline.writeFileContent(value)
+        case FileExtensionMultiple.TsvExtension       => dynz.formatTableLike /* avoid in favor of explicit call with keys */
         case _ => ??? }
       .getOrElse { ??? } }
 

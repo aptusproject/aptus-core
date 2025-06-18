@@ -5,7 +5,7 @@ package out
 
 // ===========================================================================
 trait DynzTables { self: Dynz =>
-  import io.out.TableFormatting._
+  import io.out.DynzTableFormatting._
 
   // ---------------------------------------------------------------------------
   def formatTsv(key1: Key, more: Key*): FormattedTable = formatTable(key1, more:_*)(_.tsv)

@@ -25,7 +25,7 @@ private[aptdata] object DynTableFormatting {
           keys.map {
             row
               .get(_)
-              .map(_.format)
+              .map(_.formatValew)
               .getOrElse(Missing) } } } }
 
 // ===========================================================================

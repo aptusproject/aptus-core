@@ -4,7 +4,7 @@ package io
 package out
 
 // ===========================================================================
-private[aptdata] object TableFormatting {
+private[aptdata] object DynzTableFormatting {
   private val arraySeparator = ";" // TODO: include in contexts
 
   // ---------------------------------------------------------------------------

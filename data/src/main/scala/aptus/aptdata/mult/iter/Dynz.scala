@@ -76,5 +76,4 @@ with aspects.DynzSchemaInferrer2 {
     private[aptdata] def _build(values: CloseabledIterator[Dyn]): Dynz =
       new Dynz(values) }
 
-
 // ===========================================================================

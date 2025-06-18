@@ -21,14 +21,14 @@ trait ConvertOps[Data] {
       extends ConvertOps[Sngl] {
     import _ctt._
 
-    final override def toStr    : Sngl = transform(_targets).using { _.format }
-    final override def toBoolean: Sngl = transform(_targets).using { _.format /* TODO: t241101134033 or just toString? */ }
+    final override def toStr    : Sngl = transform(_targets).using { _.formatLeafValew }
+    final override def toBoolean: Sngl = transform(_targets).using { _.formatLeafValew.toBoolean } // TODO: offer alternatives such as T/F, ...
 
     /* TODO: more efficient versions of these? */
-    final override def toInt    : Sngl = transform(_targets).using { _.format.toInt    }
-    final override def toDouble : Sngl = transform(_targets).using { _.format.toDouble }
+    final override def toInt    : Sngl = transform(_targets).using { _.formatLeafValew.toInt    }
+    final override def toDouble : Sngl = transform(_targets).using { _.formatLeafValew.toDouble }
 
-    final override def toLong   : Sngl = transform(_targets).using { _.format.toLong } }
+    final override def toLong   : Sngl = transform(_targets).using { _.formatLeafValew.toLong } }
 
   // ===========================================================================
   class MultConvertOps[Mult] private[aptdata](

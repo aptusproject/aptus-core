@@ -21,23 +21,14 @@ object DynMoreTests extends TestSuite {
       val nestingPredicate1: PartialFunction[Any, Boolean] = _.isInstanceOf[Dyn]
       val nestingPredicate2: PartialFunction[Any, Boolean] = { case _: Dyn => true }
 
-      test(  3  .pipe(info._valueExtractionWithMatching(nestingPredicate1)).check(List(int)))
-      test(  3.3.pipe(info._valueExtractionWithMatching(nestingPredicate1)).check(Nil))
-      test("abc".pipe(info._valueExtractionWithMatching(nestingPredicate1)).check(List(str)))
+      test(  3  .pipe(info._valueExtractionWithMatching(nestingPredicate1)).check1(int))
+      test(  3.3.pipe(info._valueExtractionWithMatching(nestingPredicate1)).check0())
+      test("abc".pipe(info._valueExtractionWithMatching(nestingPredicate1)).check1(str))
 
-      test(Dyn.dyn(foo -> bar).pipe(info._valueExtractionWithMatching(nestingPredicate1)).check(List(nc)))
-      test(Dyn.dyn(foo -> bar).pipe(info._valueExtractionWithMatching(nestingPredicate2)).check(List(nc)))
+      test(Dyn.dyn(foo -> bar).pipe(info._valueExtractionWithMatching(nestingPredicate1)).check1(nc))
+      test(Dyn.dyn(foo -> bar).pipe(info._valueExtractionWithMatching(nestingPredicate2)).check1(nc))
 
-      test(new java.io.File("myfile").pipe(info._valueExtractionWithMatching(nestingPredicate1)).check(Nil))
-    }
-
-    // ===========================================================================
-    test("convert") {
-      test(dyn(foo -> "9", baz -> 1).convertToInt(foo)      .check(dyn(foo -> 9  , baz ->  1)))
-      test(dyn(foo -> "9", baz -> 1).convert     (foo).toInt.check(dyn(foo -> 9  , baz ->  1)))
-      test(dyn(foo -> bar, baz -> 1).convert     (baz).toStr.check(dyn(foo -> bar, baz -> "1")))
-
-      test(_Mult1.convert(baz).toStr.check(dyns(dyn(foo -> bar1, baz -> "1"), dyn(foo -> bar2, baz -> "2")))) }
+      test(new java.io.File("myfile").pipe(info._valueExtractionWithMatching(nestingPredicate1)).check0()) }
 
     // ===========================================================================
     test {

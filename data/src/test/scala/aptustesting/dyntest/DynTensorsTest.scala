@@ -14,20 +14,20 @@ object DynTensorsTest extends TestSuite  {
   private val tensor = "tensor"
 
   // ---------------------------------------------------------------------------
-  private val m3x2 =
+  private val m3x2: Seq2D[Double] =
     _matrix(
       (1.1, 2.2),
       (3.3, 4.4),
       (5.5, 6.6))
 
   // ---------------------------------------------------------------------------
-  private val m2x3 =
+  private val m2x3: Seq2D[String] =
     _matrix(
       ("a", "b", "c"),
       ("d", "e", "f"))
 
   // ---------------------------------------------------------------------------
-  private val tex2x4 =
+  private val tex2x4: Seq3D[Double] =
     _tensor(
       _matrix(
         (0.111, 0.112, 0.113, 0.114),
@@ -40,7 +40,7 @@ object DynTensorsTest extends TestSuite  {
         (0.321, 0.322, 0.323, 0.324)) )
 
   // ---------------------------------------------------------------------------
-  val _m3x2 = m3x2.toRealMatrixCommons
+  val _m3x2: RealMatrixCommons = m3x2.toRealMatrixCommons
 
   // ===========================================================================
   val tests = Tests {

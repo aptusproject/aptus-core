@@ -16,8 +16,11 @@ package object dyntest
   // ---------------------------------------------------------------------------
   type NakedValue = Any
 
-  type Valew      = aptus.aptdata.domain.valew.Valew
-  val  Valew      = aptus.aptdata.domain.valew.Valew
+  type Valew = aptus.aptdata.domain.valew.Valew
+  val  Valew = aptus.aptdata.domain.valew.Valew
+
+  type Seq2D[T] = aptus.dyn.Seq2D[T]
+  type Seq3D[T] = aptus.dyn.Seq3D[T]
 
   // ===========================================================================
   implicit class StringSeq2D_(valuess: Seq2D[String]) { // TODO: toaptus
@@ -72,9 +75,40 @@ package object dyntest
 
   // ===========================================================================
   implicit class AnythingTests_[T](value: T) {
-    def noop(f: T => T)           = { f(value).check(value ) }
-    def check(expected: T)        = { assert(value == expected, value -> expected) }
-    def check(pred: T => Boolean) = { assert(pred(value), value) } }
+      def noop(f: T => T)   : Unit = { f(value).check(value ) }
+      def check(expected: T): Unit = {
+        if(value != expected) {
+          val msg: String =
+            formatValue(value)   .act(value).newline.append(
+            formatValue(expected).exp(expected))
+          aptus.illegalState(msg) } } }
+
+    // ---------------------------------------------------------------------------
+    implicit class AnythingsTests_[T](values: Seq[T]) {
+      def check0()                                    : Unit = _check(Nil)
+      def check1(value: T)                            : Unit = _check(Seq(value))
+      def checkN(expected1: T, expected2: T, more: T*): Unit = _check((Seq(expected1, expected2) ++ more).toList)
+
+      // ---------------------------------------------------------------------------
+      private def _check(expected: Seq[T]): Unit = {
+        if(values != expected) {
+          val msg: String =
+            values  .map(formatValue2).joinln.act.newline.append(
+            expected.map(formatValue2).joinln.exp)
+          aptus.illegalState(msg) } } }
+
+    // ---------------------------------------------------------------------------
+    private implicit class String__(diss: String) {
+      def act = diss.prepend(  "actual\n\n").newline
+      def exp = diss.prepend("expected\n\n").newline
+
+      // ---------------------------------------------------------------------------
+      def act(value: Any) = diss.prepend(  s"actual: ${value.getClass}\n\n").newline
+      def exp(value: Any) = diss.prepend(s"expected: ${value.getClass}\n\n").newline }
+
+    // ---------------------------------------------------------------------------
+    private def formatValue (value: Any): String = Option(value).map(_.toString).getOrElse("[null!]")
+    private def formatValue2(value: Any): String = formatValue(value).append(s" (${value.getClass.getSimpleName})")
 
   // ===========================================================================
   implicit class BooleanTests_(val value: Boolean) extends TestsTrait[Boolean] {

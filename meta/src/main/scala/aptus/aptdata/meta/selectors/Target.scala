@@ -57,10 +57,10 @@ case class NoRenarget private(und: NoRenargetable) extends AnyVal {
     def path = und.asInstanceOf[Path]
 
     // ---------------------------------------------------------------------------
-    def ~>(to: Key): Renarget = fold[Renarget](_ ~> to)(_ ~> to)
+    def ~>(to: Key): Renarget = fold1[Renarget](_ ~> to)(_ ~> to)
 
     // ---------------------------------------------------------------------------
-    def fold[T](k: Key => T)(p: Path => T): T =
+    def fold1[T](k: Key => T)(p: Path => T): T =
       und match {
         case x: Key       => k(x)
         case Path(Nil, x) => k(x)
@@ -73,7 +73,16 @@ case class NoRenarget private(und: NoRenargetable) extends AnyVal {
         case x: Path      =>
           x.initPathOpt match {
             case None           => k          (x.key)
-            case Some(initPath) => p(initPath)(x.key) } } }
+            case Some(initPath) => p(initPath)(x.key) } }
+
+    // ---------------------------------------------------------------------------
+    def fold3[T](k: Key => T)(p: Key /* head */ => Path /* tail */ => T): T =
+      und match {
+        case x: Key       => k(x)
+        case x: Path      =>
+          x.tailPair match {
+            case (headKey, None          ) => k(headKey)
+            case (headKey, Some(tailPath)) => p(headKey)(tailPath) } } }
 
   // ===========================================================================
   object NoRenarget {

@@ -93,7 +93,7 @@ private[aptdata] object TableFormatting {
                 .in.noneIf(encountered.contains)
                 .map { newKey =>
                   encountered += newKey
-                  entry.valew.format } }
+                  entry.valew.formatValew } }
 
         // ---------------------------------------------------------------------------
         (knownKeys ++ newKeys).toList } }

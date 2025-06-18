@@ -60,6 +60,9 @@ object FullyQualifiedName {
   // ---------------------------------------------------------------------------
   lazy val ScalaOption: Self = FullyQualifiedName.from(FullNameBuiltIns._Option)
   lazy val ScalaSeq   : Self = FullyQualifiedName.from(FullNameBuiltIns._Seq)
+  lazy val ScalaSet   : Self = FullyQualifiedName.from(FullNameBuiltIns._Set)
+  lazy val ScalaMap   : Self = FullyQualifiedName.from(FullNameBuiltIns._Map)
+  lazy val ScalaArray : Self = FullyQualifiedName.from(FullNameBuiltIns._Array)
 
   // ===========================================================================
   private[aptus] def normalizeFullName(value: Self): Self = FullyQualifiedName.from(normalizeFullName(value.format))
@@ -71,7 +74,7 @@ object FullyQualifiedName {
         case FullNameBuiltIns._JavaString       => FullNameBuiltIns._JavaString // leave unchanged (TODO: use scala Predef's alias?)
 
         // ---------------------------------------------------------------------------
-        case FullNameBuiltIns._JavaInteger      => FullNameBuiltIns._ScalaInt // all others will be handled below by the package swap (default clause)
+        case FullNameBuiltIns._JavaLangInteger  => FullNameBuiltIns._ScalaInt // all others will be handled below by the package swap (default clause)
 
         // ---------------------------------------------------------------------------
         case FullNameBuiltIns._BooleanPrimitive => FullNameBuiltIns._ScalaBoolean

@@ -69,6 +69,9 @@ case class TypeLeaf(
     // ---------------------------------------------------------------------------
     lazy val ScalaOption: TypeLeaf = TypeLeaf.trivial(FullyQualifiedName.ScalaOption)
     lazy val ScalaSeq   : TypeLeaf = TypeLeaf.trivial(FullyQualifiedName.ScalaSeq).inheritsSeq(value = true)
+    lazy val ScalaSet   : TypeLeaf = TypeLeaf.trivial(FullyQualifiedName.ScalaSet)
+    lazy val ScalaMap   : TypeLeaf = TypeLeaf.trivial(FullyQualifiedName.ScalaMap)
+    lazy val ScalaArray : TypeLeaf = TypeLeaf.trivial(FullyQualifiedName.ScalaArray)
 
     // ---------------------------------------------------------------------------
     def trivial(name    : String)            : TypeLeaf = TypeLeaf(fullName = FullyQualifiedName.from(name))

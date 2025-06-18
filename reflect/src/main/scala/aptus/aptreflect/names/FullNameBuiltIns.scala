@@ -19,11 +19,19 @@ object FullNameBuiltIns {
   private[aptreflect] lazy val JavaLangPackageNameDot = JavaLangPackageName.dot.intern()
 
   // ===========================================================================
+  private[aptreflect] lazy val _Array : FullNameString = classOf[scala.Array[_]].fullPath.intern()
+
   private[aptreflect] lazy val _Seq   : FullNameString = classOf[scala.collection.immutable.Seq[_]].fullPath.intern() // don't use collection.Seq
+  private[aptreflect] lazy val _Set   : FullNameString = classOf[scala.collection.immutable.Set[_]].fullPath.intern()
+
   private[aptreflect] lazy val _Option: FullNameString = classOf[scala.Option[_]]                  .fullPath.intern()
 
   private[aptreflect] lazy val _Some  : FullNameString = classOf[scala.Some[_]].fullPath.intern()
   private[aptreflect] lazy val _None  : FullNameString = scala.None.getClass   .fullPath.intern()
+
+  private[aptreflect] lazy val _Nil   : FullNameString = scala.collection.immutable.Nil.getClass.fullPath.intern()
+
+  private[aptreflect] lazy val _Map   : FullNameString = classOf[scala.collection.immutable.Map[_, _]].fullPath.intern()
 
   // ---------------------------------------------------------------------------
   private[aptreflect] lazy val _Product: FullNameString = classOf[scala.Product].fullPath.intern()
@@ -38,8 +46,10 @@ object FullNameBuiltIns {
   private[aptreflect] lazy val _Success: FullNameString = classOf[scala.util.Success[_]].fullPath.intern()
 
   // ===========================================================================
-  private[aptreflect] lazy val _JavaString : FullNameString = classOf[java.lang.String] .fullPath.intern()
-  private[aptreflect] lazy val _JavaInteger: FullNameString = classOf[java.lang.Integer].fullPath.intern()
+  private[aptreflect] lazy val _JavaString     : FullNameString = classOf[java.lang.String ].fullPath.intern()
+  private[aptreflect] lazy val _JavaLangInteger: FullNameString = classOf[java.lang.Integer].fullPath.intern()
+  private[aptreflect] lazy val _JavaLangDouble : FullNameString = classOf[java.lang.Double ].fullPath.intern()
+  private[aptreflect] lazy val _JavaLangBoolean: FullNameString = classOf[java.lang.Boolean].fullPath.intern()
 
   // ---------------------------------------------------------------------------
   private[aptus] lazy val _JavaTimeLocalDate     : FullNameString = classOf[java.time.LocalDate    ].fullPath.intern()
@@ -90,6 +100,11 @@ object FullNameBuiltIns {
   private[aptreflect] lazy val _EnumEntry: FullNameString = "enumeratum.EnumEntry".intern()
 
   // ===========================================================================
-  private[aptreflect] lazy val _AptusEnumValue: FullNameString = classOf[aptus.aptdata.meta.basic.EnumValue].fullPath.intern() }
+  private[aptreflect] lazy val _AptusEnumValue: FullNameString = classOf[aptus.aptdata.meta.basic.EnumValue].fullPath.intern()
+
+  // ---------------------------------------------------------------------------
+  private[aptreflect] lazy val _AptusDyn : FullNameString = "aptus.aptdata.sngl.Dyn"
+  private[aptreflect] lazy val _AptusDyns: FullNameString = "aptus.aptdata.mult.list.Dyns"
+  private[aptreflect] lazy val _AptusDynz: FullNameString = "aptus.aptdata.mult.iter.Dynz" }
 
 // ===========================================================================

@@ -32,7 +32,11 @@ object TypeNodeBuiltIns {
   val ScalaMathBigInt     = TypeNode.trivial(_ScalaMathBigInt)
   val ScalaMathBigDecimal = TypeNode.trivial(_ScalaMathBigDecimal)
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
+  val JavaLangBoolean        = TypeNode.trivial(_JavaLangBoolean)
+  val JavaLangInteger        = TypeNode.trivial(_JavaLangInteger)
+  val JavaLangDouble         = TypeNode.trivial(_JavaLangDouble)
+
   val JavaTimeLocalDate      = TypeNode.trivial(_JavaTimeLocalDate)
   val JavaTimeLocalDateTime  = TypeNode.trivial(_JavaTimeLocalDateTime)
   val JavaTimeInstant        = TypeNode.trivial(_JavaTimeInstant)
@@ -42,9 +46,22 @@ object TypeNodeBuiltIns {
 
   // ---------------------------------------------------------------------------
   def scalaOption(typeArg: TypeNode) = TypeNode(TypeLeaf.ScalaOption, List(typeArg))
-  def scalaSeq   (typeArg: TypeNode) = TypeNode(TypeLeaf.ScalaSeq,    List(typeArg))
-  
+  def scalaNoneOfUnknownType         = TypeNode.trivial(_None)
+
   // ---------------------------------------------------------------------------
-  val AptusEnumValue = TypeNode.trivial(_AptusEnumValue).enumValue(value = true) }
+  def scalaArray (typeArg: TypeNode) = TypeNode(TypeLeaf.ScalaArray,  List(typeArg))
+  def scalaSeq   (typeArg: TypeNode) = TypeNode(TypeLeaf.ScalaSeq,    List(typeArg))
+  def scalaSet   (typeArg: TypeNode) = TypeNode(TypeLeaf.ScalaSet,    List(typeArg))
+  def scalaNilOfUnknownType          = TypeNode.trivial(_Nil)
+
+  // ---------------------------------------------------------------------------
+  def scalaMap   (keyTypeArg: TypeNode, valueTypeArg: TypeNode) = TypeNode(TypeLeaf.ScalaMap, List(keyTypeArg, valueTypeArg))
+
+  // ---------------------------------------------------------------------------
+  val AptusEnumValue = TypeNode.trivial(_AptusEnumValue).enumValue(value = true)
+
+  val AptusDyn       = TypeNode.trivial(_AptusDyn)
+  val AptusDyns      = TypeNode.trivial(_AptusDyns)
+  val AptusDynz      = TypeNode.trivial(_AptusDynz) }
 
 // ===========================================================================

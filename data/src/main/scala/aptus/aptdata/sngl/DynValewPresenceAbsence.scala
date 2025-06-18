@@ -5,8 +5,8 @@ package sngl
 // ===========================================================================
 trait DynValewPresenceAbsence { self: DynData with DynValewGetter =>
   def isPresent         (target: NoRenarget): Boolean =  isSometimesPresent(target)
-  def isSometimesPresent(target: NoRenarget): Boolean =  target.fold(keySet.contains)(containsPath(total = false))
-  def isAlwaysPresent   (target: NoRenarget): Boolean =  target.fold(keySet.contains)(containsPath(total = true))
+  def isSometimesPresent(target: NoRenarget): Boolean =  target.fold1(keySet.contains)(containsPath(total = false))
+  def isAlwaysPresent   (target: NoRenarget): Boolean =  target.fold1(keySet.contains)(containsPath(total = true))
   def isAbsent          (target: NoRenarget): Boolean = !isSometimesPresent(target)
 
   // ---------------------------------------------------------------------------

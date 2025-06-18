@@ -37,7 +37,7 @@ trait MultipleOpsImpl[Mult <: HasValuesIterator[Mult]]
 
   // ---------------------------------------------------------------------------
   override final def writeKey(key: Key, to: FilePath): FilePath =
-    valuesIterator.map(_.text_(key).getOrElse("")).writeGzipLines(to)
+    valuesIterator.map(_.texts(key).join(";") /* TODO: offer alt */).writeGzipLines(to)
 
   // ===========================================================================
   // borrowed from gallia:

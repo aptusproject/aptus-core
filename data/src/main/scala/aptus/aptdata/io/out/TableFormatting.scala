@@ -5,7 +5,9 @@ package out
 
 // ===========================================================================
 private[aptdata] object TableFormatting {
+  private val arraySeparator = ";" // TODO: include in contexts
 
+  // ---------------------------------------------------------------------------
   case class TableCtx(
         separator    : String  = "\t",
         includeHeader: Boolean = true,
@@ -57,8 +59,7 @@ private[aptdata] object TableFormatting {
         .map { row =>
           keys
             .map { key =>
-              row
-                .text_(key)
+              text_(row)(key)
                 .getOrElse(missingValue) } }
 
   // ===========================================================================
@@ -79,8 +80,7 @@ private[aptdata] object TableFormatting {
         val knownKeys: Iterable[StringValue] =
           encountered
             .map { encounteredKey =>
-              row
-                .text_(encounteredKey)
+              text_(row)(encounteredKey)
                 .getOrElse(missingValue) }
 
         // ---------------------------------------------------------------------------
@@ -96,6 +96,12 @@ private[aptdata] object TableFormatting {
                   entry.valew.format } }
 
         // ---------------------------------------------------------------------------
-        (knownKeys ++ newKeys).toList } } }
+        (knownKeys ++ newKeys).toList } }
+
+  // ===========================================================================
+  private def text_(row: Dyn)(key: Key): Option[StringValue] =
+    row
+      .get(key)
+      .map(_.texts.join(arraySeparator)  /* not really expecting multiples here, but making do if some */) }
 
 // ===========================================================================

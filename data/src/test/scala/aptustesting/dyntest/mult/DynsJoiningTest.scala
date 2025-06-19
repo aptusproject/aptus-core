@@ -2,8 +2,10 @@ package aptustesting
 package dyntest
 package mult
 
+import utest._
+
 // ===========================================================================
-object DynsJoiningTest {
+object DynsJoiningTest extends TestSuite {
   import aptus.dyn._
 
   // ===========================================================================
@@ -29,17 +31,11 @@ object DynsJoiningTest {
         _Sngl1x2.add(qux -> T))
 
   // ===========================================================================
-  def main(args: Array[String]): Unit = { apply() }
+  val tests = Tests {
+    test(_Mult1.join(that1, via = foo).check(expectedJoin))
+    test(_Mult1.join(that1)           .check(expectedJoin)) /* costly, favor providing join key whenever possible */
 
-  // ---------------------------------------------------------------------------
-  def apply(): Unit = { _apply(); msg(getClass).p }
-
-  // ---------------------------------------------------------------------------
-  private def _apply(): Unit = {
-    _Mult1.join(that1, via = foo).check(expectedJoin)
-    _Mult1.join(that1)           .check(expectedJoin) /* costly, favor providing join key whenever possible */
-
-    _Mult1.bringAll(that2, via = foo).check(expectedBringAll)
-    _Mult1.bringAll(that2)           .check(expectedBringAll) /* costly, favor providing join key whenever possible */ } }
+    test(_Mult1.bringAll(that2, via = foo).check(expectedBringAll))
+    test(_Mult1.bringAll(that2)           .check(expectedBringAll)) /* costly, favor providing join key whenever possible */ } }
 
 // ===========================================================================

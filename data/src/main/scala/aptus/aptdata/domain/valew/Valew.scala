@@ -2,101 +2,55 @@ package aptus
 package aptdata
 package domain
 package valew
+import valew.{Valew => Self}
+
+import aptus.aptreflect.nodes._
 
 // ===========================================================================
 /** Little bit like gallia.Whatever */
 case class Valew private[Valew] (naked: NakedValue)
-      extends accessors.ValewBasicAccessors   /* eg .string      */
+      extends ValewFormatting
+         with ValewTransforming
+         with accessors.ValewBasicAccessors   /* eg .string      */
          with accessors.ValewComplexAccessors /* eg .realLikeOpt */ {
     require(!ValewOps.isOrContainsValew(naked), naked) // a241119155118
+
+    // ---------------------------------------------------------------------------
+    /** only use for debugging/tests */
+    def runtimeTypeNode: TypeNode = Self.DynTypeNodeRuntimeParser(naked)
+
+    // ---------------------------------------------------------------------------
+    override def toString: String = formatDebug
 
     // ---------------------------------------------------------------------------
     def transformValew(valueF: Valew => NakedValue) = ValewOps.potentiallyUnwrap(valueF(this))
 
     // ===========================================================================
-    def fold[T](f: Dyns => T)(g: Seq[_] => T)(h: Dyn => T)(i: NakedValue => T): T =
-      naked match {
-        // note: no nested Dynz/Iterator (see a241119155444) - TODO: t250402132436
-        case dyns: Dyns   => f(dyns)
-        case seq : Seq[_] => g(seq)
-        case dyn : Dyn    => h(dyn)
-        case sgl          => i(sgl) }
+    private[valew] def notNestingError  () = error("E250529135752", "no nesting")
+    private[valew] def notMultiplesError() = error("E250529135753", "no multiples")
 
-  // ---------------------------------------------------------------------------
-  def fold2(f: Dyn => Dyn)(g: Dyns => Dyns): NakedValue = _fold2(f)(g)(value = naked)
-
-    // ---------------------------------------------------------------------------
-    private def _fold2(f: Dyn => Dyn)(g: Dyns => Dyns)(value: NakedValue): NakedValue =
-        value match { // note: no nested Dynz/Iterator (see a241119155444) - TODO: t250402132436
-          case dyn : Dyn    => f(dyn)
-          case dyns: Dyns   => g(dyns)
-          case seq : Seq[_] => seq.map(_fold2(f)(g))
-          case other        => other }
-
-    // ---------------------------------------------------------------------------
-    def fold3[T](d: Dyn => T)(n: NakedValue => T)(s: Seq[T] => T): T =
-      naked match {
-        // note: no nested Dynz/Iterator (see a241119155444) - TODO: t250402132436
-        case dyns: Dyns   => dyns.exoMap(d).consumeAll().pipe(s)
-        case seq : Seq[_] => s(seq.map {
-          case dyn : Dyn    => d(dyn)
-          case sgl          => n(sgl) })
-        case dyn : Dyn    => d(dyn)
-        case sgl          => n(sgl) }
-
-    // ---------------------------------------------------------------------------
-    def transformNesting(f: Dyn => Dyn): Valew =
-      fold[Valew]
-        { dyns => dyns.endoMap(f).pipe(Valew.build) }
-        { seq =>
-          seq
-            .map {
-              case dyn : Dyn    => f(dyn)
-              case sgl          => Valew.notNestingError(sgl) }
-            .dyns
-            .pipe(Valew.build) }
-        { dyn => f(dyn).pipe(Valew.build) }
-        { sgl => Valew.notNestingError(sgl) }
-
-    // ---------------------------------------------------------------------------
-    def nesting(p: Dyn => Unit): Unit =
-      fold[Unit]
-        { dyns => dyns.valuesIterator.foreach(p) }
-        { seq =>
-          seq
-            .map {
-              case dyn : Dyn    => p(dyn)
-              case _            => () } }
-        { dyn => p(dyn) }
-        { _   => () }
+      // ---------------------------------------------------------------------------
+      private def error(id: String, msg: String) = aptus.illegalArgument(s"${id} - ${msg}: ${naked} (${runtimeTypeNode.formatPrettyJson})")
 
     // ===========================================================================
-    override def toString: String = formatDebug
-
-      // ---------------------------------------------------------------------------
-      def formatDebug: String =
-        s"Valew(${naked.getClass}:${naked.toString})"
-
-      // ---------------------------------------------------------------------------
-      def formatDefault: String =
-        fold3[String](
-          _.formatDebug)(
-          aptdata.lowlevel.AnyValueFormatter.formatLeaf)(
-          _.mkString("[", ",", "]"))
-
-    // ---------------------------------------------------------------------------
-// TODO: t250528102620 - if seq...
-@deprecated def format: String = aptdata.lowlevel.AnyValueFormatter.formatLeaf(naked) }
+    def texts: Seq[StringValue] =
+      fold3d[StringValue]
+        { /* dyn  */ _         .formatCompactJson }               /* not really expecting nesting here, but making do */
+        { /* dyns */ _.exoMap(_.formatCompactJson).consumeAll() } /* not really expecting nesting here, but making do */
+        { lowlevel.AnyValueFormatter.formatLeaf(_) } }
 
   // ===========================================================================
   object Valew {
-    private def notNestingError(value: NakedValue) = aptus.illegalArgument(
-      s"E250529135752 - not nesting: ${value} (${value.getClass})")
-
-    // ---------------------------------------------------------------------------
     /** must be prenormalized first (see 241122121139) */
     def build(value: NakedValue) = Valew.apply(value)
 
-    @inline def potentiallyUnwrap(value: Any): Valew = ValewOps.potentiallyUnwrap(value) }
+    @inline def potentiallyUnwrap(value: Any): Valew = ValewOps.potentiallyUnwrap(value)
+
+    // ===========================================================================
+    private lazy val DynTypeNodeRuntimeParser =
+      new TypeNodeRuntimeParser({
+        case _: Dyn       => TypeNodeBuiltIns.AptusDyn
+        case _: Dyns      => TypeNodeBuiltIns.AptusDyns
+        case _: Dynz      => TypeNodeBuiltIns.AptusDynz }) }
 
 // ===========================================================================

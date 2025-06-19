@@ -37,7 +37,7 @@ lazy val reflect = (project in file("reflect"))
   .settings(
     name   := "aptus-reflect", // e.g WTT/TypeNode
     target := baseDirectory.value / ".." / "bin" / "reflect")
-  .dependsOn(core)
+  .dependsOn(core % "compile->compile;test->test")
 
 // ---------------------------------------------------------------------------
 lazy val meta = (project in file("meta"))
@@ -45,14 +45,14 @@ lazy val meta = (project in file("meta"))
     name   := "aptus-meta", // e.g Cls, Fld, ...
     target := baseDirectory.value / ".." / "bin" / "meta",
     libraryDependencies += "com.beachape" %% "enumeratum" % enumeratumVersion /* needed for Key */)
-  .dependsOn(reflect)
+  .dependsOn(reflect % "compile->compile;test->test")
 
 // ---------------------------------------------------------------------------
 lazy val data = (project in file("data"))
   .settings(
     name   := "aptus-data", // e.g. Dyn, ...
     target := baseDirectory.value / ".." / "bin" / "data")
-  .dependsOn(meta)
+  .dependsOn(meta % "compile->compile;test->test")
 
 // ---------------------------------------------------------------------------
 lazy val root = (project in file("."))
@@ -154,4 +154,5 @@ ThisBuild / assembly / assemblyMergeStrategy := {
   case _                             => MergeStrategy.first }
 
 // ===========================================================================
+
 

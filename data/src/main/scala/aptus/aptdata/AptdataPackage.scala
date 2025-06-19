@@ -25,6 +25,19 @@ package aptdata {
        with io.in.TupleBasedBuildingExtensions /* eg ("name": "Alice", "age" -> 30).dyn */
      /* no AptusMinExtensions (since already under aptus) */ {
 
+  // ---------------------------------------------------------------------------
+  case class Trio(
+        start: String,
+        sep  : String,
+        end  : String) {
+      def format2(values: Seq[String]): String =
+        values.mkString(start, sep, end) }
+
+    // ---------------------------------------------------------------------------
+    object Trio {
+      val Json    = Trio("[", ",", "]")
+      val Default = Json }
+
   // ===========================================================================
   private[aptdata] type AnyValue = Any
 
@@ -63,8 +76,9 @@ package aptdata {
 
   // ===========================================================================
   private[aptdata] trait ValewGetter {
-    @abstrct       protected[aptdata] def get      (key: Key)               : Option[Valew]
-    @nonovrd final protected          def getOrElse(key: Key, alt: => Valew):        Valew = get(key).getOrElse(alt) }
+    @abstrct       protected[aptdata] def get          (key: Key)               : Option[Valew]
+    @nonovrd final protected          def getOrElse    (key: Key, alt: => Valew):        Valew       = get(key).getOrElse(alt)
+    @nonovrd final protected          def getNakedValue(key: Key)               : Option[NakedValew] = get(key).map(_.naked) }
 
   // ===========================================================================
   private[aptdata] val _group = "_group"

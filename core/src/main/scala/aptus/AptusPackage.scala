@@ -595,6 +595,13 @@ package object aptus
       def pivotPreGrouped[W](implicit ev: V <:< Seq[W]): ListMap[W, Seq[K]] = PivotingUtils.pivotPreGrouped(mp.asInstanceOf[ListMap[K, Seq[W]]]) }
 
   // ===========================================================================
+  implicit class Either_[L, R](val either: Either[L, R]) extends AnyVal {
+    @inline def mapRight[R2](f: R => R2): Either[L , R2] = either.map(f) // == map (for good measure)
+            def mapLeft [L2](f: L => L2): Either[L2, R ] = either match { case Left(l) => Left(f(l)); case Right(r) => Right(r) }
+
+    def mapBoth[L2, R2](f: L => L2)(g: R => R2): Either[L2, R2] = either match { case Left(l) => Left(f(l)); case Right(r) => Right(g(r)) } }
+
+  // ===========================================================================
   implicit class Option_[A](val opt: Option[A]) extends AnyVal {
     @inline def force = opt.get // stdlib polyseme (see Map's)
 

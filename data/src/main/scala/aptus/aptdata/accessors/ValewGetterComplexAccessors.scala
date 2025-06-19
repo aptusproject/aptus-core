@@ -10,14 +10,23 @@ private[aptdata] trait ValewGetterComplexAccessors {
 
   // ===========================================================================
   /** if confident one and exactly one (else favor seq-based + eg force.option) */
-  def nakedValue(target: NoRenarget): One[NakedValue] = nakedValues(target).force.one
+  def nakedValue(target: NoRenarget): One[NakedValue] = nakedValues(target).force.oneOrThrow("E250618153017")
 
   // ---------------------------------------------------------------------------
   /** never fails, just returns all values */
-  def nakedValues(target: NoRenarget): Seq[NakedValue] = target.und match {
-    case key: Key => self.get(key ).toSeq.flatMap { _.naked match { case seq: Seq[_] => seq; case sgl => Seq(sgl) } }
-    case Path(Nil,          leaf) => nakedValues(leaf)
-    case Path(head +: rest, leaf) => ValewGetterAccessorsUtils.nakedValues(self)(head, Path(rest, leaf)) }
+  def nakedValues(target: NoRenarget): Seq[NakedValue] =
+    target.fold3[Seq[NakedValue]]
+      { key =>
+          self.get(key).toSeq.flatMap { valew =>
+            valew.fold3d[NakedValue]
+              { dyn   => dyn }
+              { dyns  => dyns.values }
+              { vle   => vle } } }
+      { head => tail =>
+          self.get(head).toSeq.flatMap { valew =>
+            valew.fold3e[NakedValue]
+              { _             .nakedValues(tail) }
+              { _.exoFlatMap(_.nakedValues(tail)).consumeAll() } } }
 
   // ---------------------------------------------------------------------------
   // to be cleanedup/migrated

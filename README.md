@@ -8,7 +8,7 @@ when performance isn't most important. It also helps you code defensively when r
 
 <!-- =========================================================================== -->
 # Introduction
-For a good introduction to the library, see my talk from the Functional Scala 2024 conference: [video](https://drive.google.com/file/d/11uPPinjlpWQmpv220iyKgwdpgwbSSbRD) (not posted on YT yet)
+For a good introduction to the library, see my talk from the Functional Scala 2024 conference: [video on YouTube](https://youtu.be/Bkm2GPyhf0Y?si=_ROBq0hEH8-fR4jl&t=989)
 
 In particular the talk discusses the next exciting development for Aptus: bringing quick and simple dynamic data manipulations to the library, for instance:
 

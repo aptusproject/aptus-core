@@ -39,7 +39,7 @@ object DynDataClassesTest extends TestSuite {
       // def myMethod[T <: Product /* forgetting to add ": WTT" */] = johnDynamic.toStatic[T]
       // test(util.Try(myMethod[Person]).checkException(classOf[java.lang.IllegalArgumentException])) // <none>.T
 
-      test(dyn.dyn(johnStatic).check(johnDynamic)) }
+      test(dyn.fromDataClass(johnStatic).check(johnDynamic)) }
 
     // ---------------------------------------------------------------------------
     test("multiples") {

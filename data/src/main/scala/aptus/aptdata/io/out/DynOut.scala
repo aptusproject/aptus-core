@@ -32,7 +32,7 @@ private[aptdata] object DynOut {
       .parse(value)
       .map {
         case FileExtensionMultiple.JsonArrayExtension => dynz.formatCompactJson.newline.writeFileContent(value)
-        case FileExtensionMultiple.TsvExtension       => dynz.formatTableLike /* avoid in favor of explicit call with keys */
+        case FileExtensionMultiple.TsvExtension       => dynz.formatTableLike          .writeFileContent(value) /* avoid in favor of explicit call with keys */
         case _ => ??? }
       .getOrElse { ??? } }
 
